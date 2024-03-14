@@ -1,0 +1,12 @@
+{
+    "name": "mindbox/loyalty",
+    "type": "bitrix-module",
+    "require": {
+        "mindbox/sdk": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mindbox\\Loyalty\\": "lib/"
+        }
+    }
+}
