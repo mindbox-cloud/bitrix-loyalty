@@ -26,6 +26,11 @@ $request = \Bitrix\Main\Context::getCurrent()->getRequest();
 
 
 if ($request->isPost() && $request->get('save') && check_bitrix_sessid()) {
+    $notSaveOption = [
+        'USER_BITRIX_FIELDS',
+        'USER_MINDBOX_FIELDS',
+    ];
+
     $queryObject = \Bitrix\Main\SiteTable::getList([
         'select' => ['LID', 'NAME'],
         'filter' => [],
@@ -48,6 +53,10 @@ if ($request->isPost() && $request->get('save') && check_bitrix_sessid()) {
         }
 
         $key = str_replace('MINDBOX_LOYALTY_', '', $key);
+
+        if (in_array($key, $notSaveOption)) {
+            continue;
+        }
 
         if (is_array($option)) {
             $option = implode(',', $option);
@@ -89,6 +98,7 @@ $defaultOptions = Option::getDefaults(MINDBOX_LOYALTY_ADMIN_MODULE_NAME);
 $arAllOptions = [];
 foreach ($listSite as $site) {
     $arOptions = [
+        Loc::getMessage('MINDBOX_LOYALTY_HEADING_MAIN'),
         SettingsEnum::ENABLED_LOYALTY => [
             'id' => SettingsEnum::ENABLED_LOYALTY . '__' . $site,
             'origin' => SettingsEnum::ENABLED_LOYALTY,
@@ -127,16 +137,6 @@ foreach ($listSite as $site) {
                 'size' => 60,
             ]
         ],
-        SettingsEnum::BRAND => [
-            'id' => SettingsEnum::BRAND . '__' . $site,
-            'origin' => SettingsEnum::BRAND,
-            'label' => Loc::getMessage('MINDBOX_LOYALTY_BRAND', ['#LID#' => $site]),
-            'hints' => Loc::getMessage('MINDBOX_LOYALTY_BRAND_HINTS', ['#LID#'=>$site]),
-            'type' => [
-                'type' => 'text',
-                'size' => 60,
-            ]
-        ],
         SettingsEnum::WEBSITE_PREFIX => [
             'id' => SettingsEnum::WEBSITE_PREFIX . '__' . $site,
             'origin' => SettingsEnum::WEBSITE_PREFIX,
@@ -147,6 +147,17 @@ foreach ($listSite as $site) {
                 'size' => 60,
             ]
         ],
+        SettingsEnum::BRAND => [
+            'id' => SettingsEnum::BRAND . '__' . $site,
+            'origin' => SettingsEnum::BRAND,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_BRAND', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_BRAND_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
+        Loc::getMessage('MINDBOX_LOYALTY_HEADING_PRIMARY_KEY'),
         SettingsEnum::EXTERNAL_PRODUCT => [
             'id' => SettingsEnum::EXTERNAL_PRODUCT . '__' . $site,
             'origin' => SettingsEnum::EXTERNAL_PRODUCT,
@@ -177,10 +188,130 @@ foreach ($listSite as $site) {
                 'size' => 60,
             ]
         ],
+        Loc::getMessage('MINDBOX_LOYALTY_HEADING_HTTP_CLIENT'),
+        SettingsEnum::API_DOMAIN => [
+            'id' => SettingsEnum::API_DOMAIN . '__' . $site,
+            'origin' => SettingsEnum::API_DOMAIN,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_API_DOMAIN', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_API_DOMAIN_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'selectbox',
+                'options' => [
+                    'mindbox'    => 'api.mindbox.ru',
+                    'maestro' => 'api.maestra.io',
+                ],
+                'size' => 1
+            ]
+        ],
+        SettingsEnum::HTTP_CLIENT => [
+            'id' => SettingsEnum::HTTP_CLIENT . '__' . $site,
+            'origin' => SettingsEnum::HTTP_CLIENT,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_HTTP_CLIENT', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_HTTP_CLIENT_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'selectbox',
+                'options' => [
+                    'stream' => 'Stream',
+                    'curl'   => 'Curl'
+                ],
+                'size' => 1
+            ]
+        ],
+        SettingsEnum::TIMEOUT => [
+            'id' => SettingsEnum::TIMEOUT . '__' . $site,
+            'origin' => SettingsEnum::TIMEOUT,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_TIMEOUT', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_TIMEOUT_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
+        SettingsEnum::IS_LOGGING => [
+            'id' => SettingsEnum::IS_LOGGING . '__' . $site,
+            'origin' => SettingsEnum::IS_LOGGING,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_IS_LOGGING', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_IS_LOGGING_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'checkbox',
+            ]
+        ],
+        SettingsEnum::LOG_PATH => [
+            'id' => SettingsEnum::LOG_PATH . '__' . $site,
+            'origin' => SettingsEnum::LOG_PATH,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_LOG_PATH', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_LOG_PATH_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
+        SettingsEnum::LOG_LIFE_TIME => [
+            'id' => SettingsEnum::LOG_LIFE_TIME . '__' . $site,
+            'origin' => SettingsEnum::LOG_LIFE_TIME,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_LOG_LIFE_TIME', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_LOG_LIFE_TIME_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
+        Loc::getMessage('MINDBOX_LOYALTY_HEADING_USER_FIELDS'),
+        SettingsEnum::USER_BITRIX_FIELDS => [
+            'id' => SettingsEnum::USER_BITRIX_FIELDS . '__' . $site,
+            'origin' => SettingsEnum::USER_BITRIX_FIELDS,
+            'label' => Loc::getMessage('BITRIX_FIELDS', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('BITRIX_FIELDS', ['#LID#' => $site]),
+            'current' => [],
+            'type' => [
+                'type' => 'selectbox',
+                'options' => \Mindbox\Loyalty\Options::getUserFields(),
+                'size' => 1
+            ],
+
+        ],
+        SettingsEnum::USER_MINDBOX_FIELDS => [
+            'id' => SettingsEnum::USER_MINDBOX_FIELDS . '__' . $site,
+            'origin' => SettingsEnum::USER_MINDBOX_FIELDS,
+            'label' => Loc::getMessage('MINDBOX_FIELDS', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_FIELDS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'text'
+            ]
+        ],
+        [
+            'id' => 'user_module_button_add' . '__' . $site,
+            'current' => \Mindbox\Loyalty\Options::getAddOrderMatchButton('user_module_button_add_' . $site),
+            'type' => [
+                'type' => 'statichtml'
+            ]
+        ],
+        [
+            'id' => '',
+            'current' => \Mindbox\Loyalty\Options::getUserMatchesTable(),
+            'type' => [
+                'type' => 'statichtml'
+            ]
+        ],
+        SettingsEnum::USER_FIELDS_MATCH => [
+            'id' => SettingsEnum::USER_FIELDS_MATCH . '__' . $site,
+            'origin' => SettingsEnum::USER_FIELDS_MATCH,
+            'type' => [
+                'type' => 'text'
+            ]
+        ],
     ];
 
     foreach ($arOptions as &$option) {
         if (!is_array($option)) {
+            continue;
+        }
+
+        if (!isset($option['origin'])) {
+            continue;
+        }
+
+        if (isset($option['current'])) {
             continue;
         }
 
@@ -200,7 +331,7 @@ foreach ($listSite as $site) {
 
 ?>
 <form method="post"
-      action="<?php echo $APPLICATION->GetCurPage() ?>?mid=<?= htmlspecialcharsbx($mid) ?>&lang=<?php echo LANG ?>">
+      action="<?= $APPLICATION->GetCurPage() ?>?mid=<?= htmlspecialcharsbx($mid) ?>&lang=<?= LANG ?>">
     <?php echo bitrix_sessid_post() ?>
     <?php
     $tabControl->Begin();
@@ -213,85 +344,118 @@ foreach ($listSite as $site) {
                 ?>
                 <tr class="heading">
                 <td colspan="2"><?= htmlspecialcharsbx($arOption); ?></td></tr><?php
-            } else {
-                $currentValue = $arOption['current'];
-                $type = $arOption['type'];
-                $controlId = htmlspecialcharsbx($arOption['id']);
-                $controlName = 'MINDBOX_LOYALTY_' . htmlspecialcharsbx($arOption['id']);
-
-                $style = '';
-                if (
-                    $arOption['origin'] == SettingsEnum::DISABLE_PROCESSING_GROUPS
-                    && isset($arAllOptions[SettingsEnum::DISABLE_PROCESSING]['current'])
-                    && $arAllOptions[SettingsEnum::DISABLE_PROCESSING]['current'] !== 'Y'
-                ) {
-                    $style = 'display: none;';
-                }
-                ?>
-                <tr style="<?= $style ?>" data-type="<?= $type['type'] ?>">
-                    <td style="width: 40%; white-space: nowrap;">
-                        <?php
-                        if (isset($arOption['hints'])) {
-                            ?><span id="hint_<?= $controlId; ?>"></span>
-                            <script>BX.hint_replace(BX('hint_<?=$controlId;?>'), '<?=\CUtil::JSEscape($arOption['hints']); ?>');</script>&nbsp;<?php
-                        }
-
-                        if (isset($arOption['label'])) {
-                            ?><label for="<?= $controlId; ?>"><?= htmlspecialcharsbx($arOption['label']); ?></label><?php
-                        } ?>
-
-                    <td>
-                        <?php
-                        switch ($type['type']) {
-                            case 'checkbox':
-                                ?>
-                                <input type="hidden" name="<?= $controlName; ?>" value="N">
-                                <input type="checkbox" id="<?= $controlId; ?>" name="<?= $controlName; ?>"
-                                       value="Y"<?= ($currentValue == "Y" ? " checked" : ""); ?>><?php
-                                break;
-                            case 'text':
-                                ?><input type="text" id="<?= $controlId; ?>" name="<?= $controlName; ?>"
-                                         value="<?= htmlspecialcharsbx($currentValue); ?>" size="<?= $type['size']; ?>"
-                                         maxlength="255"><?php
-                                break;
-                            case 'statichtml':
-                                echo $currentValue;
-                                break;
-                            case 'multiselectbox':
-                                if ($arOption['origin'] === SettingsEnum::DISABLE_PROCESSING_GROUPS) {
-                                    ?>
-                                    <p class="disable_processing_groups_title"><?= Loc::getMessage('MINDBOX_LOYALTY_DISABLE_PROCESSING_GROUPS') ?></p>
-                                    <?php
-                                }
-                                ?>
-                                <input type="hidden" name="<?= $controlName; ?>" value="">
-                                <select id="<?= $controlId; ?>" name="<?= $controlName; ?>[]" multiple
-                                        size="<?= $type['size'] ?>">
-                                    <?php foreach ($type['options'] as $oId => $oValue) {?>
-                                        <option <?php
-                                        if (is_array($currentValue)) {
-                                            if (in_array($oId, $currentValue)) {
-                                                echo "selected";
-                                            }
-                                        } else {
-                                            if ($oId == $currentValue) {
-                                                echo "selected";
-                                            }
-                                        }
-
-                                        ?> value="<?= htmlspecialcharsbx($oId) ?>">
-                                            <?= htmlspecialcharsbx($oValue) ?>
-                                        </option>
-                                    <?php } ?>
-                                </select>
-                                <?php
-                                break;
-                        }
-                        ?>
-                    </td>
-                </tr>
-                <?php
+                continue;
             }
+
+            $currentValue = $arOption['current'];
+            $type = $arOption['type'];
+            $controlId = htmlspecialcharsbx($arOption['id']);
+            $controlName = 'MINDBOX_LOYALTY_' . htmlspecialcharsbx($arOption['id']);
+            $originName = $arOption['origin'] ?? '';
+
+            $style = '';
+            if (
+                isset($arOption['origin'])
+                && $arOption['origin'] == SettingsEnum::DISABLE_PROCESSING_GROUPS
+                && isset($arAllOptions[SettingsEnum::DISABLE_PROCESSING]['current'])
+                && $arAllOptions[SettingsEnum::DISABLE_PROCESSING]['current'] !== 'Y'
+            ) {
+                $style = 'display: none;';
+            }
+
+
+            ?>
+            <tr style="<?= $style ?>" data-type="<?= $type['type'] ?>">
+                <td style="width: 40%; white-space: nowrap;" <?php if ($type['type'] === 'statichtml') echo ' class="adm-detail-valign-top"'?>>
+                    <?php
+                    if (isset($arOption['hints'])) {
+                        ?><span id="hint_<?= $controlId; ?>"></span>
+                        <script>BX.hint_replace(BX('hint_<?=$controlId;?>'), '<?=\CUtil::JSEscape($arOption['hints']); ?>');</script>&nbsp;<?php
+                    }
+
+                    if (isset($arOption['label'])) {
+                        ?><label for="<?= $controlId; ?>"><?= htmlspecialcharsbx($arOption['label']); ?></label><?php
+                    } ?>
+
+                <td>
+                    <?php
+                    switch ($type['type']) {
+                        case 'checkbox':
+                            ?>
+                            <input type="hidden" name="<?= $controlName; ?>" data-origin-name="<?$originName?>" value="N">
+                            <input type="checkbox" id="<?= $controlId; ?>" name="<?= $controlName; ?>"
+                                   value="Y"<?= ($currentValue == "Y" ? " checked" : ""); ?>><?php
+                            break;
+                        case 'text':
+                            ?><input
+                                type="text"
+                                id="<?= $controlId; ?>"
+                                data-origin-name="<?$originName?>"
+                                name="<?= $controlName; ?>"
+                                value="<?= htmlspecialcharsbx($currentValue); ?>" size="<?= $type['size']; ?>"
+                                maxlength="255"
+                            ><?php
+                            break;
+                        case 'statichtml':
+                            echo $currentValue;
+                            break;
+                        case 'selectbox':
+                            ?>
+                            <select id="<?= $controlId; ?>" name="<?= $controlName; ?>"
+                                    size="<?= $type['size'] ?>">
+                                <?php foreach ($type['options'] as $oId => $oValue) {?>
+                                    <option <?php
+                                    if (is_array($currentValue)) {
+                                        if (in_array($oId, $currentValue)) {
+                                            echo "selected";
+                                        }
+                                    } else {
+                                        if ($oId == $currentValue) {
+                                            echo "selected";
+                                        }
+                                    }
+
+                                    ?> value="<?= htmlspecialcharsbx($oId) ?>">
+                                        <?= htmlspecialcharsbx($oValue) ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                            <?php
+                            break;
+                        case 'multiselectbox':
+                            if ($arOption['origin'] === SettingsEnum::DISABLE_PROCESSING_GROUPS) {
+                                ?>
+                                <p class="disable_processing_groups_title"><?= Loc::getMessage('MINDBOX_LOYALTY_DISABLE_PROCESSING_GROUPS') ?></p>
+                                <?php
+                            }
+                            ?>
+                            <select id="<?= $controlId; ?>" name="<?= $controlName; ?>[]" multiple
+                                    size="<?= $type['size'] ?>">
+                                <?php foreach ($type['options'] as $oId => $oValue) {?>
+                                    <option <?php
+                                    if (is_array($currentValue)) {
+                                        if (in_array($oId, $currentValue)) {
+                                            echo "selected";
+                                        }
+                                    } else {
+                                        if ($oId == $currentValue) {
+                                            echo "selected";
+                                        }
+                                    }
+
+                                    ?> value="<?= htmlspecialcharsbx($oId) ?>">
+                                        <?= htmlspecialcharsbx($oValue) ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                            <?php
+                            break;
+                    }
+                    ?>
+                </td>
+            </tr>
+            <?php
+
         }
 
         $tabControl->EndTab();
@@ -305,6 +469,63 @@ foreach ($listSite as $site) {
 </form>
 
 <style>
+    .module_button {
+      padding: 6px 13px 6px;
+      margin: 2px;
+      border-radius: 4px;
+      border: none;
+      border-top: 1px solid #fff;
+      -webkit-box-shadow: 0 0 1px rgba(0,0,0,.11), 0 1px 1px rgba(0,0,0,.3), inset 0 1px #fff, inset 0 0 1px rgba(255,255,255,.5);
+      box-shadow: 0 0 1px rgba(0,0,0,.3), 0 1px 1px rgba(0,0,0,.3), inset 0 1px 0 #fff, inset 0 0 1px rgba(255,255,255,.5);
+      background-color: #e0e9ec;
+      background-image: -webkit-linear-gradient(bottom, #d7e3e7, #fff) !important;
+      background-image: -moz-linear-gradient(bottom, #d7e3e7, #fff) !important;
+      background-image: -ms-linear-gradient(bottom, #d7e3e7, #fff) !important;
+      background-image: -o-linear-gradient(bottom, #d7e3e7, #fff) !important;
+      background-image: linear-gradient(bottom, #d7e3e7, #fff) !important;
+      color: #3f4b54;
+      cursor: pointer;
+      font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+      font-weight: bold;
+      font-size: 13px;
+      line-height: 18px;
+      text-shadow: 0 1px rgba(255,255,255,0.7);
+      text-decoration: none;
+      position: relative;
+      vertical-align: middle;
+      -webkit-font-smoothing: antialiased;
+      margin-right: 10px;
+      outline: none;
+      border-spacing: 0;
+      float: left;
+    }
+
+    .module_button_delete {
+        height: 10px;
+        display: inline-block;
+        width: 10px;
+    }
+    .th {
+        background-color: #e0e8ea;
+        padding: 15px;
+        text-align: center;
+        min-width: 400px;
+    }
+    .th-empty {
+        background-color: #e0e8ea;
+        padding: 15px;
+        text-align: center;
+    }
+    .table td {
+        border-top: 1px solid #87919c;
+        padding: 15px;
+        text-align: center;
+    }
+    .table {
+        margin: 0 auto !important;
+        border-collapse: collapse;
+    }
+
     select {
         width: 400px;
     }
@@ -323,3 +544,138 @@ foreach ($listSite as $site) {
         color: #666;
     }
 </style>
+
+<script>
+    const sites = <?= CUtil::PhpToJsObject($listSite);?>;
+
+    function addButtonHandler(mindboxName, bitrixName, tableClass, propName, useAdditional = false) {
+        let mindboxKey = document.querySelector('[name="'+mindboxName+'"]').value;
+        let bitrixKey = document.querySelector('[name="'+bitrixName+'"]').value;
+
+
+        if (mindboxKey && bitrixKey) {
+            setProps(bitrixKey, mindboxKey, propName);
+            reInitTable(tableClass, propName);
+        }
+    }
+
+    function removeButtonHandler(bitrixId, tableClass, propName) {
+        removeProps(bitrixId, propName);
+        reInitTable(tableClass, propName);
+    }
+
+    function hideInput(selector) {
+        document.querySelector(selector).style.display = 'none';
+    }
+
+    function showInput(selector) {
+        document.querySelector(selector).style.display = 'block';
+    }
+
+    function addRow(bitrixKey, mindboxKey, tableClass, propName) {
+        if (mindboxKey && bitrixKey) {
+            let row = document.querySelector('table.table.'+tableClass+' tbody').insertRow();
+            row.insertCell().appendChild(document.createTextNode(bitrixKey));
+            row.insertCell().appendChild(document.createTextNode(mindboxKey));
+
+            let link = document.createElement('a');
+            link.classList.add('module_button_delete');
+            link.innerHTML = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96 96" enable-background="new 0 0 96 96" xml:space="preserve"><polygon fill="#AAAAAB" points="96,14 82,0 48,34 14,0 0,14 34,48 0,82 14,96 48,62 82,96 96,82 62,48 "></polygon></svg>';
+            link.href = 'javascript:void(0)';
+            link.onclick = () => {
+                removeButtonHandler(bitrixKey, tableClass, propName)
+            };
+
+            row.insertCell().appendChild(link);
+        }
+    }
+
+    function reInitTable(tableClass, propName) {
+        removeTable(tableClass);
+        createTable(tableClass, propName);
+    }
+
+    function createTableExt(tableClass, propName) {
+        let props = getProps(propName);
+
+        Object.keys(props).map((objectKey, index) => {
+            let value = props[objectKey];
+            addRow(value['bitrix'], value['mindbox'], tableClass, propName);
+        });
+    }
+
+    function createTable(tableClass, propName) {
+        let props = getProps(propName);
+
+        Object.keys(props).map((objectKey, index) => {
+            let value = props[objectKey];
+            addRow(objectKey, value, tableClass, propName);
+        });
+    }
+
+    function removeProps(key, propName) {
+        let currentProps = getProps(propName);
+
+        delete currentProps[key];
+
+        document.querySelector('[name="'+propName+'"]').value = JSON.stringify(currentProps);
+    }
+
+    function setProps(key, value, propName) {
+        let currentProps = getProps(propName);
+
+        if (Object.values(currentProps).indexOf(value) === -1) {
+            currentProps[key] = value;
+        }
+
+        document.querySelector('[name="'+propName+'"]').value = JSON.stringify(currentProps);
+    }
+
+    function setPropsExt(key, value, propName) {
+        let currentProps = getProps(propName);
+        let rowKey = key;
+
+        if (Object.keys(currentProps).indexOf(rowKey) === -1) {
+            currentProps[rowKey] = {
+                bitrix: key,
+                mindbox: value
+            };
+        }
+
+        document.querySelector('[name="'+propName+'"]').value = JSON.stringify(currentProps);
+    }
+
+    function getProps(propName) {
+        let string = document.querySelector('[name="'+propName+'"]').value;
+
+        if (string) {
+            return JSON.parse(string);
+        }
+
+        return JSON.parse('{}');
+    }
+
+    function removeTable(tableClass) {
+        document.querySelectorAll('.table.'+tableClass+' tr:not(.title)').forEach((e) => {
+            e.remove()
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        sites.forEach((element) => {
+            createTable('user-table', 'MINDBOX_LOYALTY_<?= SettingsEnum::USER_FIELDS_MATCH?>'+ "__" + element);
+            hideInput('[name="MINDBOX_LOYALTY_<?= SettingsEnum::USER_FIELDS_MATCH?>' + '__' + element +'"]');
+
+            document.querySelector('.module_button_add.user_module_button_add_' + element).onclick = () => {
+                addButtonHandler(
+                    'MINDBOX_LOYALTY_<?= SettingsEnum::USER_MINDBOX_FIELDS?>'  + '__' + element,
+                    'MINDBOX_LOYALTY_<?= SettingsEnum::USER_BITRIX_FIELDS?>' + '__' + element,
+                    'user-table',
+                    'MINDBOX_LOYALTY_<?= SettingsEnum::USER_FIELDS_MATCH?>' + '__' + element
+                );
+            };
+
+        });
+    });
+
+</script>
