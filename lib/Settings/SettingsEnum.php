@@ -21,9 +21,24 @@ class SettingsEnum
     public const IS_LOGGING = 'is_logging';
     public const LOG_PATH = 'log_path';
     public const LOG_LIFE_TIME = 'log_life_time';
-    public const DISABLE_PROCESSING = 'disable_processing';
-    public const DISABLE_PROCESSING_GROUPS = 'disable_user_groups';
+    public const DISABLE_PROCESSING_USER_GROUPS = 'disable_processing_user_groups';
     public const USER_BITRIX_FIELDS = 'user_bitrix_fields';
     public const USER_MINDBOX_FIELDS = 'user_mindbox_fields';
     public const USER_FIELDS_MATCH = 'user_fields_match';
+
+    public const ORDER_BITRIX_FIELDS = 'order_bitrix_fields';
+    public const ORDER_MINDBOX_FIELDS = 'order_mindbox_fields';
+    public const ORDER_FIELDS_MATCH = 'order_fields_match';
+    public const ORDER_BITRIX_STATUS = 'order_bitrix_status';
+    public const ORDER_MINDBOX_STATUS = 'order_mindbox_status';
+    public const ORDER_STATUS_MATCH = 'order_status_match';
+
+    public const YML_FEED_ENABLED = 'yml_feed_enabled';
+    public const YML_CATALOG_IBLOCK_ID = 'yml_catalog_iblock_id';
+    public const YML_CATALOG_PROPERTIES = 'yml_catalog_properties';
+    public const YML_OFFERS_PROPERTIES = 'yml_offers_properties';
+    public const YML_PROTOCOL = 'yml_protocol';
+    public const YML_PATH = 'yml_path';
+    public const YML_CHUNK_SIZE = 'yml_chunk_size';
+
 }

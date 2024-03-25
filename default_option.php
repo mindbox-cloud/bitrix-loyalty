@@ -21,7 +21,7 @@ $mindbox_loyalty_default_option = [
     'user_bitrix_fields' => '',
     'user_mindbox_fields' => '',
     'user_fields_match' => '',
-    'WEBSITE_ID' => '',
-    'CATALOG_PROPS' => '',
-    'CATALOG_OFFER_PROPS' => '',
+    'yml_protocol' => 'Y',
+    'yml_path' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'mindbox.yml',
+    'yml_chunk_size' => 1000,
 ];

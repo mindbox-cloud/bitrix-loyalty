@@ -62,10 +62,6 @@ if ($request->isPost() && $request->get('save') && check_bitrix_sessid()) {
             $option = implode(',', $option);
         }
 
-        if ($key === SettingsEnum::DISABLE_PROCESSING_GROUPS && $request->get('MINDBOX_LOYALTY' . SettingsEnum::DISABLE_PROCESSING . '__' . $site) === 'N') {
-            $option = '';
-        }
-
         if (empty($option)) {
             \Bitrix\Main\Config\Option::delete(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, ['name' => $key, 'site_id' => $site]);
         } else {
@@ -155,6 +151,17 @@ foreach ($listSite as $site) {
             'type' => [
                 'type' => 'text',
                 'size' => 60,
+            ]
+        ],
+        SettingsEnum::DISABLE_PROCESSING_USER_GROUPS => [
+            'id' => SettingsEnum::DISABLE_PROCESSING_USER_GROUPS . '__' . $site,
+            'origin' => SettingsEnum::DISABLE_PROCESSING_USER_GROUPS,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_DISABLE_PROCESSING_USER_GROUPS', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_DISABLE_PROCESSING_USER_GROUPS_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'multiselectbox',
+                'options' => \Mindbox\Loyalty\Options::getUserGroups(),
+                'size' => 3
             ]
         ],
         Loc::getMessage('MINDBOX_LOYALTY_HEADING_PRIMARY_KEY'),
@@ -276,11 +283,12 @@ foreach ($listSite as $site) {
             'label' => Loc::getMessage('MINDBOX_FIELDS', ['#LID#' => $site]),
             'hints' => Loc::getMessage('MINDBOX_FIELDS', ['#LID#' => $site]),
             'type' => [
-                'type' => 'text'
+                'type' => 'text',
+                'size' => 60,
             ]
         ],
         [
-            'id' => 'user_module_button_add' . '__' . $site,
+            'id' => 'user_module_button_add' . $site,
             'current' => \Mindbox\Loyalty\Options::getAddOrderMatchButton('user_module_button_add_' . $site),
             'type' => [
                 'type' => 'statichtml'
@@ -288,7 +296,7 @@ foreach ($listSite as $site) {
         ],
         [
             'id' => '',
-            'current' => \Mindbox\Loyalty\Options::getUserMatchesTable(),
+            'current' => \Mindbox\Loyalty\Options::getMatchesTable('user-table' . '_' . $site),
             'type' => [
                 'type' => 'statichtml'
             ]
@@ -297,7 +305,154 @@ foreach ($listSite as $site) {
             'id' => SettingsEnum::USER_FIELDS_MATCH . '__' . $site,
             'origin' => SettingsEnum::USER_FIELDS_MATCH,
             'type' => [
-                'type' => 'text'
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
+        Loc::getMessage('MINDBOX_LOYALTY_HEADING_ORDER_FIELDS'),
+
+        SettingsEnum::ORDER_BITRIX_FIELDS => [
+            'id' => SettingsEnum::ORDER_BITRIX_FIELDS . '__' . $site,
+            'origin' => SettingsEnum::ORDER_BITRIX_FIELDS,
+            'label' => Loc::getMessage('BITRIX_FIELDS', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('BITRIX_FIELDS', ['#LID#' => $site]),
+            'current' => [],
+            'type' => [
+                'type' => 'selectbox',
+                'options' => \Mindbox\Loyalty\Options::getOrderFields($site),
+                'size' => 1
+            ],
+
+        ],
+        SettingsEnum::ORDER_MINDBOX_FIELDS => [
+            'id' => SettingsEnum::ORDER_MINDBOX_FIELDS . '__' . $site,
+            'origin' => SettingsEnum::ORDER_MINDBOX_FIELDS,
+            'label' => Loc::getMessage('MINDBOX_FIELDS', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_FIELDS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
+        [
+            'id' => 'order_fields_module_button_add' . $site,
+            'current' => \Mindbox\Loyalty\Options::getAddOrderMatchButton('order_fields_module_button_add' . $site),
+            'type' => [
+                'type' => 'statichtml'
+            ]
+        ],
+        [
+            'id' => '',
+            'current' => \Mindbox\Loyalty\Options::getMatchesTable('order-props-table' . '_' . $site),
+            'type' => [
+                'type' => 'statichtml'
+            ]
+        ],
+        SettingsEnum::ORDER_FIELDS_MATCH => [
+            'id' => SettingsEnum::ORDER_FIELDS_MATCH . '__' . $site,
+            'origin' => SettingsEnum::ORDER_FIELDS_MATCH,
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
+
+        Loc::getMessage('MINDBOX_LOYALTY_HEADING_ORDER_STATUS'),
+
+        SettingsEnum::ORDER_BITRIX_STATUS => [
+            'id' => SettingsEnum::ORDER_BITRIX_STATUS . '__' . $site,
+            'origin' => SettingsEnum::ORDER_BITRIX_STATUS,
+            'label' => Loc::getMessage('BITRIX_FIELDS', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('BITRIX_FIELDS', ['#LID#' => $site]),
+            'current' => [],
+            'type' => [
+                'type' => 'selectbox',
+                'options' => \Mindbox\Loyalty\Options::getOrderStatuses(),
+                'size' => 1
+            ],
+
+        ],
+        SettingsEnum::ORDER_MINDBOX_STATUS => [
+            'id' => SettingsEnum::ORDER_MINDBOX_STATUS . '__' . $site,
+            'origin' => SettingsEnum::ORDER_MINDBOX_STATUS,
+            'label' => Loc::getMessage('MINDBOX_FIELDS', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_FIELDS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
+        [
+            'id' => 'status_order_module_button_add' . $site,
+            'current' => \Mindbox\Loyalty\Options::getAddOrderMatchButton('status_order_module_button_add' . $site),
+            'type' => [
+                'type' => 'statichtml'
+            ]
+        ],
+        [
+            'id' => '',
+            'current' => \Mindbox\Loyalty\Options::getMatchesTable('order-status-table' . '_' . $site),
+            'type' => [
+                'type' => 'statichtml'
+            ]
+        ],
+        SettingsEnum::ORDER_STATUS_MATCH => [
+            'id' => SettingsEnum::ORDER_STATUS_MATCH . '__' . $site,
+            'origin' => SettingsEnum::ORDER_STATUS_MATCH,
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
+
+        Loc::getMessage('MINDBOX_LOYALTY_HEADING_YML_FEED'),
+        SettingsEnum::YML_FEED_ENABLED => [
+            'id' => SettingsEnum::YML_FEED_ENABLED . '__' . $site,
+            'origin' => SettingsEnum::YML_FEED_ENABLED,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_FEED_ENABLED', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_FEED_ENABLED_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'checkbox',
+            ]
+        ],
+        SettingsEnum::YML_CATALOG_IBLOCK_ID => [
+            'id' => SettingsEnum::YML_CATALOG_IBLOCK_ID . '__' . $site,
+            'origin' => SettingsEnum::YML_CATALOG_IBLOCK_ID,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_CATALOG_IBLOCK_ID', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_CATALOG_IBLOCK_ID_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'selectbox',
+                'options' => \Mindbox\Loyalty\Options::getIblocks(),
+                'size' => 1
+            ]
+        ],
+        SettingsEnum::YML_PROTOCOL => [
+            'id' => SettingsEnum::YML_PROTOCOL . '__' . $site,
+            'origin' => SettingsEnum::YML_PROTOCOL,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_PROTOCOL', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_PROTOCOL_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'checkbox',
+            ]
+        ],
+        SettingsEnum::YML_PATH => [
+            'id' => SettingsEnum::YML_PATH . '__' . $site,
+            'origin' => SettingsEnum::YML_PATH,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_PATH', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_PATH_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
+        SettingsEnum::YML_CHUNK_SIZE => [
+            'id' => SettingsEnum::YML_CHUNK_SIZE . '__' . $site,
+            'origin' => SettingsEnum::YML_CHUNK_SIZE,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_CHUNK_SIZE', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_CHUNK_SIZE_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
             ]
         ],
     ];
@@ -316,12 +471,45 @@ foreach ($listSite as $site) {
         }
 
         switch ($option['origin']) {
-            case SettingsEnum::DISABLE_PROCESSING_GROUPS:
+            case SettingsEnum::DISABLE_PROCESSING_USER_GROUPS:
                 $option['current'] = explode(',',
                     Option::get(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, $option['origin'], $defaultOptions[$option['origin']], $site));
             default:
                 $option['current'] = Option::get(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, $option['origin'], $defaultOptions[$option['origin']], $site);
                 break;
+        }
+    }
+
+    if ($arOptions[SettingsEnum::YML_CATALOG_IBLOCK_ID]['current'] !== '') {
+        $catalogIblockId = (int) $arOptions[SettingsEnum::YML_CATALOG_IBLOCK_ID]['current'];
+        $arOptions[SettingsEnum::YML_CATALOG_PROPERTIES] = [
+            'id' => SettingsEnum::YML_CATALOG_PROPERTIES . '__' . $site,
+            'origin' => SettingsEnum::YML_CATALOG_PROPERTIES,
+            'current' => explode(',',
+                Option::get(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, SettingsEnum::YML_CATALOG_PROPERTIES, $defaultOptions[SettingsEnum::YML_CATALOG_PROPERTIES], $site)),
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_CATALOG_PROPERTIES', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_CATALOG_PROPERTIES_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'multiselectbox',
+                'options' => \Mindbox\Loyalty\Options::getIblockProperty($catalogIblockId),
+                'size' => 3
+            ]
+        ];
+
+        if (($iblockOffersId = \Mindbox\Loyalty\Options::getOffersCatalogId($catalogIblockId)) > 0) {
+            $arOptions[SettingsEnum::YML_OFFERS_PROPERTIES] = [
+                'id' => SettingsEnum::YML_OFFERS_PROPERTIES . '__' . $site,
+                'origin' => SettingsEnum::YML_OFFERS_PROPERTIES,
+                'current' => explode(',',
+                    Option::get(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, SettingsEnum::YML_OFFERS_PROPERTIES, $defaultOptions[SettingsEnum::YML_OFFERS_PROPERTIES], $site)),
+                'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_OFFERS_PROPERTIES', ['#LID#' => $site]),
+                'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_OFFERS_PROPERTIES_HINTS', ['#LID#' => $site]),
+                'type' => [
+                    'type' => 'multiselectbox',
+                    'options' => \Mindbox\Loyalty\Options::getIblockProperty($iblockOffersId),
+                    'size' => 3
+                ]
+            ];
         }
     }
 
@@ -353,19 +541,9 @@ foreach ($listSite as $site) {
             $controlName = 'MINDBOX_LOYALTY_' . htmlspecialcharsbx($arOption['id']);
             $originName = $arOption['origin'] ?? '';
 
-            $style = '';
-            if (
-                isset($arOption['origin'])
-                && $arOption['origin'] == SettingsEnum::DISABLE_PROCESSING_GROUPS
-                && isset($arAllOptions[SettingsEnum::DISABLE_PROCESSING]['current'])
-                && $arAllOptions[SettingsEnum::DISABLE_PROCESSING]['current'] !== 'Y'
-            ) {
-                $style = 'display: none;';
-            }
-
 
             ?>
-            <tr style="<?= $style ?>" data-type="<?= $type['type'] ?>">
+            <tr data-type="<?= $type['type'] ?>">
                 <td style="width: 40%; white-space: nowrap;" <?php if ($type['type'] === 'statichtml') echo ' class="adm-detail-valign-top"'?>>
                     <?php
                     if (isset($arOption['hints'])) {
@@ -423,11 +601,6 @@ foreach ($listSite as $site) {
                             <?php
                             break;
                         case 'multiselectbox':
-                            if ($arOption['origin'] === SettingsEnum::DISABLE_PROCESSING_GROUPS) {
-                                ?>
-                                <p class="disable_processing_groups_title"><?= Loc::getMessage('MINDBOX_LOYALTY_DISABLE_PROCESSING_GROUPS') ?></p>
-                                <?php
-                            }
                             ?>
                             <select id="<?= $controlId; ?>" name="<?= $controlName; ?>[]" multiple
                                     size="<?= $type['size'] ?>">
@@ -538,17 +711,12 @@ foreach ($listSite as $site) {
         vertical-align: top;
     }
 
-    .disable_processing_groups_title {
-        margin: 0 0 5px 0;
-        font-size: 12px;
-        color: #666;
-    }
 </style>
 
 <script>
     const sites = <?= CUtil::PhpToJsObject($listSite);?>;
 
-    function addButtonHandler(mindboxName, bitrixName, tableClass, propName, useAdditional = false) {
+    function addButtonHandler(mindboxName, bitrixName, tableClass, propName) {
         let mindboxKey = document.querySelector('[name="'+mindboxName+'"]').value;
         let bitrixKey = document.querySelector('[name="'+bitrixName+'"]').value;
 
@@ -663,18 +831,41 @@ foreach ($listSite as $site) {
 
     document.addEventListener('DOMContentLoaded', function() {
         sites.forEach((element) => {
-            createTable('user-table', 'MINDBOX_LOYALTY_<?= SettingsEnum::USER_FIELDS_MATCH?>'+ "__" + element);
+            createTable('user-table' + "_" + element, 'MINDBOX_LOYALTY_<?= SettingsEnum::USER_FIELDS_MATCH?>'+ "__" + element);
             hideInput('[name="MINDBOX_LOYALTY_<?= SettingsEnum::USER_FIELDS_MATCH?>' + '__' + element +'"]');
+
+            createTable('order-props-table' + "_" + element, 'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_FIELDS_MATCH?>'+ "__" + element);
+            hideInput('[name="MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_FIELDS_MATCH?>' + '__' + element +'"]');
+
+            createTable('order-status-table' + "_" + element, 'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_STATUS_MATCH?>'+ "__" + element);
+            hideInput('[name="MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_STATUS_MATCH?>' + '__' + element +'"]');
 
             document.querySelector('.module_button_add.user_module_button_add_' + element).onclick = () => {
                 addButtonHandler(
                     'MINDBOX_LOYALTY_<?= SettingsEnum::USER_MINDBOX_FIELDS?>'  + '__' + element,
                     'MINDBOX_LOYALTY_<?= SettingsEnum::USER_BITRIX_FIELDS?>' + '__' + element,
-                    'user-table',
+                    'user-table' + "_" + element,
                     'MINDBOX_LOYALTY_<?= SettingsEnum::USER_FIELDS_MATCH?>' + '__' + element
                 );
             };
 
+            document.querySelector('.module_button_add.order_fields_module_button_add' + element).onclick = () => {
+                addButtonHandler(
+                    'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_MINDBOX_FIELDS?>'  + '__' + element,
+                    'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_BITRIX_FIELDS?>' + '__' + element,
+                    'order-props-table' + "_" + element,
+                    'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_FIELDS_MATCH?>' + '__' + element
+                );
+            };
+
+            document.querySelector('.module_button_add.status_order_module_button_add' + element).onclick = () => {
+                addButtonHandler(
+                    'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_MINDBOX_STATUS?>'  + '__' + element,
+                    'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_BITRIX_STATUS?>' + '__' + element,
+                    'order-status-table' + "_" + element,
+                    'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_STATUS_MATCH?>' + '__' + element
+                );
+            };
         });
     });
 
