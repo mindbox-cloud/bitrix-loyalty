@@ -426,6 +426,17 @@ foreach ($listSite as $site) {
                 'size' => 1
             ]
         ],
+        SettingsEnum::YML_BASE_PRICE_ID => [
+            'id' => SettingsEnum::YML_BASE_PRICE_ID . '__' . $site,
+            'origin' => SettingsEnum::YML_BASE_PRICE_ID,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_BASE_PRICE_ID', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_BASE_PRICE_ID_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'selectbox',
+                'options' => \Mindbox\Loyalty\Options::getPrices(),
+                'size' => 1
+            ]
+        ],
         SettingsEnum::YML_PROTOCOL => [
             'id' => SettingsEnum::YML_PROTOCOL . '__' . $site,
             'origin' => SettingsEnum::YML_PROTOCOL,

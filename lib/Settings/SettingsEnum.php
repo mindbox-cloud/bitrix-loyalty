@@ -35,6 +35,7 @@ class SettingsEnum
 
     public const YML_FEED_ENABLED = 'yml_feed_enabled';
     public const YML_CATALOG_IBLOCK_ID = 'yml_catalog_iblock_id';
+    public const YML_BASE_PRICE_ID = 'yml_base_price_id';
     public const YML_CATALOG_PROPERTIES = 'yml_catalog_properties';
     public const YML_OFFERS_PROPERTIES = 'yml_offers_properties';
     public const YML_PROTOCOL = 'yml_protocol';

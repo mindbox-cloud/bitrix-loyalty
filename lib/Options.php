@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty;
 
+use Bitrix\Catalog\GroupTable;
+use Bitrix\Catalog\PriceTable;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
 
@@ -25,6 +27,23 @@ final class Options
         }
 
         return $iblockCatalogList;
+    }
+
+    public static function getPrices(): array
+    {
+        $prices = [];
+
+        if (Loader::includeModule('catalog')) {
+            $iterPricec = GroupTable::getList([
+                'select' => ['ID', 'NAME']
+            ]);
+
+            while ($price = $iterPricec->fetch()) {
+                $prices[$price['ID']] = $price['NAME'] . ' [' . $price['ID'] . ']';
+            }
+        }
+
+        return $prices;
     }
 
     public static function getOffersCatalogId(int $catalogId): int
