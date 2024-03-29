@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty;
 
 use Bitrix\Catalog\GroupTable;
-use Bitrix\Catalog\PriceTable;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
 

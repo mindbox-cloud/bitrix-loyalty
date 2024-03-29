@@ -66,10 +66,24 @@ class mindbox_loyalty extends CModule
 
     public function InstallEvents()
     {
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'main',
+            'OnAfterUserAdd',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Event\UserEvent::class,
+            'onAfterUserAdd'
+        );
     }
 
     public function UnInstallEvents()
     {
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'main',
+            'OnAfterUserAdd',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Event\UserEvent::class,
+            'onAfterUserAdd'
+        );
     }
 
     public function InstallFiles()
