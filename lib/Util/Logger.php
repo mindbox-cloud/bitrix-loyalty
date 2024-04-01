@@ -12,7 +12,6 @@ use Psr\Log\LogLevel;
  *
  *
  * @see https://www.php-fig.org/psr/psr-3/
- * @package Maxma\Loyalty\Util
  */
 class Logger implements \Psr\Log\LoggerInterface
 {
@@ -58,7 +57,7 @@ class Logger implements \Psr\Log\LoggerInterface
      * @param string $channel
      * @return Logger|mixed
      */
-    public static function channel(string $channel = 'maxma')
+    public static function channel(string $channel = 'mindbox-dev')
     {
         if (!array_key_exists($channel, self::$channels)) {
             self::$channels[$channel] = new self($channel);
@@ -176,7 +175,7 @@ class Logger implements \Psr\Log\LoggerInterface
      * @param array $context Массив дополнительных параметров логирования
      * @return void
      */
-    public function log($level, \Stringable|string  $message, array $context = array()): void
+    public function log($level, \Stringable|string $message, array $context = array()): void
     {
         if ($this->enableLoggingFlag) {
             $directory = $this->initLogDir();
