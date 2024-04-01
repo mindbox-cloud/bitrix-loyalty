@@ -3,7 +3,6 @@
 namespace Mindbox\Loyalty\Util;
 
 use CloudLoyalty\Api\Logger\LoggerInterface;
-use Maxma\Loyalty\Settings;
 use Psr\Log\LogLevel;
 
 /**
