@@ -8,7 +8,7 @@
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
-use Mindbox\Loyalty\Settings\SettingsEnum;
+use Mindbox\Loyalty\Support\SettingsEnum;
 
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
 defined('MINDBOX_LOYALTY_ADMIN_MODULE_NAME') or define('MINDBOX_LOYALTY_ADMIN_MODULE_NAME', 'mindbox.loyalty');

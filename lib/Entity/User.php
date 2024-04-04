@@ -20,19 +20,19 @@ class User
 
         $loggerDir = \COption::GetOptionString(
             module_id: 'mindbox.loyalty',
-            name: \Mindbox\Loyalty\Settings\SettingsEnum::LOG_PATH,
+            name: \Mindbox\Loyalty\Support\SettingsEnum::LOG_PATH,
             site: SITE_ID
         );
         $this->logger = new \Mindbox\Loggers\MindboxFileLogger($loggerDir);
 
         $endPoint = \COption::GetOptionString(
             module_id: 'mindbox.loyalty',
-            name: \Mindbox\Loyalty\Settings\SettingsEnum::ENDPOINT,
+            name: \Mindbox\Loyalty\Support\SettingsEnum::ENDPOINT,
             site: SITE_ID
         );
         $secret = \COption::GetOptionString(
             module_id: 'mindbox.loyalty',
-            name: \Mindbox\Loyalty\Settings\SettingsEnum::SECRET_KEY,
+            name: \Mindbox\Loyalty\Support\SettingsEnum::SECRET_KEY,
             site: SITE_ID
         );
 
@@ -63,7 +63,7 @@ class User
 
         $prefix = \COption::GetOptionString(
             module_id: 'mindbox.loyalty',
-            name: \Mindbox\Loyalty\Settings\SettingsEnum::WEBSITE_PREFIX,
+            name: \Mindbox\Loyalty\Support\SettingsEnum::WEBSITE_PREFIX,
             site: SITE_ID
         );
 
@@ -160,7 +160,7 @@ class User
 
         $prefix = \COption::GetOptionString(
             module_id: 'mindbox.loyalty',
-            name: \Mindbox\Loyalty\Settings\SettingsEnum::WEBSITE_PREFIX,
+            name: \Mindbox\Loyalty\Support\SettingsEnum::WEBSITE_PREFIX,
             site: SITE_ID
         );
 

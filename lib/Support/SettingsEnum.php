@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mindbox\Loyalty\Settings;
+namespace Mindbox\Loyalty\Support;
 
 class SettingsEnum
 {
@@ -22,6 +22,7 @@ class SettingsEnum
     public const LOG_PATH = 'log_path';
     public const LOG_LIFE_TIME = 'log_life_time';
     public const DISABLE_PROCESSING_USER_GROUPS = 'disable_processing_user_groups';
+
     public const USER_BITRIX_FIELDS = 'user_bitrix_fields';
     public const USER_MINDBOX_FIELDS = 'user_mindbox_fields';
     public const USER_FIELDS_MATCH = 'user_fields_match';
@@ -41,5 +42,4 @@ class SettingsEnum
     public const YML_PROTOCOL = 'yml_protocol';
     public const YML_PATH = 'yml_path';
     public const YML_CHUNK_SIZE = 'yml_chunk_size';
-
 }
