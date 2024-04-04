@@ -6,6 +6,7 @@ namespace Mindbox\Loyalty\Services;
 
 use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Operations\CheckCustomer;
+use Mindbox\Loyalty\Operations\EditCustomer;
 use Mindbox\Loyalty\Operations\RegisterCustomer;
 
 class CustomerService
@@ -17,5 +18,17 @@ class CustomerService
         if ($exists === null) {
             $register = (new RegisterCustomer())->execute($customer);
         }
+    }
+
+    public function edit(Customer $customer)
+    {
+        $exists = (new CheckCustomer())->execute($customer);
+
+        if ($exists === null) {
+            $register = (new RegisterCustomer())->execute($customer);
+            return;
+        }
+
+        (new EditCustomer())->execute($customer);
     }
 }

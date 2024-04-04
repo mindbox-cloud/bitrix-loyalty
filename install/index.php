@@ -73,6 +73,14 @@ class mindbox_loyalty extends CModule
             \Mindbox\Loyalty\Event\UserEvent::class,
             'onAfterUserAdd'
         );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'main',
+            'OnAfterUserUpdate',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Event\UserEvent::class,
+            'onAfterUserUpdate'
+        );
     }
 
     public function UnInstallEvents()
@@ -83,6 +91,14 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Event\UserEvent::class,
             'onAfterUserAdd'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'main',
+            'OnAfterUserUpdate',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Event\UserEvent::class,
+            'onAfterUserUpdate'
         );
     }
 
