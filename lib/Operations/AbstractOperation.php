@@ -23,6 +23,11 @@ abstract class AbstractOperation implements OperationInterface
         return Settings::getInstance()->getWebsitePrefix() . '.' . $this->operation();
     }
 
+    public static function make(): static
+    {
+        return new static();
+    }
+
     protected function customOperation(): mixed
     {
         return null;

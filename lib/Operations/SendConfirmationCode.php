@@ -7,7 +7,7 @@ namespace Mindbox\Loyalty\Operations;
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\Loyalty\Models\Customer;
 
-class SendConfirmationCodeOperation extends AbstractOperation
+class SendConfirmationCode extends AbstractOperation
 {
     public function execute(string $phone)
     {

@@ -21,7 +21,7 @@ class Customer
         'LAST_NAME' => null,
         'EMAIL' => null,
         'PERSONAL_PHONE' => null,
-        'MAIN_USER_AUTH_PHONE_NUMBER' => null,
+        'PHONE_AUTH' => null,
         'PERSONAL_BIRTHDAY' => null,
         'PERSONAL_GENDER' => null,
     ];
@@ -45,7 +45,7 @@ class Customer
             'PERSONAL_PHONE',
             'PERSONAL_BIRTHDAY',
             'PERSONAL_GENDER',
-            'AUTH.PHONE_NUMBER'
+            'PHONE_AUTH'
         ];
 
         if (!empty($userFieldsMatch)) {
@@ -58,14 +58,6 @@ class Customer
             ],
             'limit' => 1,
             'select' => $selectFields,
-            'runtime' => [
-                new Reference(
-                    'AUTH',
-                    UserPhoneAuthTable::class,
-                    Join::on('this.ID', 'ref.USER_ID')
-                ),
-            ],
-
         ])->fetch();
 
         if (!empty($userData)) {
@@ -130,8 +122,8 @@ class Customer
             case $this->data['PERSONAL_MOBILE']:
                 $value = $this->data['PERSONAL_MOBILE'];
                 break;
-            case $this->data['MAIN_USER_AUTH_PHONE_NUMBER']:
-                $value = $this->data['PHONE_NUMBER'];
+            case $this->data['PHONE_AUTH']:
+                $value = $this->data['PHONE_AUTH'];
                 break;
         }
 
