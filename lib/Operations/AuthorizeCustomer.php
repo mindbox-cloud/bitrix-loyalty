@@ -5,10 +5,16 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Operations;
 
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
+use Mindbox\Exceptions\MindboxClientException;
+use Mindbox\Exceptions\MindboxUnavailableException;
+use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Models\Customer;
 
 class AuthorizeCustomer extends AbstractOperation
 {
+    /**
+     * @throws ErrorCallOperationException
+     */
     public function execute(Customer $customer): bool
     {
         try {
@@ -16,19 +22,27 @@ class AuthorizeCustomer extends AbstractOperation
 
             $response = $client->customer()
                 ->authorize(
-                    $customer->getDto(),
-                    $this->getOperation()
+                    customer: $customer->getDto(),
+                    operationName: $this->getOperation(),
+                    addDeviceUUID: false,
+                    isSync: true
                 )
                 ->sendRequest();
 
-            $responseBody = $response->getBody();
+            $result = $response->getResult();
 
-            if ($responseBody['status'] === 'Success') {
+            if ($result->getStatus() === 'Success') {
                 return true;
             }
-
-        } catch (\Mindbox\Exceptions\MindboxClientException $e) {
-            // todo походу в операциях будем досылать не выполненные
+        } catch (MindboxUnavailableException $e) {
+            // todo тут нужно будет делать ретрай отправки на очереди
+        } catch (MindboxClientException $e) {
+            // todo log this or log service?
+            throw new ErrorCallOperationException(
+                message: sprintf('The operation %s failed', $this->getOperation()),
+                previous: $e,
+                operationName: $this->getOperation()
+            );
         }
 
         return false;

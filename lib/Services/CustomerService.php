@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Services;
 
+use Bitrix\Main\ObjectNotFoundException;
+use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
+use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Operations\AuthorizeCustomer;
 use Mindbox\Loyalty\Operations\CheckCustomer;
 use Mindbox\Loyalty\Operations\EditCustomer;
 use Mindbox\Loyalty\Operations\RegisterCustomer;
+use Mindbox\Loyalty\Operations\SendMobilePhoneAuthorizationCode;
 
 class CustomerService
 {
@@ -19,47 +23,102 @@ class CustomerService
         $this->serviceLocator = \Bitrix\Main\DI\ServiceLocator::getInstance();
     }
 
-    public function register(Customer $customer)
+    /**
+     * @throws ObjectNotFoundException
+     * @throws ErrorCallOperationException
+     * @throws ValidationErrorCallOperationException
+     */
+    public function register(Customer $customer): bool
     {
-        if (!$this->serviceLocator->has('mindboxLoyalty.registerCustomer')) {
-            // todo throw
+        /** @var RegisterCustomer $operationRegisterCustomer */
+        $operationRegisterCustomer = $this->serviceLocator->get('mindboxLoyalty.registerCustomer');
+
+        /** @var CheckCustomer $operationCheckCustomer */
+        $operationCheckCustomer = $this->serviceLocator->get('mindboxLoyalty.checkCustomer');
+
+        $exists = $operationCheckCustomer->execute($customer);
+
+        if (!$exists) {
+            $register =  $operationRegisterCustomer->execute($customer);
+
+            if ($register) {
+                return true;
+            }
         }
 
-        /** @var RegisterCustomer $test */
-        $test = $this->serviceLocator->get('mindboxLoyalty.registerCustomer');
-
-        $test = CheckCustomer::make()->execute($customer);
-        $exists = (new CheckCustomer())->execute($customer);
-
-        if ($exists === null) {
-            $register = (new RegisterCustomer())->execute($customer);
-        }
+        return false;
     }
 
-    public function authorize(Customer $customer)
+    /**
+     * @throws ErrorCallOperationException
+     * @throws ValidationErrorCallOperationException
+     * @throws ObjectNotFoundException
+     */
+    public function authorize(Customer $customer): bool
     {
-        $exists = (new CheckCustomer())->execute($customer);
+        /** @var RegisterCustomer $operationRegisterCustomer */
+        $operationRegisterCustomer = $this->serviceLocator->get('mindboxLoyalty.registerCustomer');
 
-        if ($exists === null) {
-            $register = (new RegisterCustomer())->execute($customer);
+        /** @var CheckCustomer $operationCheckCustomer */
+        $operationCheckCustomer = $this->serviceLocator->get('mindboxLoyalty.checkCustomer');
+
+        /** @var AuthorizeCustomer $operationAuthorizeCustomer */
+        $operationAuthorizeCustomer = $this->serviceLocator->get('mindboxLoyalty.authorizeCustomer');
+
+        $exists = $operationCheckCustomer->execute($customer);
+
+        if (!$exists) {
+            $operationRegisterCustomer->execute($customer);
         }
 
-        if (!$authorize = (new AuthorizeCustomer())->execute($customer)) {
-            // todo throw
+        if (!$operationAuthorizeCustomer->execute($customer)) {
+            return false;
         }
 
         return true;
     }
 
-    public function edit(Customer $customer)
+    /**
+     * @throws ErrorCallOperationException
+     * @throws ValidationErrorCallOperationException
+     * @throws ObjectNotFoundException
+     */
+    public function edit(Customer $customer): bool
     {
-        $exists = (new CheckCustomer())->execute($customer);
+        /** @var RegisterCustomer $operationRegisterCustomer */
+        $operationRegisterCustomer = $this->serviceLocator->get('mindboxLoyalty.registerCustomer');
 
-        if ($exists === null) {
-            $register = (new RegisterCustomer())->execute($customer);
-            return;
+        /** @var CheckCustomer $operationCheckCustomer */
+        $operationCheckCustomer = $this->serviceLocator->get('mindboxLoyalty.checkCustomer');
+
+        /** @var EditCustomer $operationEditCustomer */
+        $operationEditCustomer = $this->serviceLocator->get('mindboxLoyalty.editCustomer');
+
+        $exists = $operationCheckCustomer->execute($customer);
+
+        if (!$exists) {
+            $operationRegisterCustomer->execute($customer);
         }
 
-        (new EditCustomer())->execute($customer);
+        if ($operationEditCustomer->execute($customer)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $phone
+     * @return bool
+     * @throws ErrorCallOperationException
+     * @throws ObjectNotFoundException
+     * @throws ValidationErrorCallOperationException
+     */
+    public function sendAuthorizeCode(string $phone): bool
+    {
+        /** @var SendMobilePhoneAuthorizationCode $operation */
+        $operation = $this->serviceLocator->get('mindboxLoyalty.sendMobilePhoneAuthorizationCode');
+
+        return $operation->execute($phone);
     }
 }

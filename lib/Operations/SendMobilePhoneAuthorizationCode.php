@@ -4,52 +4,52 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Operations;
 
+use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
-use Mindbox\Loyalty\Models\Customer;
 
-class EditCustomer extends AbstractOperation
+class SendMobilePhoneAuthorizationCode extends AbstractOperation
 {
     /**
-     * @throws ErrorCallOperationException
-     * @throws ValidationErrorCallOperationException
+     * @throws ErrorCallOperationException|ValidationErrorCallOperationException
      */
-    public function execute(Customer $customer): bool
+    public function execute(string $phone): bool
     {
         $operation = $this->getOperation();
 
         try {
             $client = $this->api();
 
+            $dto = new CustomerRequestDTO([
+                'mobilePhone' => $phone,
+            ]);
+
             $response = $client->customer()
-                ->edit(
-                    customer: $customer->getDto(),
+                ->sendAuthorizationCode(
+                    customer: $dto,
                     operationName: $operation,
                     addDeviceUUID: false
-                )
-                ->sendRequest();
+                )->sendRequest();
 
-            $result = $response->getResult();
-
-            if ($result->getStatus() === 'ValidationError') {
+            if ($response->getResult()->getStatus() === 'Success') {
+                return true;
+            } elseif ($response->getResult()->getStatus() === 'ValidationError') {
                 throw new ValidationErrorCallOperationException(
                     message: sprintf('The operation %s failed', $operation),
                     operationName: $operation,
-                    validationMessage: $result->getValidationMessages()
+                    validationMessage: $response->getResult()->getValidationMessages()
                 );
-            } elseif ($result->getStatus() === 'Success') {
-                return true;
             }
-        } catch (MindboxUnavailableException $e) {
-            // todo тут нужно будет делать ретрай отправки на очереди
+
         } catch (MindboxClientException $e) {
             // todo log this or log service?
+
             throw new ErrorCallOperationException(
                 message: sprintf('The operation %s failed', $this->getOperation()),
                 previous: $e,
-                operationName: $this->getOperation()
+                operationName: $operation
             );
         }
 
@@ -58,6 +58,6 @@ class EditCustomer extends AbstractOperation
 
     public function operation(): string
     {
-        return 'EditCustomer';
+        return 'SendMobilePhoneAuthorizationCode';
     }
 }
