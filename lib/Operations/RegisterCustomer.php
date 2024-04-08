@@ -33,6 +33,6 @@ class RegisterCustomer extends AbstractOperation
 
     public function operation(): string
     {
-        return '`RegisterCusto`mer';
+        return 'RegisterCustomer';
     }
 }

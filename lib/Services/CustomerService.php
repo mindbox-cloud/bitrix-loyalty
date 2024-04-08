@@ -11,8 +11,22 @@ use Mindbox\Loyalty\Operations\RegisterCustomer;
 
 class CustomerService
 {
+    protected \Bitrix\Main\DI\ServiceLocator $serviceLocator;
+
+    public function __construct()
+    {
+        $this->serviceLocator = \Bitrix\Main\DI\ServiceLocator::getInstance();
+    }
+
     public function register(Customer $customer)
     {
+        if (!$this->serviceLocator->has('mindboxLoyalty.registerCustomer')) {
+            // todo throw
+        }
+
+        /** @var RegisterCustomer $test */
+        $test = $this->serviceLocator->get('mindboxLoyalty.registerCustomer');
+
         $exists = (new CheckCustomer())->execute($customer);
 
         if ($exists === null) {

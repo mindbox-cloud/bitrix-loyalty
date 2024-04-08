@@ -16,6 +16,15 @@ abstract class AbstractOperation implements OperationInterface
 
     protected function getOperation(): string
     {
+        if ($this->customOperation()) {
+            return $this->customOperation();
+        }
+
         return Settings::getInstance()->getWebsitePrefix() . '.' . $this->operation();
+    }
+
+    protected function customOperation(): mixed
+    {
+        return null;
     }
 }

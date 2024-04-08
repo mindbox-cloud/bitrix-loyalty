@@ -12,7 +12,6 @@ class CheckCustomer extends AbstractOperation
 {
     public function execute(Customer $customer)
     {
-        return null;
         try {
             $client = $this->api();
 
@@ -41,5 +40,10 @@ class CheckCustomer extends AbstractOperation
     public function operation(): string
     {
         return 'CheckCustomer';
+    }
+
+    public function customOperation(): mixed
+    {
+        return 'BitrixCheckCustomer';
     }
 }
