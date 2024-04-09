@@ -14,17 +14,14 @@ use Mindbox\Loyalty\Models\Customer;
 class CheckCustomer extends AbstractOperation
 {
     /**
+     * @param CustomerRequestDTO $dto
+     * @return bool
      * @throws ErrorCallOperationException
      */
-    public function execute(Customer $customer): bool
+    public function execute(CustomerRequestDTO $dto): bool
     {
         try {
             $client = $this->api();
-
-            $dto = new CustomerRequestDTO([
-                'mobilePhone' => $customer->getMobilePhone(),
-                'email' => $customer->getEmail()
-            ]);
 
             $response = $client->customer()
                 ->checkCustomer(
@@ -33,9 +30,12 @@ class CheckCustomer extends AbstractOperation
                     addDeviceUUID: false
                 )->sendRequest();
 
+            //todo операция возвращает неверный ответ, нет отрицательного
+
             if ($response->getResult()->getStatus() === 'Success') {
                 return true;
             }
+
 
         } catch (MindboxUnavailableException $e) {
             // todo тут нужно будет делать ретрай отправки на очереди

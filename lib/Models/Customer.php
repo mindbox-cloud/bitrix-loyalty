@@ -10,6 +10,7 @@ use Bitrix\Main\Type\Date;
 use Bitrix\Main\UserPhoneAuthTable;
 use Bitrix\Main\UserTable;
 use Mindbox\Loyalty\Support\Settings;
+use Mindbox\Loyalty\Support\SettingsFactory;
 
 class Customer
 {
@@ -26,16 +27,20 @@ class Customer
         'PERSONAL_GENDER' => null,
     ];
 
+    protected Settings $settings;
+
     public function __construct(int $userId)
     {
         $this->userId = $userId;
+        $this->settings = SettingsFactory::create();
+
         $this->load();
     }
 
     protected function load(): void
     {
         // todo тут возможно нужно добавить исключение, если клиент не найден
-        $userFieldsMatch = Settings::getInstance()->getUserFieldsMatch();
+        $userFieldsMatch = $this->settings->getUserFieldsMatch();
 
         $selectFields = [
             'NAME',
@@ -132,7 +137,6 @@ class Customer
 
     public function getDto(): \Mindbox\DTO\V3\Requests\CustomerRequestDTO
     {
-        // todo тут нужно бы добавить блок id пользователя
         return new \Mindbox\DTO\V3\Requests\CustomerRequestDTO([
             'email' => $this->getEmail(),
             'lastName' => $this->getLastName(),
@@ -153,7 +157,7 @@ class Customer
     public function getIds(): array
     {
         return [
-            Settings::getInstance()->getExternalUserId() => $this->getId()
+            $this->settings->getExternalUserId() => $this->getId()
         ];
     }
 }

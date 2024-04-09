@@ -7,6 +7,7 @@ namespace Mindbox\Loyalty\Support;
 final class Settings
 {
     protected static ?Settings $instance = null;
+    protected string $siteId;
 
     protected array $settings = [
         SettingsEnum::ENABLED_LOYALTY => null,
@@ -39,15 +40,15 @@ final class Settings
         SettingsEnum::YML_SERVER_NAME => null,
     ];
 
-    protected function __construct(?string $siteId = null)
+    protected function __construct(string $siteId)
     {
-        $siteId = $siteId ?: SITE_ID;
+        $this->siteId = $siteId;
 
         foreach ($this->settings as $settingCode => $value) {
             $this->settings[$settingCode] = \Bitrix\Main\Config\Option::get(
                 moduleId: 'mindbox.loyalty',
                 name: $settingCode,
-                siteId: $siteId
+                siteId: $this->siteId
             );
         }
     }
@@ -189,7 +190,7 @@ final class Settings
         return $this->settings[SettingsEnum::YML_SERVER_NAME];
     }
 
-    public static function getInstance(?string $siteId = null): static
+    public static function getInstance(string $siteId): static
     {
         return self::$instance === null ? self::$instance = new static($siteId) : self::$instance;
     }
@@ -201,6 +202,4 @@ final class Settings
     protected function __wakeup()
     {
     }
-
-
 }

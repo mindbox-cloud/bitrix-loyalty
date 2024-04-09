@@ -6,6 +6,7 @@ namespace Mindbox\Loyalty\Operations;
 
 use Mindbox\Loyalty\Api;
 use Mindbox\Loyalty\Support\Settings;
+use Mindbox\Loyalty\Support\SettingsFactory;
 
 abstract class AbstractOperation implements OperationInterface
 {
@@ -20,7 +21,9 @@ abstract class AbstractOperation implements OperationInterface
             return $this->customOperation();
         }
 
-        return Settings::getInstance()->getWebsitePrefix() . '.' . $this->operation();
+        $settings = SettingsFactory::create();
+
+        return $settings->getWebsitePrefix() . '.' . $this->operation();
     }
 
     public static function make(): static
