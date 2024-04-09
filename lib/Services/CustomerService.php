@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Services;
 
 use Bitrix\Main\ObjectNotFoundException;
+use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 use Mindbox\Loyalty\Models\Customer;
@@ -36,12 +37,15 @@ class CustomerService
         /** @var CheckCustomer $operationCheckCustomer */
         $operationCheckCustomer = $this->serviceLocator->get('mindboxLoyalty.checkCustomer');
 
-        $exists = $operationCheckCustomer->execute($customer);
+
+        $exists = $operationCheckCustomer->execute(
+            new CustomerRequestDTO([
+                'mobilePhone' => $customer->getMobilePhone(),
+            ])
+        );
 
         if (!$exists) {
-            $register =  $operationRegisterCustomer->execute($customer);
-
-            if ($register) {
+            if ($operationRegisterCustomer->execute($customer->getDto())) {
                 return true;
             }
         }
@@ -65,13 +69,17 @@ class CustomerService
         /** @var AuthorizeCustomer $operationAuthorizeCustomer */
         $operationAuthorizeCustomer = $this->serviceLocator->get('mindboxLoyalty.authorizeCustomer');
 
-        $exists = $operationCheckCustomer->execute($customer);
+        $exists = $operationCheckCustomer->execute(
+            new CustomerRequestDTO([
+                'mobilePhone' => $customer->getMobilePhone(),
+            ])
+        );
 
         if (!$exists) {
-            $operationRegisterCustomer->execute($customer);
+            $operationRegisterCustomer->execute($customer->getDto());
         }
 
-        if (!$operationAuthorizeCustomer->execute($customer)) {
+        if (!$operationAuthorizeCustomer->execute($customer->getDto())) {
             return false;
         }
 
@@ -94,13 +102,17 @@ class CustomerService
         /** @var EditCustomer $operationEditCustomer */
         $operationEditCustomer = $this->serviceLocator->get('mindboxLoyalty.editCustomer');
 
-        $exists = $operationCheckCustomer->execute($customer);
+        $exists = $operationCheckCustomer->execute(
+            new CustomerRequestDTO([
+                'mobilePhone' => $customer->getMobilePhone(),
+            ])
+        );
 
         if (!$exists) {
-            $operationRegisterCustomer->execute($customer);
+            $operationRegisterCustomer->execute($customer->getDto());
         }
 
-        if ($operationEditCustomer->execute($customer)) {
+        if ($operationEditCustomer->execute($customer->getDto())) {
             return true;
         }
 

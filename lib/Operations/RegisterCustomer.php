@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Operations;
 
+use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\DTO\V3\Responses\CustomerResponseDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
-use Mindbox\Loyalty\Models\Customer;
 
 class RegisterCustomer extends AbstractOperation
 {
@@ -17,7 +17,7 @@ class RegisterCustomer extends AbstractOperation
      * @throws ErrorCallOperationException
      * @throws ValidationErrorCallOperationException
      */
-    public function execute(Customer $customer): ?CustomerResponseDTO
+    public function execute(CustomerRequestDTO $dto): ?CustomerResponseDTO
     {
         $operation = $this->getOperation();
 
@@ -26,7 +26,7 @@ class RegisterCustomer extends AbstractOperation
 
             $response = $client->customer()
                 ->register(
-                    $customer->getDto(),
+                    $dto,
                     $operation
                 )
                 ->sendRequest();

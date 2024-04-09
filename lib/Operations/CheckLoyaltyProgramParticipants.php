@@ -10,34 +10,32 @@ use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Models\Customer;
 
-class AuthorizeCustomer extends AbstractOperation
+class CheckLoyaltyProgramParticipants extends AbstractOperation
 {
-    /**
-     * @throws ErrorCallOperationException
-     */
-    public function execute(CustomerRequestDTO $dto): bool
+    public function execute(CustomerRequestDTO $dto)
     {
+        $operation = $this->getOperation();
+
         try {
             $client = $this->api();
 
-            $response = $client->customer()
-                ->authorize(
-                    customer: $dto,
-                    operationName: $this->getOperation(),
-                    addDeviceUUID: false,
-                    isSync: true
-                )
-                ->sendRequest();
+            $request = $client->getClientV3()->prepareRequest(
+                method: 'POST',
+                operationName: $operation,
+                body: $dto
+            );
 
-            $result = $response->getResult();
+            $response = $request->sendRequest();
 
-            if ($result->getStatus() === 'Success') {
+            echo '<pre>'; print_r($response); echo '</pre>';
+
+            if ($response->getResult()->getStatus() === 'Success') {
                 return true;
             }
-        } catch (MindboxUnavailableException $e) {
-            // todo тут нужно будет делать ретрай отправки на очереди
+
         } catch (MindboxClientException $e) {
             // todo log this or log service?
+
             throw new ErrorCallOperationException(
                 message: sprintf('The operation %s failed', $this->getOperation()),
                 previous: $e,
@@ -50,6 +48,6 @@ class AuthorizeCustomer extends AbstractOperation
 
     public function operation(): string
     {
-        return 'AuthorizeCustomer';
+        return 'CheckLoyaltyProgramParticipants';
     }
 }

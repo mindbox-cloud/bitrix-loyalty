@@ -14,17 +14,14 @@ use Mindbox\Loyalty\Models\Customer;
 class CheckCustomer extends AbstractOperation
 {
     /**
+     * @param CustomerRequestDTO $dto
+     * @return bool
      * @throws ErrorCallOperationException
      */
-    public function execute(Customer $customer): bool
+    public function execute(CustomerRequestDTO $dto): bool
     {
         try {
             $client = $this->api();
-
-            $dto = new CustomerRequestDTO([
-                'mobilePhone' => $customer->getMobilePhone(),
-                'email' => $customer->getEmail()
-            ]);
 
             $response = $client->customer()
                 ->checkCustomer(

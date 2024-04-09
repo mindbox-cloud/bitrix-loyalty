@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Operations;
 
+use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
@@ -16,7 +17,7 @@ class EditCustomer extends AbstractOperation
      * @throws ErrorCallOperationException
      * @throws ValidationErrorCallOperationException
      */
-    public function execute(Customer $customer): bool
+    public function execute(CustomerRequestDTO $dto): bool
     {
         $operation = $this->getOperation();
 
@@ -25,7 +26,7 @@ class EditCustomer extends AbstractOperation
 
             $response = $client->customer()
                 ->edit(
-                    customer: $customer->getDto(),
+                    customer: $dto,
                     operationName: $operation,
                     addDeviceUUID: false
                 )
