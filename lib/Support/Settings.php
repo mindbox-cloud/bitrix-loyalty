@@ -28,6 +28,14 @@ final class Settings
         SettingsEnum::USER_BITRIX_FIELDS => null,
         SettingsEnum::USER_MINDBOX_FIELDS => null,
         SettingsEnum::USER_FIELDS_MATCH => null,
+        SettingsEnum::YML_FEED_ENABLED => null,
+        SettingsEnum::YML_CATALOG_IBLOCK_ID => null,
+        SettingsEnum::YML_BASE_PRICE_ID => null,
+        SettingsEnum::YML_CATALOG_PROPERTIES => null,
+        SettingsEnum::YML_OFFERS_PROPERTIES => null,
+        SettingsEnum::YML_PROTOCOL => null,
+        SettingsEnum::YML_PATH => null,
+        SettingsEnum::YML_CHUNK_SIZE => null,
     ];
 
     protected function __construct(?string $siteId = null)
@@ -116,6 +124,63 @@ final class Settings
     public function getLogPath(): ?string
     {
         return $this->settings[SettingsEnum::LOG_PATH];
+    }
+
+    public function enabledFeed(): bool
+    {
+        return $this->settings[SettingsEnum::YML_FEED_ENABLED] === 'Y';
+    }
+
+    public function getFeedCatalogId(): ?int
+    {
+        return $this->settings[SettingsEnum::YML_CATALOG_IBLOCK_ID]
+            ? (int)$this->settings[SettingsEnum::YML_CATALOG_IBLOCK_ID]
+            : null;
+    }
+
+    public function getFeedBasePriceId(): ?int
+    {
+        return $this->settings[SettingsEnum::YML_BASE_PRICE_ID]
+            ? (int)$this->settings[SettingsEnum::YML_BASE_PRICE_ID]
+            : null;
+    }
+
+    public function getFeedCatalogProperties(): ?array
+    {
+        return $this->getArrayOptionValue(SettingsEnum::YML_CATALOG_PROPERTIES);
+    }
+
+    public function getFeedOffersProperties(): ?array
+    {
+        return $this->getArrayOptionValue(SettingsEnum::YML_OFFERS_PROPERTIES);
+    }
+
+    public function isFeedHttps(): bool
+    {
+        return $this->settings[SettingsEnum::YML_PROTOCOL] === 'Y';
+    }
+
+    public function getFeedPath(): ?string
+    {
+        return $this->settings[SettingsEnum::YML_PROTOCOL];
+    }
+
+    public function getFeedChunkSize(): ?int
+    {
+        return $this->settings[SettingsEnum::YML_BASE_PRICE_ID]
+            ? (int)$this->settings[SettingsEnum::YML_BASE_PRICE_ID]
+            : null;
+    }
+
+    protected function getArrayOptionValue(string $settingCode): ?array
+    {
+        $currentOption = $this->settings[$settingCode];
+
+        if (!$currentOption || !is_string($currentOption)) {
+            return null;
+        }
+
+        return explode(',', $currentOption);
     }
 
     public static function getInstance(?string $siteId = null): static
