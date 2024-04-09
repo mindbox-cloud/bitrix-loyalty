@@ -36,6 +36,7 @@ final class Settings
         SettingsEnum::YML_PROTOCOL => null,
         SettingsEnum::YML_PATH => null,
         SettingsEnum::YML_CHUNK_SIZE => null,
+        SettingsEnum::YML_SERVER_NAME => null,
     ];
 
     protected function __construct(?string $siteId = null)
@@ -162,13 +163,13 @@ final class Settings
 
     public function getFeedPath(): ?string
     {
-        return $this->settings[SettingsEnum::YML_PROTOCOL];
+        return $this->settings[SettingsEnum::YML_PATH];
     }
 
     public function getFeedChunkSize(): ?int
     {
-        return $this->settings[SettingsEnum::YML_BASE_PRICE_ID]
-            ? (int)$this->settings[SettingsEnum::YML_BASE_PRICE_ID]
+        return $this->settings[SettingsEnum::YML_CHUNK_SIZE]
+            ? (int)$this->settings[SettingsEnum::YML_CHUNK_SIZE]
             : null;
     }
 
@@ -181,6 +182,11 @@ final class Settings
         }
 
         return explode(',', $currentOption);
+    }
+
+    public function getFeedServerName(): ?string
+    {
+        return $this->settings[SettingsEnum::YML_SERVER_NAME];
     }
 
     public static function getInstance(?string $siteId = null): static
