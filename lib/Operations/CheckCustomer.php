@@ -30,9 +30,12 @@ class CheckCustomer extends AbstractOperation
                     addDeviceUUID: false
                 )->sendRequest();
 
+            //todo операция возвращает неверный ответ, нет отрицательного
+
             if ($response->getResult()->getStatus() === 'Success') {
                 return true;
             }
+
 
         } catch (MindboxUnavailableException $e) {
             // todo тут нужно будет делать ретрай отправки на очереди

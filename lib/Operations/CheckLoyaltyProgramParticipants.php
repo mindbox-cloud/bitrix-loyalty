@@ -27,6 +27,7 @@ class CheckLoyaltyProgramParticipants extends AbstractOperation
 
             $response = $request->sendRequest();
 
+            //todo тут пока операция неверно работает, ждем пока будет возвращать правильное значение
             echo '<pre>'; print_r($response); echo '</pre>';
 
             if ($response->getResult()->getStatus() === 'Success') {

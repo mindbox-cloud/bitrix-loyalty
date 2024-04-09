@@ -40,7 +40,7 @@ class Customer
     protected function load(): void
     {
         // todo тут возможно нужно добавить исключение, если клиент не найден
-        $userFieldsMatch = Settings::getInstance()->getUserFieldsMatch();
+        $userFieldsMatch = $this->settings->getUserFieldsMatch();
 
         $selectFields = [
             'NAME',
@@ -137,7 +137,6 @@ class Customer
 
     public function getDto(): \Mindbox\DTO\V3\Requests\CustomerRequestDTO
     {
-        // todo тут нужно бы добавить блок id пользователя
         return new \Mindbox\DTO\V3\Requests\CustomerRequestDTO([
             'email' => $this->getEmail(),
             'lastName' => $this->getLastName(),
