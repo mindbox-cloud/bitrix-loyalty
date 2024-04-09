@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty;
 
 use Mindbox\Loyalty\Support\Settings;
+use Mindbox\Loyalty\Support\SettingsFactory;
 use Mindbox\Mindbox;
 
 class Api
@@ -14,16 +15,18 @@ class Api
 
     protected function __construct()
     {
+        $settings = SettingsFactory::create();
+
         $logger = new \Mindbox\Loggers\MindboxFileLogger(
-            Settings::getInstance()->getLogPath()
+            $settings->getLogPath()
         );
 
         $this->client = new Mindbox([
-            'endpointId' => Settings::getInstance()->getEndpoint(),
-            'secretKey' => Settings::getInstance()->getSecretKey(),
+            'endpointId' => $settings->getEndpoint(),
+            'secretKey' => $settings->getSecretKey(),
             'domainZone' => 'ru',
-            'domain' => Settings::getInstance()->getApiDomain(),
-            'timeout' => Settings::getInstance()->getHttpTimeout()
+            'domain' => $settings->getApiDomain(),
+            'timeout' => $settings->getHttpTimeout()
         ], $logger);
     }
 

@@ -10,6 +10,7 @@ use Bitrix\Main\Type\Date;
 use Bitrix\Main\UserPhoneAuthTable;
 use Bitrix\Main\UserTable;
 use Mindbox\Loyalty\Support\Settings;
+use Mindbox\Loyalty\Support\SettingsFactory;
 
 class Customer
 {
@@ -26,9 +27,13 @@ class Customer
         'PERSONAL_GENDER' => null,
     ];
 
+    protected Settings $settings;
+
     public function __construct(int $userId)
     {
         $this->userId = $userId;
+        $this->settings = SettingsFactory::create();
+
         $this->load();
     }
 
@@ -153,7 +158,7 @@ class Customer
     public function getIds(): array
     {
         return [
-            Settings::getInstance()->getExternalUserId() => $this->getId()
+            $this->settings->getExternalUserId() => $this->getId()
         ];
     }
 }
