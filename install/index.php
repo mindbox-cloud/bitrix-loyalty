@@ -136,7 +136,6 @@ class mindbox_loyalty extends CModule
 
     public function unInstallAgents(): void
     {
-
         CAgent::RemoveAgent(
             "\Mindbox\Loyalty\Feed\AgentRunner::run();",
             $this->MODULE_ID

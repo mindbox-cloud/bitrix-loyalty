@@ -171,7 +171,9 @@ class CatalogRepository implements RepositoryInterface
             $properties = $this->getProperties($addProps, $this->getIblockId(), $arProductId);
 
             foreach ($properties as $elementId => $prop) {
-                $this->products[$elementId]['properties'][] = $prop;
+                if (is_array($prop)) {
+                    $this->products[$elementId]['properties'] = $prop;
+                }
             }
         }
 
