@@ -29,6 +29,7 @@ final class Settings
         SettingsEnum::USER_BITRIX_FIELDS => null,
         SettingsEnum::USER_MINDBOX_FIELDS => null,
         SettingsEnum::USER_FIELDS_MATCH => null,
+        SettingsEnum::LOYALTY_DISABLE_EVENTS => null
     ];
 
     protected function __construct(string $siteId)
@@ -112,6 +113,11 @@ final class Settings
         }
 
         return $result;
+    }
+
+    public function getDisableEvents(): ?string
+    {
+        return $this->settings[SettingsEnum::LOYALTY_DISABLE_EVENTS];
     }
 
     public function getLogPath(): ?string
