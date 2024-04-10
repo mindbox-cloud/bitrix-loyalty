@@ -6,10 +6,7 @@ namespace Mindbox\Loyalty\Operations;
 
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
-use Mindbox\Exceptions\MindboxUnavailableException;
-use Mindbox\Loyalty\Api;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
-use Mindbox\Loyalty\Models\Customer;
 
 class CheckCustomer extends AbstractOperation
 {
@@ -29,19 +26,14 @@ class CheckCustomer extends AbstractOperation
                     operationName: $this->getOperation(),
                     addDeviceUUID: false
                 )->sendRequest();
-
-            //todo операция возвращает неверный ответ, нет отрицательного
-
-            if ($response->getResult()->getStatus() === 'Success') {
+            // todo добавить исключение для ошибок валидации
+            if (
+                $response->getResult()->getStatus() === 'Success' &&
+                $response->getResult()->getCustomer()->getProcessingStatus() === 'Found')
+            {
                 return true;
             }
-
-
-        } catch (MindboxUnavailableException $e) {
-            // todo тут нужно будет делать ретрай отправки на очереди
         } catch (MindboxClientException $e) {
-            // todo log this or log service?
-
             throw new ErrorCallOperationException(
                 message: sprintf('The operation %s failed', $this->getOperation()),
                 previous: $e,

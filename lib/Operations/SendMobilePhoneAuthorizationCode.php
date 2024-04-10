@@ -58,6 +58,6 @@ class SendMobilePhoneAuthorizationCode extends AbstractOperation
 
     public function operation(): string
     {
-        return 'SendMobilePhoneAuthorizationCode';
+        return 'SendMobileAuthentificationCode';
     }
 }
