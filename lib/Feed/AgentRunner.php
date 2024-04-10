@@ -14,7 +14,6 @@ class AgentRunner
             ->setSelect(['ID'])
             ->exec();
 
-        $now = new DateTime();
         foreach ($siteIterator as $site) {
             $siteId = $site['ID'];
 
@@ -26,12 +25,6 @@ class AgentRunner
             \CAgent::AddAgent(
                 "\Mindbox\Loyalty\Feed\FeedGenerator::generate('$siteId');",
                'mindbox.loyalty',
-                "N",
-                86400,
-                $now,
-                "Y",
-                $now,
-                30
             );
         }
 

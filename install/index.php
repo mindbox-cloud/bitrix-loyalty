@@ -2,6 +2,7 @@
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
 
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\Type\DateTime;
 
 if (class_exists('mindbox.loyalty')) {
     return;
