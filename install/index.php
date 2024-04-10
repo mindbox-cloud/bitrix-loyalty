@@ -43,6 +43,7 @@ class mindbox_loyalty extends CModule
         $this->InstallDB();
         $this->InstallFiles();
         $this->InstallEvents();
+        $this->installAgents();
     }
 
     public function DoUninstall()
@@ -51,7 +52,7 @@ class mindbox_loyalty extends CModule
         $this->UnInstallEvents();
         $this->UnInstallDB();
         $this->UnInstallFiles();
-
+        $this->unInstallAgents();
     }
 
     public function InstallDB()
@@ -99,6 +100,30 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Event\UserEvent::class,
             'onAfterUserUpdate'
+        );
+    }
+
+    public function installAgents(): void
+    {
+        $now = new DateTime();
+        CAgent::AddAgent(
+            "\Mindbox\Loyalty\Feed\AgentRunner::run();",
+            $this->MODULE_ID,
+            "N",
+            86400,
+            $now,
+            "Y",
+            $now,
+            30
+        );
+    }
+
+    public function unInstallAgents(): void
+    {
+
+        CAgent::RemoveAgent(
+            "\Mindbox\Loyalty\Feed\AgentRunner::run();",
+            $this->MODULE_ID
         );
     }
 
