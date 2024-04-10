@@ -18,12 +18,14 @@ class CustomerEvent
 {
     public static function onAfterUserAdd(array &$arFields)
     {
-        try {
-            $service = new CustomerService();
-            $service->register(new Customer($arFields['ID']));
-        } catch (ObjectNotFoundException $e) {
-        } catch (ErrorCallOperationException $e) {
-        } catch (ValidationErrorCallOperationException $e) {
+        if (!empty($arFields['ID'])) {
+            try {
+                $service = new CustomerService();
+                $service->register(new Customer($arFields['ID']));
+            } catch (ObjectNotFoundException $e) {
+            } catch (ErrorCallOperationException $e) {
+            } catch (ValidationErrorCallOperationException $e) {
+            }
         }
     }
 
