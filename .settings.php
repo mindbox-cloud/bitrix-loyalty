@@ -17,6 +17,12 @@ return [
             'mindboxLoyalty.sendMobilePhoneAuthorizationCode' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\SendMobilePhoneAuthorizationCode()
             ],
+            'mindboxLoyalty.feedGenerator' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Feed\YmlFeedMindbox()
+            ],
+            'mindboxLoyalty.feedCatalogRepository' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Feed\CatalogRepository()
+            ],
 		],
 		'readonly' => true,
 	],

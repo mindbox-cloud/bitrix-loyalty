@@ -72,6 +72,9 @@ $MESS['MINDBOX_LOYALTY_YML_PATH_HINTS'] = 'Укажите путь относи�
 $MESS['MINDBOX_LOYALTY_YML_CHUNK_SIZE'] = 'Количество элементов выгружаемых за один шаг';
 $MESS['MINDBOX_LOYALTY_YML_CHUNK_SIZE_HINTS'] = 'Если при формировании фида на сайте повышается нагрузка, то следует уменьшить данный параметр.';
 
+$MESS['MINDBOX_LOYALTY_YML_SERVER_NAME'] = 'URL сервера (без http://):';
+$MESS['MINDBOX_LOYALTY_YML_SERVER_NAME_HINTS'] = 'Для формирования ссылок, если не указать - берется из настроек сайта';
+
 $MESS['MINDBOX_LOYALTY_YML_CATALOG_PROPERTIES'] = 'Выгружаемые свойства каталога';
 $MESS['MINDBOX_LOYALTY_YML_CATALOG_PROPERTIES_HINTS'] = '';
 

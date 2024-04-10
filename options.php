@@ -466,6 +466,16 @@ foreach ($listSite as $site) {
                 'size' => 60,
             ]
         ],
+        SettingsEnum::YML_SERVER_NAME => [
+            'id' => SettingsEnum::YML_SERVER_NAME . '__' . $site,
+            'origin' => SettingsEnum::YML_SERVER_NAME,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_SERVER_NAME', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_SERVER_NAME_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
     ];
 
     foreach ($arOptions as &$option) {
@@ -526,8 +536,6 @@ foreach ($listSite as $site) {
 
     $arAllOptions[$site] = $arOptions;
 }
-
-
 ?>
 <form method="post"
       action="<?= $APPLICATION->GetCurPage() ?>?mid=<?= htmlspecialcharsbx($mid) ?>&lang=<?= LANG ?>">
