@@ -110,6 +110,7 @@ class CustomerService
 
         if (!$exists) {
             $operationRegisterCustomer->execute($customer->getDto());
+            return true;
         }
 
         if ($operationEditCustomer->execute($customer->getDto())) {

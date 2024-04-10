@@ -70,15 +70,23 @@ class mindbox_loyalty extends CModule
             'main',
             'OnAfterUserAdd',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\UserEvent::class,
+            \Mindbox\Loyalty\Event\CustomerEvent::class,
             'onAfterUserAdd'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'main',
+            'OnAfterUserAuthorize',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Event\CustomerEvent::class,
+            'onAfterUserAuthorize'
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
             'main',
             'OnAfterUserUpdate',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\UserEvent::class,
+            \Mindbox\Loyalty\Event\CustomerEvent::class,
             'onAfterUserUpdate'
         );
     }
@@ -89,15 +97,23 @@ class mindbox_loyalty extends CModule
             'main',
             'OnAfterUserAdd',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\UserEvent::class,
+            \Mindbox\Loyalty\Event\CustomerEvent::class,
             'onAfterUserAdd'
         );
 
-        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'main',
+            'OnAfterUserAuthorize',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Event\CustomerEvent::class,
+            'onAfterUserAuthorize'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
             'main',
             'OnAfterUserUpdate',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\UserEvent::class,
+            \Mindbox\Loyalty\Event\CustomerEvent::class,
             'onAfterUserUpdate'
         );
     }
