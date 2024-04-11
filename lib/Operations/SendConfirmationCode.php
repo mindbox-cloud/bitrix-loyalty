@@ -23,7 +23,7 @@ class SendConfirmationCode extends AbstractOperation
         echo '<pre>'; print_r($result); echo '</pre>';
     }
 
-    public function operation(): string
+    protected function operation(): string
     {
         return 'SendConfirmationCode';
     }
