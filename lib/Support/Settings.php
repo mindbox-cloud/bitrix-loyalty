@@ -37,12 +37,21 @@ final class Settings
     {
         $this->siteId = $siteId;
 
+        $this->fillDefaultOperationsSettings();
+
         foreach ($this->settings as $settingCode => $value) {
             $this->settings[$settingCode] = \Bitrix\Main\Config\Option::get(
                 moduleId: 'mindbox.loyalty',
                 name: $settingCode,
                 siteId: $this->siteId
             );
+        }
+    }
+
+    protected function fillDefaultOperationsSettings(): void
+    {
+        foreach (DefaultOperations::getMap() as $defaultOperationName) {
+            $this->settings[$defaultOperationName] = null;
         }
     }
 
@@ -139,6 +148,11 @@ final class Settings
     public static function getInstance(string $siteId): static
     {
         return self::$instance[$siteId] === null ? self::$instance[$siteId] = new static($siteId) : self::$instance[$siteId];
+    }
+
+    public function getCustomOperation(string $operationName): ?string
+    {
+        return $this->settings[$operationName];
     }
 
     protected function __clone()

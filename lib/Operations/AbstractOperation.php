@@ -10,7 +10,7 @@ use Mindbox\Loyalty\Support\SettingsFactory;
 
 abstract class AbstractOperation
 {
-    private Settings $settings;
+    private ?Settings $settings = null;
 
     protected function api(): \Mindbox\Mindbox
     {
@@ -31,9 +31,9 @@ abstract class AbstractOperation
         return new static();
     }
 
-    protected function customOperation(): mixed
+    protected function customOperation(): ?string
     {
-        return null;
+        return $this->getSettings()->getCustomOperation($this->operation());
     }
 
     abstract protected function operation(): string;
