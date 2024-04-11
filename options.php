@@ -170,6 +170,17 @@ foreach ($listSite as $site) {
                 'size' => 3
             ]
         ],
+        SettingsEnum::LOYALTY_ENABLE_EVENTS => [
+            'id' => SettingsEnum::LOYALTY_ENABLE_EVENTS . '__' . $site,
+            'origin' => SettingsEnum::LOYALTY_ENABLE_EVENTS,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_ENABLE_EVENTS', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_ENABLE_EVENTS_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'multiselectbox',
+                'options' => \Mindbox\Loyalty\Support\LoyalityEvents::getAll(),
+                'size' => 5
+            ]
+        ],
         Loc::getMessage('MINDBOX_LOYALTY_HEADING_PRIMARY_KEY'),
         SettingsEnum::EXTERNAL_PRODUCT => [
             'id' => SettingsEnum::EXTERNAL_PRODUCT . '__' . $site,
@@ -645,6 +656,9 @@ foreach ($listSite as $site) {
                             <?php
                             break;
                         case 'multiselectbox':
+                            if (is_string($currentValue) && str_contains($currentValue, ',')) {
+                                $currentValue = explode(',', $currentValue);
+                            }
                             ?>
                             <select id="<?= $controlId; ?>" name="<?= $controlName; ?>[]" multiple
                                     size="<?= $type['size'] ?>">

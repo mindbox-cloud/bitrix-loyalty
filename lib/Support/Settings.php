@@ -30,6 +30,7 @@ final class Settings
         SettingsEnum::USER_BITRIX_FIELDS => null,
         SettingsEnum::USER_MINDBOX_FIELDS => null,
         SettingsEnum::USER_FIELDS_MATCH => null,
+        SettingsEnum::LOYALTY_ENABLE_EVENTS => null,
         SettingsEnum::YML_FEED_ENABLED => null,
         SettingsEnum::YML_CATALOG_IBLOCK_ID => null,
         SettingsEnum::YML_BASE_PRICE_ID => null,
@@ -141,6 +142,11 @@ final class Settings
         }
 
         return $result;
+    }
+
+    public function getEnableEvents(): array
+    {
+        return explode(',', $this->settings[SettingsEnum::LOYALTY_ENABLE_EVENTS]);
     }
 
     public function getLogPath(): ?string

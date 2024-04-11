@@ -6,11 +6,11 @@ namespace Mindbox\Loyalty\Event;
 
 
 use Bitrix\Main\ObjectNotFoundException;
-use Mindbox\Loyalty\Entity\User;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Services\CustomerService;
+use Mindbox\Loyalty\Support\LoyalityEvents;
 use Mindbox\Loyalty\Support\SettingsFactory;
 use Psr\Log\LogLevel;
 
@@ -18,6 +18,10 @@ class CustomerEvent
 {
     public static function onAfterUserAdd(array &$arFields)
     {
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::REGISTRATION)) {
+            return true;
+        }
+
         if (!empty($arFields['ID'])) {
             try {
                 $service = new CustomerService();
@@ -40,6 +44,9 @@ class CustomerEvent
         $logger->error('onAfterUserAuthorize', $arUser);
         $logger->info('id', [$arUser['user_fields']['ID']]);
 
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::AUTH)) {
+            return true;
+        }
 
         try {
             $service = new CustomerService();
@@ -58,6 +65,10 @@ class CustomerEvent
 
     public static function onAfterUserUpdate($arUser)
     {
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::EDIT_USER)) {
+            return true;
+        }
+
         try {
             $service = new CustomerService();
             $service->edit(new Customer($arUser['ID']));
