@@ -87,3 +87,5 @@ $MESS['MINDBOX_LOYALTY_HEADING_ORDER_STATUS'] = 'Сопоставление ст
 $MESS['MINDBOX_LOYALTY_HEADING_YML_FEED'] = 'Настройка YML фида mindbox';
 $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS'] = 'Включить обработку событий';
 $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_HINTS'] = 'Используйте эту настройку, чтобы включить обработку событий';
+$MESS['MINDBOX_LOYALTY_HEADING_CUSTOM_OPERATIONS'] = 'Замена стандартных операций';
+$MESS['MINDBOX_LOYALTY_OPERATIONS_HINTS'] = 'Указывать полное название операции с учетом префикса';

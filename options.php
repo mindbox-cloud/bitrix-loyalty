@@ -68,6 +68,12 @@ if ($request->isPost() && $request->get('save') && check_bitrix_sessid()) {
             Option::set(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, $key, $option, $site);
         }
     }
+
+    if (!empty($_REQUEST["back_url_settings"]) && empty($_REQUEST["Apply"])) {
+        LocalRedirect($_REQUEST["back_url_settings"]);
+    } else {
+        LocalRedirect("/bitrix/admin/settings.php?lang=" . LANGUAGE_ID . "&mid=" . urlencode($mid) . "&tabControl_active_tab=" . urlencode($_REQUEST["tabControl_active_tab"] ?? '') . "&back_url_settings=" . urlencode($_REQUEST["back_url_settings"] ?? ''));
+    }
 }
 
 
@@ -533,6 +539,25 @@ foreach ($listSite as $site) {
                 ]
             ];
         }
+    }
+
+    $arOptions[] = Loc::getMessage('MINDBOX_LOYALTY_HEADING_CUSTOM_OPERATIONS');
+
+    $defaultOperationNames = \Mindbox\Loyalty\Support\DefaultOperations::getMap();
+
+    foreach ($defaultOperationNames as $defaultOperationName) {
+        $arOptions[$defaultOperationName] = [];
+        $arOptions[$defaultOperationName] = [
+            'id' => $defaultOperationName . '__' . $site,
+            'origin' => $defaultOperationName,
+            'current' => Option::get(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, $defaultOperationName, $defaultOptions[$defaultOperationName], $site),
+            'label' => $defaultOperationName,
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_OPERATIONS_HINTS', ['#OPERATION#' => $defaultOperationName]),
+            'type' => [
+                'type' => 'text',
+                'size' => 20,
+            ]
+        ];
     }
 
     $arAllOptions[$site] = $arOptions;
