@@ -17,7 +17,7 @@ abstract class AbstractOperation
         return Api::getInstance()->getClient();
     }
 
-    public function getOperation(): string
+    protected function getOperation(): string
     {
         if ($this->customOperation()) {
             return $this->customOperation();
