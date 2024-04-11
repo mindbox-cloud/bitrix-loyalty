@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Event;
 
 
-use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\ObjectNotFoundException;
-use Mindbox\Loyalty\Entity\User;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 use Mindbox\Loyalty\Models\Customer;
@@ -70,7 +68,7 @@ class CustomerEvent
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::EDIT_USER)) {
             return true;
         }
-        
+
         try {
             $service = new CustomerService();
             $service->edit(new Customer($arUser['ID']));
