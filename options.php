@@ -167,8 +167,8 @@ foreach ($listSite as $site) {
         SettingsEnum::LOYALTY_DISABLE_EVENTS => [
             'id' => SettingsEnum::LOYALTY_DISABLE_EVENTS . '__' . $site,
             'origin' => SettingsEnum::LOYALTY_DISABLE_EVENTS,
-            'label' => Loc::getMessage('MINDBOX_LOYALTY_DISABLE_EVENTS', ['#LID#' => $site]),
-            'hints' => Loc::getMessage('MINDBOX_LOYALTY_DISABLE_EVENTS_HINTS', ['#LID#'=>$site]),
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_ENABLE_EVENTS', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_ENABLE_EVENTS_HINTS', ['#LID#'=>$site]),
             'type' => [
                 'type' => 'multiselectbox',
                 'options' => \Mindbox\Loyalty\Support\LoyalityEvents::getAll(),

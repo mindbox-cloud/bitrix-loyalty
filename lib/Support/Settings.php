@@ -115,9 +115,9 @@ final class Settings
         return $result;
     }
 
-    public function getDisableEvents(): ?string
+    public function getEnableEvents(): array
     {
-        return $this->settings[SettingsEnum::LOYALTY_DISABLE_EVENTS];
+        return explode(',', $this->settings[SettingsEnum::LOYALTY_DISABLE_EVENTS]);
     }
 
     public function getLogPath(): ?string
