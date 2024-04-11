@@ -100,9 +100,19 @@ final class Settings
         return (int)$this->settings[SettingsEnum::TIMEOUT];
     }
 
+    public function getExternalProductId(): ?string
+    {
+        return $this->settings[SettingsEnum::EXTERNAL_PRODUCT];
+    }
+
     public function getExternalUserId(): ?string
     {
         return $this->settings[SettingsEnum::EXTERNAL_USER];
+    }
+
+    public function getExternalOrderId(): ?string
+    {
+        return $this->settings[SettingsEnum::EXTERNAL_ORDER];
     }
 
     /**
