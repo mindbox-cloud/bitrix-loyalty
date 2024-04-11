@@ -6,7 +6,8 @@ namespace Mindbox\Loyalty\Support;
 
 final class Settings
 {
-    protected static ?Settings $instance = null;
+    /** @var Settings[] */
+    protected static $instance = [];
     protected string $siteId;
 
     protected array $settings = [
@@ -29,6 +30,7 @@ final class Settings
         SettingsEnum::USER_BITRIX_FIELDS => null,
         SettingsEnum::USER_MINDBOX_FIELDS => null,
         SettingsEnum::USER_FIELDS_MATCH => null,
+        SettingsEnum::YML_BASE_PRICE_ID => null,
     ];
 
     protected function __construct(string $siteId)
@@ -119,9 +121,14 @@ final class Settings
         return $this->settings[SettingsEnum::LOG_PATH];
     }
 
+    public function getBasePriceId(): ?string
+    {
+        return $this->settings[SettingsEnum::YML_BASE_PRICE_ID];
+    }
+
     public static function getInstance(string $siteId): static
     {
-        return self::$instance === null ? self::$instance = new static($siteId) : self::$instance;
+        return self::$instance[$siteId] === null ? self::$instance[$siteId] = new static($siteId) : self::$instance[$siteId];
     }
 
     protected function __clone()
@@ -131,6 +138,4 @@ final class Settings
     protected function __wakeup()
     {
     }
-
-
 }
