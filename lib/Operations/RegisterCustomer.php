@@ -56,7 +56,7 @@ class RegisterCustomer extends AbstractOperation
         return null;
     }
 
-    public function operation(): string
+    protected function operation(): string
     {
         return 'RegisterCustomer';
     }

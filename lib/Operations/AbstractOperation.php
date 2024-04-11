@@ -8,8 +8,10 @@ use Mindbox\Loyalty\Api;
 use Mindbox\Loyalty\Support\Settings;
 use Mindbox\Loyalty\Support\SettingsFactory;
 
-abstract class AbstractOperation implements OperationInterface
+abstract class AbstractOperation
 {
+    private Settings $settings;
+
     protected function api(): \Mindbox\Mindbox
     {
         return Api::getInstance()->getClient();
@@ -21,9 +23,7 @@ abstract class AbstractOperation implements OperationInterface
             return $this->customOperation();
         }
 
-        $settings = SettingsFactory::create();
-
-        return $settings->getWebsitePrefix() . '.' . $this->operation();
+        return $this->getSettings()->getWebsitePrefix() . '.' . $this->operation();
     }
 
     public static function make(): static
@@ -34,5 +34,23 @@ abstract class AbstractOperation implements OperationInterface
     protected function customOperation(): mixed
     {
         return null;
+    }
+
+    abstract protected function operation(): string;
+
+    public function setSettings(Settings $settings): static
+    {
+        $this->settings = $settings;
+
+        return $this;
+    }
+
+    public function getSettings(): Settings
+    {
+        if ($this->settings === null) {
+            $this->settings = SettingsFactory::create();
+        }
+
+        return $this->settings;
     }
 }
