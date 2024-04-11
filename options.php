@@ -164,9 +164,9 @@ foreach ($listSite as $site) {
                 'size' => 3
             ]
         ],
-        SettingsEnum::LOYALTY_DISABLE_EVENTS => [
-            'id' => SettingsEnum::LOYALTY_DISABLE_EVENTS . '__' . $site,
-            'origin' => SettingsEnum::LOYALTY_DISABLE_EVENTS,
+        SettingsEnum::LOYALTY_ENABLE_EVENTS => [
+            'id' => SettingsEnum::LOYALTY_ENABLE_EVENTS . '__' . $site,
+            'origin' => SettingsEnum::LOYALTY_ENABLE_EVENTS,
             'label' => Loc::getMessage('MINDBOX_LOYALTY_ENABLE_EVENTS', ['#LID#' => $site]),
             'hints' => Loc::getMessage('MINDBOX_LOYALTY_ENABLE_EVENTS_HINTS', ['#LID#'=>$site]),
             'type' => [

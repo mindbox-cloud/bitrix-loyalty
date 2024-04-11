@@ -20,7 +20,10 @@ class CustomerEvent
 {
     public static function onAfterUserAdd(array &$arFields)
     {
-        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::REGISTRATION)) return true;
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::REGISTRATION)) {
+            return true;
+        }
+
         if (!empty($arFields['ID'])) {
             try {
                 $service = new CustomerService();
@@ -43,7 +46,9 @@ class CustomerEvent
         $logger->error('onAfterUserAuthorize', $arUser);
         $logger->info('id', [$arUser['user_fields']['ID']]);
 
-        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::AUTH)) return true;
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::AUTH)) {
+            return true;
+        }
 
         try {
             $service = new CustomerService();
@@ -62,7 +67,10 @@ class CustomerEvent
 
     public static function onAfterUserUpdate($arUser)
     {
-        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::EDIT_USER)) return true;
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::EDIT_USER)) {
+            return true;
+        }
+        
         try {
             $service = new CustomerService();
             $service->edit(new Customer($arUser['ID']));

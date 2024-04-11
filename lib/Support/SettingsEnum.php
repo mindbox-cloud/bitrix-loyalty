@@ -42,5 +42,5 @@ class SettingsEnum
     public const YML_PROTOCOL = 'yml_protocol';
     public const YML_PATH = 'yml_path';
     public const YML_CHUNK_SIZE = 'yml_chunk_size';
-    public const LOYALTY_DISABLE_EVENTS = 'disable_events';
+    public const LOYALTY_ENABLE_EVENTS = 'enable_events';
 }
