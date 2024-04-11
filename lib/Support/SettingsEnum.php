@@ -42,4 +42,5 @@ class SettingsEnum
     public const YML_PROTOCOL = 'yml_protocol';
     public const YML_PATH = 'yml_path';
     public const YML_CHUNK_SIZE = 'yml_chunk_size';
+    public const YML_SERVER_NAME = 'yml_server_name';
 }
