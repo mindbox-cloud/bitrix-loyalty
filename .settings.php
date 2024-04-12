@@ -27,6 +27,15 @@ return [
             'mindboxLoyalty.calculateUnauthorizedCart' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\CalculateUnauthorizedCart()
             ],
+            'mindboxLoyalty.createAuthorizedOrder' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CreateAuthorizedOrder()
+            ],
+            'mindboxLoyalty.createAuthorizedOrderAdmin' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CreateAuthorizedOrderAdmin()
+            ],
+            'mindboxLoyalty.createUnauthorizedOrder' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CreateUnauthorizedOrder()
+            ],
 		],
 		'readonly' => true,
 	],

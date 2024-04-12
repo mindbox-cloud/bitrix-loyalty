@@ -10,6 +10,7 @@ use Bitrix\Main\UserTable;
 use Bitrix\Sale\Order;
 use Mindbox\DTO\V3\Responses\OrderResponseDTO;
 use Mindbox\Loyalty\Discount\BasketDiscountTable;
+use Mindbox\Loyalty\Helper;
 use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Models\OrderMindbox;
 use Mindbox\Loyalty\Operations\CalculateAuthorizedCart;
@@ -31,7 +32,7 @@ class CalculateService
     {
         if (Context::getCurrent()->getRequest()->isAdminSection()) {
             $orderResponseDTO = $this->calculateOrderAdmin($order);
-        } elseif ($this->isUserAuthorized((int) $order->getField('USER_ID'))) {
+        } elseif (Helper::isUserAuthorized((int) $order->getField('USER_ID'))) {
             $orderResponseDTO = $this->calculateAuthorizedOrder($order);
         } else {
             $orderResponseDTO = $this->calculateUnauthorizedOrder($order);
@@ -175,37 +176,4 @@ class CalculateService
         return $calculateAuthorizedCart->execute($DTO);
     }
 
-    protected function isUserAuthorized(?int $userId): bool
-    {
-        global $USER;
-
-        if (!$USER->IsAuthorized()) {
-            return false;
-        }
-
-        if ($userId === null) {
-            return false;
-        }
-
-        $iterUser = \Bitrix\Main\UserTable::query()
-            ->where('ID', $userId)
-            ->setLimit(1)
-            ->setSelect(['DATE_REGISTER'])
-            ->exec();
-
-        if ($findUser = $iterUser->fetch()) {
-            /** @var \Bitrix\Main\Type\Date|\Bitrix\Main\Type\DateTime $dateRegister */
-            $dateRegister = $findUser['DATE_REGISTER'];
-            $diff = time() - $dateRegister->getTimestamp();
-
-            // С момента регистрации пользователя прошло меньше $userRegisterDelta времени
-            // Считаем что пользователь был создан компонентом sale.order.ajax
-            // Такой пользователь должен считаться не авторизованным
-            if ($diff > self::$userRegisterDelta) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

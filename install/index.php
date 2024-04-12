@@ -115,7 +115,7 @@ class mindbox_loyalty extends CModule
             'OnSaleOrderBeforeSaved',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Event\OrderEvent::class,
-            'OnSaleOrderBeforeSaved'
+            'onSaleOrderBeforeSaved'
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
