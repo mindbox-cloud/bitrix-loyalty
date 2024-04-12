@@ -8,7 +8,7 @@ use domDocument;
 
 class YmlFeedMindbox
 {
-    const DESCRIPTION_TEXT_LENGTH = 1;
+    const DESCRIPTION_TEXT_LENGTH = 3000;
 
     protected $lid = '';
 
