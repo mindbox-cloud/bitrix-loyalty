@@ -68,7 +68,9 @@ class DiscountRuleInstaller implements InstallerInterface
             ]
         ];
 
-        \CSaleDiscount::Add($discountFields);
+        $result = \CSaleDiscount::Add($discountFields);
+
+        return $result;
     }
 
     public function down()

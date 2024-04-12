@@ -47,6 +47,7 @@ class mindbox_loyalty extends CModule
         $this->InstallDB();
         $this->InstallFiles();
         $this->InstallEvents();
+        $this->installBasketRule();
     }
 
     public function DoUninstall()
@@ -69,7 +70,6 @@ class mindbox_loyalty extends CModule
         $siteId = $this->getCurrentSiteId();
         (new OrderGroupPropertyInstaller($siteId))->up();
         (new OrderPropertyInstaller($siteId))->up();
-        (new DiscountRuleInstaller($siteId))->up();
     }
 
     public function UnInstallDB()
@@ -94,6 +94,15 @@ class mindbox_loyalty extends CModule
 
     public function InstallEvents()
     {
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'sale',
+            'OnCondSaleActionsControlBuildList',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Discount\BasketRuleAction::class,
+            'GetControlDescr'
+        );
+
+
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
             'main',
             'OnAfterUserAdd',
@@ -129,6 +138,14 @@ class mindbox_loyalty extends CModule
 
     public function UnInstallEvents()
     {
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'sale',
+            'OnCondSaleActionsControlBuildList',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Discount\BasketRuleAction::class,
+            'GetControlDescr'
+        );
+
         \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
             'main',
             'OnAfterUserAdd',
@@ -168,6 +185,16 @@ class mindbox_loyalty extends CModule
 
     public function UnInstallFiles()
     {
+    }
+
+    /**
+     * Необходимо вызывать после того, как добавлено событие OnCondSaleActionsControlBuildList
+     * @return void
+     */
+    public function installBasketRule()
+    {
+        $siteId = $this->getCurrentSiteId();
+        (new DiscountRuleInstaller($siteId))->up();
     }
 
     protected function getCurrentSiteId()
