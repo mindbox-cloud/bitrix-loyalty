@@ -38,6 +38,6 @@ class CalculateAuthorizedCart extends AbstractOperation
 
     protected function operation(): string
     {
-        return 'CalculateAuthorizedOrder';
+        return 'CalculateAuthorizedCart';
     }
 }

@@ -102,6 +102,29 @@ class mindbox_loyalty extends CModule
             'GetControlDescr'
         );
 
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'sale',
+            'OnBeforeSaleOrderFinalAction',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Event\OrderEvent::class,
+            'onBeforeSaleOrderFinalAction'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'sale',
+            'OnSaleOrderBeforeSaved',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Event\OrderEvent::class,
+            'OnSaleOrderBeforeSaved'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'sale',
+            'OnSaleOrderSaved',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Event\OrderEvent::class,
+            'onSaleOrderSaved'
+        );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
             'main',
@@ -125,14 +148,6 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Event\CustomerEvent::class,
             'onAfterUserUpdate'
-        );
-
-        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
-            'sale',
-            'OnBeforeSaleOrderFinalAction',
-            $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\OrderEvent::class,
-            'onBeforeSaleOrderFinalAction'
         );
     }
 
@@ -147,6 +162,30 @@ class mindbox_loyalty extends CModule
         );
 
         \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'sale',
+            'OnBeforeSaleOrderFinalAction',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Event\OrderEvent::class,
+            'onBeforeSaleOrderFinalAction'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'sale',
+            'OnSaleOrderBeforeSaved',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Event\OrderEvent::class,
+            'onSaleOrderBeforeSaved'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'sale',
+            'OnSaleOrderSaved',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Event\OrderEvent::class,
+            'onSaleOrderSaved'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
             'main',
             'OnAfterUserAdd',
             $this->MODULE_ID,
@@ -168,14 +207,6 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Event\CustomerEvent::class,
             'onAfterUserUpdate'
-        );
-
-        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
-            'sale',
-            'OnBeforeSaleOrderFinalAction',
-            $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\OrderEvent::class,
-            'onBeforeSaleOrderFinalAction'
         );
     }
 

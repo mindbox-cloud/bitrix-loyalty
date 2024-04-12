@@ -22,4 +22,15 @@ class OrderEvent
         $service = new CalculateService();
         $service->calculateOrder($order);
     }
+
+    public static function onSaleOrderBeforeSaved(\Bitrix\Main\Event $event)
+    {
+
+    }
+
+
+    public static function onSaleOrderSaved(\Bitrix\Main\Event $event)
+    {
+
+    }
 }
