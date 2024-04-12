@@ -1,0 +1,211 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Mindbox\Loyalty\Services;
+
+use Bitrix\Main\Context;
+use Bitrix\Main\Type\DateTime;
+use Bitrix\Main\UserTable;
+use Bitrix\Sale\Order;
+use Mindbox\DTO\V3\Responses\OrderResponseDTO;
+use Mindbox\Loyalty\Discount\BasketDiscountTable;
+use Mindbox\Loyalty\Models\Customer;
+use Mindbox\Loyalty\Models\OrderMindbox;
+use Mindbox\Loyalty\Operations\CalculateAuthorizedCart;
+use Mindbox\Loyalty\Support\SessionStorage;
+use Mindbox\Loyalty\Support\SettingsFactory;
+
+class CalculateService
+{
+    /** @var int Расхождение в секундах */
+    private static $userRegisterDelta = 30;
+    protected \Bitrix\Main\DI\ServiceLocator $serviceLocator;
+
+    public function __construct()
+    {
+        $this->serviceLocator = \Bitrix\Main\DI\ServiceLocator::getInstance();
+    }
+
+    public function calculateOrder(Order $order)
+    {
+        if (Context::getCurrent()->getRequest()->isAdminSection()) {
+            $orderResponseDTO = $this->calculateOrderAdmin($order);
+        } elseif ($this->isUserAuthorized((int) $order->getField('USER_ID'))) {
+            $orderResponseDTO = $this->calculateAuthorizedOrder($order);
+        } else {
+            $orderResponseDTO = $this->calculateUnauthorizedOrder($order);
+        }
+
+        $orderData = $orderResponseDTO->getFieldsAsArray();
+
+        // расчетная стоимость заказа из МБ
+        $mbTotalPrice = $orderData['totalPrice'] ?? $order->getPrice();
+        SessionStorage::getInstance()->setTotalPrice(floatval($mbTotalPrice));
+
+        // проверяем списанные бонусы, чтобы не списывали больше доступного
+        if (isset($orderData['totalBonusPointsInfo'])) {
+            $totalBonusPointInfo = $orderData['totalBonusPointsInfo'];
+            if (!empty($totalBonusPointInfo) && $totalBonusPointInfo['availableAmountForCurrentOrder'] < SessionStorage::getInstance()->getPayBonuses()) {
+                // Списываю за заказ, больше чем доступно
+                SessionStorage::getInstance()->setPayBonuses(intval($totalBonusPointInfo['availableAmountForCurrentOrder']));
+            }
+
+            // Доступно для заказа
+            SessionStorage::getInstance()->setOrderAvailableBonuses(intval($totalBonusPointInfo['availableAmountForCurrentOrder']));
+            // Всего бонусов
+            SessionStorage::getInstance()->setBonusesBalanceAvailable(intval($totalBonusPointInfo['balance']['available']));
+            unset($totalBonusPointInfo);
+        }
+
+        // проверяем начисление бонусов за заказ
+        if (isset($orderData['bonusPointsChanges']) && is_array($orderData['bonusPointsChanges'])) {
+            $bonusPointsChanges = current($orderData['bonusPointsChanges']);
+            // Будет начислено за заказ
+            $earnedAmount = $bonusPointsChanges['earnedAmount'] ?? 0;
+            SessionStorage::getInstance()->setOrderEarnedBonuses(intval($earnedAmount));
+
+            unset($bonusPointsChanges, $earnedAmount);
+        }
+
+        // проверяем, применение промокода
+        SessionStorage::getInstance()->setPromocodeError('');
+        if (isset($orderData['couponsInfo']) && is_array($orderData['couponsInfo'])) {
+            $couponsInfo = current($orderData['couponsInfo']);
+            if ($couponsInfo['coupon']['status'] === 'NotFound') {
+                $setCouponError = 'Промокод не найден';
+            } elseif ($couponsInfo['coupon']['status'] === 'CanNotBeUsedForCurrentOrder') {
+                $setCouponError = 'Нельзя применить данный промокод';
+            } elseif ($couponsInfo['coupon']['status'] === 'Used') {
+                $setCouponError = 'Промокод был использован ранее';
+            }
+
+            if ($setCouponError !== null) {
+                SessionStorage::getInstance()->setPromocodeError($setCouponError);
+            }
+
+            unset($couponsInfo, $setCouponError);
+        }
+
+        $mindboxBasket = [];
+        foreach ($orderData['lines'] as $line) {
+            $lineId = (int) $line['lineId'];
+            $discountedPrice = (float) $line['discountedPriceOfLine'];
+            $quantity = (float) $line['quantity'];
+
+            // todo необходимо реализовать скидку в МБ, которое бы нарушало данное условие
+            if (!isset($mindboxBasket[$lineId]) && $lineId > 0) {
+                $mindboxPrice = $discountedPrice / $quantity;
+
+                $mindboxBasket[$lineId] = [
+                    'price' => $mindboxPrice,
+                    'quantity' => $quantity,
+                ];
+
+                BasketDiscountTable::set($lineId, $mindboxPrice);
+            }
+        }
+
+        unset($mindboxBasket, $line, $lineId, $discountedPrice, $quantity, $mindboxPrice);
+    }
+
+    public function calculateOrderAdmin(Order $order): OrderResponseDTO
+    {
+        $settings = SettingsFactory::createBySiteId($order->getSiteId());
+
+        $mindboxOrder = new OrderMindbox($order, $settings);
+        $customer = new Customer($order->getUserId());
+
+        /** @var CalculateAuthorizedCart $calculateAuthorizedCart */
+        $calculateAuthorizedCart = $this->serviceLocator->get('mindboxLoyalty.calculateAuthorizedCartAdmin');
+
+        $customerDTO = new \Mindbox\DTO\V3\Requests\CustomerRequestDTO();
+        $customerDTO->setIds($customer->getIds());
+
+        $orderData = $mindboxOrder->getData();
+
+        $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
+        $DTO->setOrder($orderData);
+        $DTO->setCustomer($customerDTO);
+
+        return $calculateAuthorizedCart->execute($DTO);
+    }
+
+    public function calculateAuthorizedOrder(Order $order): OrderResponseDTO
+    {
+        $settings = SettingsFactory::createBySiteId($order->getSiteId());
+        $mindboxOrder = new OrderMindbox($order, $settings);
+        $customer = new Customer((int) $order->getField('USER_ID'));
+
+        /** @var CalculateAuthorizedCart $calculateAuthorizedCart */
+        $calculateAuthorizedCart = $this->serviceLocator->get('mindboxLoyalty.calculateAuthorizedCart');
+
+        $mindboxOrder->setBonuses(SessionStorage::getInstance()->getPayBonuses());
+        $mindboxOrder->setCoupons(SessionStorage::getInstance()->getPromocodeValue());
+
+        $customerDTO = new \Mindbox\DTO\V3\Requests\CustomerRequestDTO();
+        $customerDTO->setIds($customer->getIds());
+
+        $orderData = $mindboxOrder->getData();
+
+        $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
+        $DTO->setOrder($orderData);
+        $DTO->setCustomer($customerDTO);
+
+        return $calculateAuthorizedCart->execute($DTO);
+    }
+
+    public function calculateUnauthorizedOrder(Order $order): OrderResponseDTO
+    {
+        $settings = SettingsFactory::createBySiteId($order->getSiteId());
+
+        $mindboxOrder = new OrderMindbox($order, $settings);
+
+        /** @var CalculateAuthorizedCart $calculateAuthorizedCart */
+        $calculateAuthorizedCart = $this->serviceLocator->get('mindboxLoyalty.calculateUnauthorizedCart');
+
+        $mindboxOrder->setCoupons(SessionStorage::getInstance()->getPromocodeValue());
+
+
+        $orderData = $mindboxOrder->getData();
+
+        $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
+        $DTO->setOrder($orderData);
+
+        return $calculateAuthorizedCart->execute($DTO);
+    }
+
+    protected function isUserAuthorized(?int $userId): bool
+    {
+        global $USER;
+
+        if (!$USER->IsAuthorized()) {
+            return false;
+        }
+
+        if ($userId === null) {
+            return false;
+        }
+
+        $iterUser = \Bitrix\Main\UserTable::query()
+            ->where('ID', $userId)
+            ->setLimit(1)
+            ->setSelect(['DATE_REGISTER'])
+            ->exec();
+
+        if ($findUser = $iterUser->fetch()) {
+            /** @var \Bitrix\Main\Type\Date|\Bitrix\Main\Type\DateTime $dateRegister */
+            $dateRegister = $findUser['DATE_REGISTER'];
+            $diff = time() - $dateRegister->getTimestamp();
+
+            // С момента регистрации пользователя прошло меньше $userRegisterDelta времени
+            // Считаем что пользователь был создан компонентом sale.order.ajax
+            // Такой пользователь должен считаться не авторизованным
+            if ($diff > self::$userRegisterDelta) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}

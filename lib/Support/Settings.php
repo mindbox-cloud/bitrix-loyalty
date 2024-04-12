@@ -41,7 +41,7 @@ final class Settings
 
         foreach ($this->settings as $settingCode => $value) {
             $this->settings[$settingCode] = \Bitrix\Main\Config\Option::get(
-                moduleId: 'mindbox.loyalty',
+                moduleId: $this->getModuleId(),
                 name: $settingCode,
                 siteId: $this->siteId
             );
@@ -53,6 +53,11 @@ final class Settings
         foreach (DefaultOperations::getMap() as $defaultOperationName) {
             $this->settings[$defaultOperationName] = null;
         }
+    }
+
+    public function getModuleId(): string
+    {
+        return 'mindbox.loyalty';
     }
 
     public function enabledLoyalty(): bool

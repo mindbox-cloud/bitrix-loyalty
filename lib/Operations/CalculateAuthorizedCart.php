@@ -8,7 +8,6 @@ use Mindbox\DTO\V3\Requests\PreorderRequestDTO;
 use Mindbox\DTO\V3\Responses\OrderResponseDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
-use Mindbox\Loyalty\Operations\AbstractOperation;
 
 class CalculateAuthorizedCart extends AbstractOperation
 {
@@ -39,6 +38,6 @@ class CalculateAuthorizedCart extends AbstractOperation
 
     protected function operation(): string
     {
-        return 'Website.CalculateAuthorizedCart';
+        return 'CalculateAuthorizedOrder';
     }
 }

@@ -149,6 +149,20 @@ class Customer
         ]);
     }
 
+    public function getData(): array
+    {
+        return array_filter([
+            'email' => $this->getEmail(),
+            'lastName' => $this->getLastName(),
+            'middleName' => $this->getSecondName(),
+            'firstName' => $this->getFirstName(),
+            'mobilePhone' => $this->getMobilePhone(),
+            'birthDate' => $this->getBirthday()?->format('Y-m-d H:i:s'),
+            'sex' => $this->getGender(),
+            'ids' => $this->getIds()
+        ]);
+    }
+
     public function getId(): int
     {
         return $this->userId;

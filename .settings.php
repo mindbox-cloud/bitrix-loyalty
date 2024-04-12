@@ -1,4 +1,5 @@
 <?php
+
 return [
     'services' => [
 		'value' => [
@@ -16,6 +17,15 @@ return [
             ],
             'mindboxLoyalty.sendMobilePhoneAuthorizationCode' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\SendMobilePhoneAuthorizationCode()
+            ],
+            'mindboxLoyalty.calculateAuthorizedCart' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CalculateAuthorizedCart()
+            ],
+            'mindboxLoyalty.calculateAuthorizedCartAdmin' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CalculateAuthorizedCartAdmin()
+            ],
+            'mindboxLoyalty.calculateUnauthorizedCart' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CalculateUnauthorizedCart()
             ],
 		],
 		'readonly' => true,
