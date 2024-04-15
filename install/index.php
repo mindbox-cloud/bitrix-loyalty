@@ -72,7 +72,7 @@ class mindbox_loyalty extends CModule
             'main',
             'OnAfterUserAdd',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\CustomerEvent::class,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
             'onAfterUserAdd'
         );
 
@@ -80,7 +80,7 @@ class mindbox_loyalty extends CModule
             'main',
             'OnAfterUserAuthorize',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\CustomerEvent::class,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
             'onAfterUserAuthorize'
         );
 
@@ -88,7 +88,7 @@ class mindbox_loyalty extends CModule
             'main',
             'OnAfterUserUpdate',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\CustomerEvent::class,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
             'onAfterUserUpdate'
         );
     }
@@ -99,7 +99,7 @@ class mindbox_loyalty extends CModule
             'main',
             'OnAfterUserAdd',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\CustomerEvent::class,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
             'onAfterUserAdd'
         );
 
@@ -107,7 +107,7 @@ class mindbox_loyalty extends CModule
             'main',
             'OnAfterUserAuthorize',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\CustomerEvent::class,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
             'onAfterUserAuthorize'
         );
 
@@ -115,7 +115,7 @@ class mindbox_loyalty extends CModule
             'main',
             'OnAfterUserUpdate',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\CustomerEvent::class,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
             'onAfterUserUpdate'
         );
     }
