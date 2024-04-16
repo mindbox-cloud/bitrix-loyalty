@@ -160,6 +160,11 @@ final class Settings
         return $this->settings[$operationName];
     }
 
+    public function getSiteId(): string
+    {
+        return $this->siteId;
+    }
+
     protected function __clone()
     {
     }

@@ -12,7 +12,6 @@ use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Services\CustomerService;
 use Mindbox\Loyalty\Support\SettingsFactory;
-use Psr\Log\LogLevel;
 
 class CustomerEvent
 {
@@ -33,26 +32,13 @@ class CustomerEvent
     {
         $settings = SettingsFactory::create();
 
-        $logger = new \Mindbox\Loggers\MindboxFileLogger(
-            $settings->getLogPath(),
-            LogLevel::DEBUG
-        );
-        $logger->error('onAfterUserAuthorize', $arUser);
-        $logger->info('id', [$arUser['user_fields']['ID']]);
-
-
         try {
             $service = new CustomerService();
             $service->authorize(new Customer((int)$arUser['user_fields']['ID']));
-            $logger->info('успех');
         } catch (ObjectNotFoundException $e) {
-            $logger->emergency('ObjectNotFoundException', ['exception' => $e]);
         } catch (ErrorCallOperationException $e) {
-            $logger->emergency('ErrorCallOperationException', ['exception' => $e]);
         } catch (ValidationErrorCallOperationException $e) {
-            $logger->emergency('ValidationErrorCallOperationException', ['exception' => $e]);
         } catch (\Throwable $throwable) {
-            $logger->emergency('Throwable', ['exception' => $throwable]);
         }
     }
 

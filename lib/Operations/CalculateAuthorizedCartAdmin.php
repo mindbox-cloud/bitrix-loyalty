@@ -13,6 +13,6 @@ class CalculateAuthorizedCartAdmin extends CalculateAuthorizedCart
 {
     protected function operation(): string
     {
-        return 'Website.CalculateAuthorizedCartAdmin';
+        return 'CalculateAuthorizedCartAdmin';
     }
 }

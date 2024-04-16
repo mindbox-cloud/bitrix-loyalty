@@ -48,10 +48,4 @@ class CheckCustomer extends AbstractOperation
     {
         return 'CheckCustomer';
     }
-
-    public function customOperation(): mixed
-    {
-        //return 'BitrixCheckCustomer';
-        return null;
-    }
 }

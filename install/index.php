@@ -61,10 +61,16 @@ class mindbox_loyalty extends CModule
 
     public function InstallDB()
     {
-        $discountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\Discount\BasketDiscountTable::class);
+        $discountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\BasketDiscountTable::class);
 
         if (!$discountTableInstance->getConnection()->isTableExists($discountTableInstance->getDBTableName())) {
             $discountTableInstance->createDbTable();
+        }
+
+        $transactionTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\TransactionTable::class);
+
+        if (!$transactionTableInstance->getConnection()->isTableExists($transactionTableInstance->getDBTableName())) {
+            $transactionTableInstance->createDbTable();
         }
 
         $siteId = $this->getCurrentSiteId();

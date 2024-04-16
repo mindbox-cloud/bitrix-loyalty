@@ -15,6 +15,41 @@ class Helper
         return str_replace([' ', '(', ')', '-', '+'], "", $phone);
     }
 
+    public static function isUserUnAuthorized(?int $userId): bool
+    {
+        global $USER;
+
+        if ($USER instanceof \CUser && !$USER->IsAuthorized()) {
+            return true;
+        }
+
+        if ($userId === null || $userId === 0) {
+            return true;
+        }
+
+        static $userRegisterDelta = 30;
+
+        $iterUser = \Bitrix\Main\UserTable::query()
+            ->where('ID', $userId)
+            ->setLimit(1)
+            ->setSelect(['DATE_REGISTER'])
+            ->exec();
+
+        if ($findUser = $iterUser->fetch()) {
+            /** @var \Bitrix\Main\Type\Date|\Bitrix\Main\Type\DateTime $dateRegister */
+            $dateRegister = $findUser['DATE_REGISTER'];
+            $diff = time() - $dateRegister->getTimestamp();
+
+            // С момента регистрации пользователя прошло меньше $userRegisterDelta времени
+            // Считаем что пользователь был создан компонентом sale.order.ajax
+            // Такой пользователь должен считаться не авторизованным
+            if ($diff <$userRegisterDelta) {
+                return true;
+            }
+        }
+
+        return false;
+    }
     public static function isUserAuthorized(?int $userId): bool
     {
         global $USER;

@@ -9,7 +9,7 @@ use Bitrix\Main\Type\DateTime;
 use Bitrix\Main\UserTable;
 use Bitrix\Sale\Order;
 use Mindbox\DTO\V3\Responses\OrderResponseDTO;
-use Mindbox\Loyalty\Discount\BasketDiscountTable;
+use Mindbox\Loyalty\ORM\BasketDiscountTable;
 use Mindbox\Loyalty\Helper;
 use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Models\OrderMindbox;
@@ -32,10 +32,10 @@ class CalculateService
     {
         if (Context::getCurrent()->getRequest()->isAdminSection()) {
             $orderResponseDTO = $this->calculateOrderAdmin($order);
-        } elseif (Helper::isUserAuthorized((int) $order->getField('USER_ID'))) {
-            $orderResponseDTO = $this->calculateAuthorizedOrder($order);
-        } else {
+        } elseif (Helper::isUserUnAuthorized((int) $order->getField('USER_ID'))) {
             $orderResponseDTO = $this->calculateUnauthorizedOrder($order);
+        } else {
+            $orderResponseDTO = $this->calculateAuthorizedOrder($order);
         }
 
         $orderData = $orderResponseDTO->getFieldsAsArray();

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Discount;
 
+use Mindbox\Loyalty\ORM\BasketDiscountTable;
+
 class BasketRuleAction extends \CSaleActionCtrlBasketGroup
 {
     const INPUT_NAME = 'basket_discount';

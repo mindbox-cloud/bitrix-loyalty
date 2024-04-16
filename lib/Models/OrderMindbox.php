@@ -7,6 +7,7 @@ namespace Mindbox\Loyalty\Models;
 use Bitrix\Sale\Order;
 use Mindbox\DTO\V3\Requests\OrderRequestDTO;
 use Mindbox\Loyalty\PropertyCodeEnum;
+use Mindbox\Loyalty\Support\SessionStorage;
 use Mindbox\Loyalty\Support\Settings;
 
 class OrderMindbox
@@ -72,9 +73,11 @@ class OrderMindbox
             return [];
         }
 
-        return [[
-            'amount' => $propertyBonus->getValue(),
-        ]];
+        return [
+            [
+                'amount' => $propertyBonus->getValue(),
+            ]
+        ];
     }
 
     public function setBonuses(float $value): void
@@ -150,17 +153,21 @@ class OrderMindbox
     public function getCustomFields()
     {
         $customFields = [];
-        /** @var \Bitrix\Sale\PropertyValueCollection $propertyCollection */
-        $propertyCollection = $this->order->getPropertyCollection();
 
         // todo сделать получение кастом полей
         return array_filter($customFields);
+    }
+
+    public function getTotalPrice()
+    {
+        return SessionStorage::getInstance()->getTotalPrice();
     }
 
     public function getData(): array
     {
         return array_filter([
             'ids' => $this->getIds(),
+            'totalPrice' => $this->getTotalPrice(),
             'lines' => $this->getLines()->getData(),
             'customFields' => $this->getCustomFields(),
             'payments' => $this->getPayments(),
@@ -176,6 +183,7 @@ class OrderMindbox
     {
         return new OrderRequestDTO(array_filter([
             'ids' => $this->getIds(),
+            'totalPrice' => $this->getTotalPrice(),
             'lines' => $this->getLines()->getData(),
             'customFields' => $this->getCustomFields(),
             'payments' => $this->getPayments(),

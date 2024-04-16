@@ -187,11 +187,11 @@ class SessionStorage
     /**
      * ID заказа в МБ
      *
-     * @return string
+     * @return string|null
      */
     public function getMindboxOrderId()
     {
-        return $_SESSION[self::GROUPS][self::MINDBOX_ORDER_ID] ?? '';
+        return $_SESSION[self::GROUPS][self::MINDBOX_ORDER_ID];
     }
 
     public function clear()

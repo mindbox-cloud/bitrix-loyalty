@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mindbox\Loyalty\Discount;
+namespace Mindbox\Loyalty\ORM;
 
 use Bitrix\Main;
 use Bitrix\Main\ORM\Data\DataManager;
