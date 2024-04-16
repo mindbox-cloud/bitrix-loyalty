@@ -72,6 +72,9 @@ $MESS['MINDBOX_LOYALTY_YML_PATH_HINTS'] = 'Укажите путь относи�
 $MESS['MINDBOX_LOYALTY_YML_CHUNK_SIZE'] = 'Количество элементов выгружаемых за один шаг';
 $MESS['MINDBOX_LOYALTY_YML_CHUNK_SIZE_HINTS'] = 'Если при формировании фида на сайте повышается нагрузка, то следует уменьшить данный параметр.';
 
+$MESS['MINDBOX_LOYALTY_YML_SERVER_NAME'] = 'URL сервера (без http://):';
+$MESS['MINDBOX_LOYALTY_YML_SERVER_NAME_HINTS'] = 'Для формирования ссылок, если не указать - берется из настроек сайта';
+
 $MESS['MINDBOX_LOYALTY_YML_CATALOG_PROPERTIES'] = 'Выгружаемые свойства каталога';
 $MESS['MINDBOX_LOYALTY_YML_CATALOG_PROPERTIES_HINTS'] = '';
 
@@ -85,5 +88,7 @@ $MESS['MINDBOX_LOYALTY_HEADING_USER_FIELDS'] = 'Настройки "customFields
 $MESS['MINDBOX_LOYALTY_HEADING_ORDER_FIELDS'] = 'Настройки "customFields" сущности заказ';
 $MESS['MINDBOX_LOYALTY_HEADING_ORDER_STATUS'] = 'Сопоставление статусов заказа';
 $MESS['MINDBOX_LOYALTY_HEADING_YML_FEED'] = 'Настройка YML фида mindbox';
+$MESS['MINDBOX_LOYALTY_ENABLE_EVENTS'] = 'Включить обработку событий';
+$MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_HINTS'] = 'Используйте эту настройку, чтобы включить обработку событий';
 $MESS['MINDBOX_LOYALTY_HEADING_CUSTOM_OPERATIONS'] = 'Замена стандартных операций';
 $MESS['MINDBOX_LOYALTY_OPERATIONS_HINTS'] = 'Указывать полное название операции с учетом префикса';

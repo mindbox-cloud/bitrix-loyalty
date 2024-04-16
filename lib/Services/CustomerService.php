@@ -14,14 +14,17 @@ use Mindbox\Loyalty\Operations\CheckCustomer;
 use Mindbox\Loyalty\Operations\EditCustomer;
 use Mindbox\Loyalty\Operations\RegisterCustomer;
 use Mindbox\Loyalty\Operations\SendMobilePhoneAuthorizationCode;
+use Mindbox\Loyalty\Support\Settings;
 
 class CustomerService
 {
     protected \Bitrix\Main\DI\ServiceLocator $serviceLocator;
+    protected Settings $settings;
 
-    public function __construct()
+    public function __construct(Settings $settings)
     {
         $this->serviceLocator = \Bitrix\Main\DI\ServiceLocator::getInstance();
+        $this->settings = $settings;
     }
 
     /**
@@ -33,9 +36,11 @@ class CustomerService
     {
         /** @var RegisterCustomer $operationRegisterCustomer */
         $operationRegisterCustomer = $this->serviceLocator->get('mindboxLoyalty.registerCustomer');
+        $operationRegisterCustomer->setSettings($this->settings);
 
         /** @var CheckCustomer $operationCheckCustomer */
         $operationCheckCustomer = $this->serviceLocator->get('mindboxLoyalty.checkCustomer');
+        $operationRegisterCustomer->setSettings($this->settings);
 
 
         $exists = $operationCheckCustomer->execute(
@@ -62,12 +67,15 @@ class CustomerService
     {
         /** @var RegisterCustomer $operationRegisterCustomer */
         $operationRegisterCustomer = $this->serviceLocator->get('mindboxLoyalty.registerCustomer');
+        $operationRegisterCustomer->setSettings($this->settings);
 
         /** @var CheckCustomer $operationCheckCustomer */
         $operationCheckCustomer = $this->serviceLocator->get('mindboxLoyalty.checkCustomer');
+        $operationCheckCustomer->setSettings($this->settings);
 
         /** @var AuthorizeCustomer $operationAuthorizeCustomer */
         $operationAuthorizeCustomer = $this->serviceLocator->get('mindboxLoyalty.authorizeCustomer');
+        $operationAuthorizeCustomer->setSettings($this->settings);
 
         $exists = $operationCheckCustomer->execute(
             new CustomerRequestDTO([
@@ -95,12 +103,15 @@ class CustomerService
     {
         /** @var RegisterCustomer $operationRegisterCustomer */
         $operationRegisterCustomer = $this->serviceLocator->get('mindboxLoyalty.registerCustomer');
+        $operationRegisterCustomer->setSettings($this->settings);
 
         /** @var CheckCustomer $operationCheckCustomer */
         $operationCheckCustomer = $this->serviceLocator->get('mindboxLoyalty.checkCustomer');
+        $operationCheckCustomer->setSettings($this->settings);
 
         /** @var EditCustomer $operationEditCustomer */
         $operationEditCustomer = $this->serviceLocator->get('mindboxLoyalty.editCustomer');
+        $operationEditCustomer->setSettings($this->settings);
 
         $exists = $operationCheckCustomer->execute(
             new CustomerRequestDTO([
@@ -121,6 +132,21 @@ class CustomerService
     }
 
     /**
+     * @throws ErrorCallOperationException
+     * @throws ObjectNotFoundException
+     */
+    public function exists(Customer $customer): bool
+    {
+        /** @var CheckCustomer $operationCheckCustomer */
+        $operationCheckCustomer = $this->serviceLocator->get('mindboxLoyalty.checkCustomer');
+        $operationCheckCustomer->setSettings($this->settings);
+
+        return $operationCheckCustomer->execute( new CustomerRequestDTO([
+            'mobilePhone' => $customer->getMobilePhone(),
+        ]));
+    }
+
+    /**
      * @param string $phone
      * @return bool
      * @throws ErrorCallOperationException
@@ -131,6 +157,7 @@ class CustomerService
     {
         /** @var SendMobilePhoneAuthorizationCode $operation */
         $operation = $this->serviceLocator->get('mindboxLoyalty.sendMobilePhoneAuthorizationCode');
+        $operation->setSettings($this->settings);
 
         return $operation->execute($phone);
     }

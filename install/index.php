@@ -6,6 +6,7 @@ use Bitrix\Main\Localization\Loc;
 use Mindbox\Loyalty\Install\DiscountRuleInstaller;
 use Mindbox\Loyalty\Install\OrderGroupPropertyInstaller;
 use Mindbox\Loyalty\Install\OrderPropertyInstaller;
+use Bitrix\Main\Type\DateTime;
 
 if (class_exists('mindbox.loyalty')) {
     return;
@@ -47,6 +48,7 @@ class mindbox_loyalty extends CModule
         $this->InstallDB();
         $this->InstallFiles();
         $this->InstallEvents();
+        $this->installAgents();
         $this->installBasketRule();
     }
 
@@ -56,7 +58,7 @@ class mindbox_loyalty extends CModule
         $this->UnInstallEvents();
         $this->UnInstallDB();
         $this->UnInstallFiles();
-
+        $this->unInstallAgents();
     }
 
     public function InstallDB()
@@ -136,7 +138,7 @@ class mindbox_loyalty extends CModule
             'main',
             'OnAfterUserAdd',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\CustomerEvent::class,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
             'onAfterUserAdd'
         );
 
@@ -144,7 +146,7 @@ class mindbox_loyalty extends CModule
             'main',
             'OnAfterUserAuthorize',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\CustomerEvent::class,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
             'onAfterUserAuthorize'
         );
 
@@ -152,7 +154,7 @@ class mindbox_loyalty extends CModule
             'main',
             'OnAfterUserUpdate',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\CustomerEvent::class,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
             'onAfterUserUpdate'
         );
     }
@@ -195,7 +197,7 @@ class mindbox_loyalty extends CModule
             'main',
             'OnAfterUserAdd',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\CustomerEvent::class,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
             'onAfterUserAdd'
         );
 
@@ -203,7 +205,7 @@ class mindbox_loyalty extends CModule
             'main',
             'OnAfterUserAuthorize',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\CustomerEvent::class,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
             'onAfterUserAuthorize'
         );
 
@@ -211,8 +213,31 @@ class mindbox_loyalty extends CModule
             'main',
             'OnAfterUserUpdate',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\CustomerEvent::class,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
             'onAfterUserUpdate'
+        );
+    }
+
+    public function installAgents(): void
+    {
+        $now = new DateTime();
+        CAgent::AddAgent(
+            "\Mindbox\Loyalty\Feed\AgentRunner::run();",
+            $this->MODULE_ID,
+            "N",
+            86400,
+            $now,
+            "Y",
+            $now,
+            30
+        );
+    }
+
+    public function unInstallAgents(): void
+    {
+        CAgent::RemoveAgent(
+            "\Mindbox\Loyalty\Feed\AgentRunner::run();",
+            $this->MODULE_ID
         );
     }
 

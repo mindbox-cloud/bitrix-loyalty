@@ -170,6 +170,17 @@ foreach ($listSite as $site) {
                 'size' => 3
             ]
         ],
+        SettingsEnum::LOYALTY_ENABLE_EVENTS => [
+            'id' => SettingsEnum::LOYALTY_ENABLE_EVENTS . '__' . $site,
+            'origin' => SettingsEnum::LOYALTY_ENABLE_EVENTS,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_ENABLE_EVENTS', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_ENABLE_EVENTS_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'multiselectbox',
+                'options' => \Mindbox\Loyalty\Support\LoyalityEvents::getAll(),
+                'size' => 5
+            ]
+        ],
         Loc::getMessage('MINDBOX_LOYALTY_HEADING_PRIMARY_KEY'),
         SettingsEnum::EXTERNAL_PRODUCT => [
             'id' => SettingsEnum::EXTERNAL_PRODUCT . '__' . $site,
@@ -472,6 +483,16 @@ foreach ($listSite as $site) {
                 'size' => 60,
             ]
         ],
+        SettingsEnum::YML_SERVER_NAME => [
+            'id' => SettingsEnum::YML_SERVER_NAME . '__' . $site,
+            'origin' => SettingsEnum::YML_SERVER_NAME,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_SERVER_NAME', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_SERVER_NAME_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
     ];
 
     foreach ($arOptions as &$option) {
@@ -551,8 +572,6 @@ foreach ($listSite as $site) {
 
     $arAllOptions[$site] = $arOptions;
 }
-
-
 ?>
 <form method="post"
       action="<?= $APPLICATION->GetCurPage() ?>?mid=<?= htmlspecialcharsbx($mid) ?>&lang=<?= LANG ?>">
@@ -637,6 +656,9 @@ foreach ($listSite as $site) {
                             <?php
                             break;
                         case 'multiselectbox':
+                            if (is_string($currentValue) && str_contains($currentValue, ',')) {
+                                $currentValue = explode(',', $currentValue);
+                            }
                             ?>
                             <select id="<?= $controlId; ?>" name="<?= $controlName; ?>[]" multiple
                                     size="<?= $type['size'] ?>">

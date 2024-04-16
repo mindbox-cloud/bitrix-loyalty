@@ -44,8 +44,6 @@ class SendMobilePhoneAuthorizationCode extends AbstractOperation
             }
 
         } catch (MindboxClientException $e) {
-            // todo log this or log service?
-
             throw new ErrorCallOperationException(
                 message: sprintf('The operation %s failed', $this->getOperation()),
                 previous: $e,
