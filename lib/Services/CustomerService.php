@@ -38,18 +38,8 @@ class CustomerService
         $operationRegisterCustomer = $this->serviceLocator->get('mindboxLoyalty.registerCustomer');
         $operationRegisterCustomer->setSettings($this->settings);
 
-        /** @var CheckCustomer $operationCheckCustomer */
-        $operationCheckCustomer = $this->serviceLocator->get('mindboxLoyalty.checkCustomer');
-        $operationRegisterCustomer->setSettings($this->settings);
 
-
-        $exists = $operationCheckCustomer->execute(
-            new CustomerRequestDTO([
-                'mobilePhone' => $customer->getMobilePhone(),
-            ])
-        );
-
-        if (!$exists) {
+        if (!$this->exists($customer)) {
             if ($operationRegisterCustomer->execute($customer->getDto())) {
                 return true;
             }
@@ -69,19 +59,12 @@ class CustomerService
         $operationRegisterCustomer = $this->serviceLocator->get('mindboxLoyalty.registerCustomer');
         $operationRegisterCustomer->setSettings($this->settings);
 
-        /** @var CheckCustomer $operationCheckCustomer */
-        $operationCheckCustomer = $this->serviceLocator->get('mindboxLoyalty.checkCustomer');
-        $operationCheckCustomer->setSettings($this->settings);
 
         /** @var AuthorizeCustomer $operationAuthorizeCustomer */
         $operationAuthorizeCustomer = $this->serviceLocator->get('mindboxLoyalty.authorizeCustomer');
         $operationAuthorizeCustomer->setSettings($this->settings);
 
-        $exists = $operationCheckCustomer->execute(
-            new CustomerRequestDTO([
-                'mobilePhone' => $customer->getMobilePhone(),
-            ])
-        );
+        $exists = $this->exists($customer);
 
         if (!$exists) {
             $operationRegisterCustomer->execute($customer->getDto());
@@ -105,19 +88,11 @@ class CustomerService
         $operationRegisterCustomer = $this->serviceLocator->get('mindboxLoyalty.registerCustomer');
         $operationRegisterCustomer->setSettings($this->settings);
 
-        /** @var CheckCustomer $operationCheckCustomer */
-        $operationCheckCustomer = $this->serviceLocator->get('mindboxLoyalty.checkCustomer');
-        $operationCheckCustomer->setSettings($this->settings);
-
         /** @var EditCustomer $operationEditCustomer */
         $operationEditCustomer = $this->serviceLocator->get('mindboxLoyalty.editCustomer');
         $operationEditCustomer->setSettings($this->settings);
 
-        $exists = $operationCheckCustomer->execute(
-            new CustomerRequestDTO([
-                'mobilePhone' => $customer->getMobilePhone(),
-            ])
-        );
+        $exists = $this->exists($customer);
 
         if (!$exists) {
             $operationRegisterCustomer->execute($customer->getDto());
@@ -141,9 +116,17 @@ class CustomerService
         $operationCheckCustomer = $this->serviceLocator->get('mindboxLoyalty.checkCustomer');
         $operationCheckCustomer->setSettings($this->settings);
 
-        return $operationCheckCustomer->execute( new CustomerRequestDTO([
-            'mobilePhone' => $customer->getMobilePhone(),
-        ]));
+        $requestData = [];
+
+        if (!empty($customer->getMobilePhone())) {
+            $requestData['mobilePhone'] = $customer->getMobilePhone();
+        } elseif ($customer->getEmail()) {
+            $requestData['email'] = $customer->getEmail();
+        } else {
+            $requestData['ids'] = $customer->getIds();
+        }
+
+        return $operationCheckCustomer->execute(new CustomerRequestDTO($requestData));
     }
 
     /**
