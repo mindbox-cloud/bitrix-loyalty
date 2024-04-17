@@ -15,7 +15,7 @@ return [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\EditCustomer()
             ],
             'mindboxLoyalty.sendMobilePhoneAuthorizationCode' => [
-                'constructor' => fn() => new \Mindbox\Loyalty\Operations\SendMobilePhoneAuthorizationCode()
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\SendMobileAuthenticationCode()
             ],
             'mindboxLoyalty.feedGenerator' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Feed\YmlFeedMindbox()

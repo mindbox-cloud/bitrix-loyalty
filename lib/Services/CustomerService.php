@@ -13,7 +13,7 @@ use Mindbox\Loyalty\Operations\AuthorizeCustomer;
 use Mindbox\Loyalty\Operations\CheckCustomer;
 use Mindbox\Loyalty\Operations\EditCustomer;
 use Mindbox\Loyalty\Operations\RegisterCustomer;
-use Mindbox\Loyalty\Operations\SendMobilePhoneAuthorizationCode;
+use Mindbox\Loyalty\Operations\SendMobileAuthenticationCode;
 use Mindbox\Loyalty\Support\Settings;
 
 class CustomerService
@@ -155,7 +155,7 @@ class CustomerService
      */
     public function sendAuthorizeCode(string $phone): bool
     {
-        /** @var SendMobilePhoneAuthorizationCode $operation */
+        /** @var SendMobileAuthenticationCode $operation */
         $operation = $this->serviceLocator->get('mindboxLoyalty.sendMobilePhoneAuthorizationCode');
         $operation->setSettings($this->settings);
 

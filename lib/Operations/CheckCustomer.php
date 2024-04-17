@@ -26,7 +26,7 @@ class CheckCustomer extends AbstractOperation
                     operationName: $this->getOperation(),
                     addDeviceUUID: false
                 )->sendRequest();
-            // todo добавить исключение для ошибок валидации
+
             if (
                 $response->getResult()->getStatus() === 'Success' &&
                 $response->getResult()->getCustomer()->getProcessingStatus() === 'Found')
