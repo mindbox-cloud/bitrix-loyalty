@@ -48,6 +48,6 @@ class CheckAuthenticationCode extends AbstractOperation
 
     protected function operation(): string
     {
-        return 'CheckAuthentificationCode';
+        return 'CheckAuthenticationCode';
     }
 }
