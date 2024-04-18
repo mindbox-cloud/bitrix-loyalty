@@ -7,13 +7,14 @@ namespace Mindbox\Loyalty\Operations;
 use Mindbox\DTO\ResultDTO;
 use Mindbox\DTO\V3\Requests\PreorderRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
+use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\MindboxResponse;
 use Mindbox\Responses\MindboxOrderResponse;
 
 class CreateUnauthorizedOrder extends AbstractOperation
 {
-    public function execute(PreorderRequestDTO $DTO, string $transactionId): MindboxResponse
+    public function execute(PreorderRequestDTO $DTO, ?string $transactionId): MindboxResponse
     {
         $operation = $this->getOperation();
 
@@ -27,10 +28,12 @@ class CreateUnauthorizedOrder extends AbstractOperation
                 $operation,
                 $DTO,
                 'create',
-                ['transactionId' => $transactionId]
+                array_filter(['transactionId' => $transactionId])
             )->sendRequest();
 
             return $response;
+        } catch (MindboxUnavailableException $e) {
+            throw new MindboxUnavailableException($e->getMessage());
         } catch (MindboxClientException $e) {
             // todo log this or log service?
             throw new ErrorCallOperationException(

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mindbox\Loyalty\Event;
+namespace Mindbox\Loyalty\Events;
 
 use Bitrix\Sale\Order;
 use Mindbox\Loyalty\Exceptions\PriceHasBeenChangedException;
@@ -37,6 +37,7 @@ class OrderEvent
             return;
         }
 
+//        $order->isNew() ID === null
         try {
             $service = new OrderService();
 
@@ -75,12 +76,29 @@ class OrderEvent
             return;
         }
 
+        /*
+         * saveOrder
+         * if PriceHasBeenChangedException
+         *
+         *  calculate -> Необходимо пересчиать заказ на стороне сайта и занова его пересохранить
+         *  saveOrder
+         *
+         *  if PriceHasBeenChangedException
+         *      saveOfflineOrder
+         * elseif ValidationErrorCallOperationException
+         *  saveOfflineOrder
+         * endif
+         *
+         */
         try {
+            // $order->isNew() ID === null
+
             $service = new OrderService();
 
             $transactionId = Transaction::getInstance()->get($order);
             $service->saveOrder($order, $transactionId);
         } catch (PriceHasBeenChangedException $exception) {
+            // тут заказ не сохранен
         } catch (ValidationErrorCallOperationException $exception) {
         }
 

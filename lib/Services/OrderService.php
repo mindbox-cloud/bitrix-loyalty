@@ -6,12 +6,12 @@ namespace Mindbox\Loyalty\Services;
 
 use Bitrix\Main\Context;
 use Bitrix\Sale\Order;
+use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\PriceHasBeenChangedException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 use Mindbox\Loyalty\Helper;
 use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Models\OrderMindbox;
-use Mindbox\Loyalty\Models\Transaction;
 use Mindbox\Loyalty\Operations\CreateAuthorizedOrder;
 use Mindbox\Loyalty\Operations\CreateAuthorizedOrderAdmin;
 use Mindbox\Loyalty\Operations\CreateUnauthorizedOrder;
@@ -41,6 +41,7 @@ class OrderService
 
         if ($responceData['status'] === 'ValidationError') {
             $errorMessage = '';
+
             foreach ($responceData['validationMessages'] as $validationMessages) {
                 $errorMessage .= $validationMessages['message'];
             }
@@ -66,82 +67,162 @@ class OrderService
         return $mindboxId;
     }
 
-    public function saveOrderAdmin(Order $order, string $transactionId)
+    public function saveOrderAdmin(Order $order, ?string $transactionId)
     {
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
         $mindboxOrder = new OrderMindbox($order, $settings);
         $customer = new Customer((int)$order->getUserId());
+
+        $orderData = array_filter([
+            'ids' => $mindboxOrder->getIds(),
+            'totalPrice' => $mindboxOrder->getTotalPrice(),
+            'deliveryCost' => $mindboxOrder->getDeliveryCost(),
+            'lines' => $mindboxOrder->getLines()->getData(),
+            'customFields' => $mindboxOrder->getCustomFields(),
+            'payments' => $mindboxOrder->getPayments(),
+            'coupons' => $mindboxOrder->getCoupons(),
+            'email' => $mindboxOrder->getEmail(),
+            'mobilePhone' => $mindboxOrder->getMobilePhone(),
+        ]);
+
+        $customerData = array_filter([
+            'ids' => $customer->getIds(),
+            'email' => $customer->getEmail(),
+            'mobilePhone' => $customer->getMobilePhone(),
+        ]);
+
+        $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
+        $DTO->setOrder($orderData);
+        $DTO->setCustomer($customerData);
 
         /** @var CreateAuthorizedOrderAdmin $createAuthorizedOrderAdmin */
         $createAuthorizedOrderAdmin = $this->serviceLocator->get('mindboxLoyalty.createAuthorizedOrderAdmin');
 
-        $customerDTO = new \Mindbox\DTO\V3\Requests\CustomerRequestDTO();
-        $customerDTO->setIds($customer->getIds());
-        $customerDTO->setEmail($customer->getEmail());
-        $customerDTO->setMobilePhone($customer->getMobilePhone());
-
-        $orderData = $mindboxOrder->getData();
-
-        $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
-        $DTO->setOrder($orderData);
-        $DTO->setCustomer($customerDTO);
-
-
         return $createAuthorizedOrderAdmin->execute($DTO, $transactionId);
     }
 
-    public function saveAuthorizedOrder(Order $order, string $transactionId)
+    public function saveAuthorizedOrder(Order $order, ?string $transactionId)
     {
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
         $mindboxOrder = new OrderMindbox($order, $settings);
         $customer = new Customer((int)$order->getUserId());
+
+        $orderData = array_filter([
+            'ids' => $mindboxOrder->getIds(),
+            'totalPrice' => $mindboxOrder->getTotalPrice(),
+            'deliveryCost' => $mindboxOrder->getDeliveryCost(),
+            'lines' => $mindboxOrder->getLines()->getData(),
+            'customFields' => $mindboxOrder->getCustomFields(),
+            'payments' => $mindboxOrder->getPayments(),
+            'coupons' => $mindboxOrder->getCoupons(),
+            'email' => $mindboxOrder->getEmail(),
+            'mobilePhone' => $mindboxOrder->getMobilePhone(),
+        ]);
+
+        $customerData = array_filter([
+            'ids' => $customer->getIds(),
+            'email' => $customer->getEmail(),
+            'mobilePhone' => $customer->getMobilePhone(),
+        ]);
+
+        $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
+        $DTO->setOrder($orderData);
+        $DTO->setCustomer($customerData);
 
         /** @var CreateAuthorizedOrder $createAuthorizedOrder */
         $createAuthorizedOrder = $this->serviceLocator->get('mindboxLoyalty.createAuthorizedOrder');
 
-        $customerDTO = new \Mindbox\DTO\V3\Requests\CustomerRequestDTO();
-        $customerDTO->setIds($customer->getIds());
-        $customerDTO->setEmail($customer->getEmail());
-        $customerDTO->setMobilePhone($customer->getMobilePhone());
-
-        $orderData = $mindboxOrder->getData();
-
-        $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
-        $DTO->setOrder($orderData);
-        $DTO->setCustomer($customerDTO);
-
         return $createAuthorizedOrder->execute($DTO, $transactionId);
     }
 
-    public function saveUnauthorizedOrder(Order $order, string $transactionId)
+    public function saveUnauthorizedOrder(Order $order, ?string $transactionId)
     {
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
         $mindboxOrder = new OrderMindbox($order, $settings);
         $customer = new Customer((int)$order->getUserId());
 
-        /** @var CreateUnauthorizedOrder $createUnauthorizedOrder */
-        $createUnauthorizedOrder = $this->serviceLocator->get('mindboxLoyalty.createUnauthorizedOrder');
+        $orderData = array_filter([
+            'ids' => $mindboxOrder->getIds(),
+            'totalPrice' => $mindboxOrder->getTotalPrice(),
+            'deliveryCost' => $mindboxOrder->getDeliveryCost(),
+            'lines' => $mindboxOrder->getLines()->getData(),
+            'customFields' => $mindboxOrder->getCustomFields(),
+            'payments' => $mindboxOrder->getPayments(),
+            'coupons' => $mindboxOrder->getCoupons(),
+            'email' => $mindboxOrder->getEmail(),
+            'mobilePhone' => $mindboxOrder->getMobilePhone(),
+        ]);
 
-        // todo должно быть гораздо больше параметров
-        $customerDTO = new \Mindbox\DTO\V3\Requests\CustomerRequestDTO();
-        $customerDTO->setIds($customer->getIds());
-        $customerDTO->setEmail($customer->getEmail());
-        $customerDTO->setMobilePhone($customer->getMobilePhone());
-
-        $orderData = $mindboxOrder->getData();
+        $customerData = array_filter([
+            'ids' => $customer->getIds(),
+            'email' => $customer->getEmail(),
+            'mobilePhone' => $customer->getMobilePhone(),
+            'firstName' => $customer->getFirstName(),
+            'lastName' => $customer->getLastName(),
+            'middleName' => $customer->getMiddleName(),
+        ]);
 
         $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
         $DTO->setOrder($orderData);
-        $DTO->setCustomer($customerDTO);
+        $DTO->setCustomer($customerData);
 
-        return $createUnauthorizedOrder->execute($DTO, $transactionId);
+        /** @var CreateUnauthorizedOrder $createUnauthorizedOrder */
+        $createUnauthorizedOrder = $this->serviceLocator->get('mindboxLoyalty.createUnauthorizedOrder');
+
+        try {
+            $response = $createUnauthorizedOrder->execute($DTO, $transactionId);
+        } catch (MindboxUnavailableException $e) {
+            // необходим повторный вызов
+        }
+
+        return $response;
     }
 
-    public function cancelOrder(Order $order)
+
+    public function rollback(Order $order)
     {
         // Тут должны отменить заказ
+    }
+
+    public function saveOfflineOrder(Order $order)
+    {
+        $settings = SettingsFactory::createBySiteId($order->getSiteId());
+
+        $mindboxOrder = new OrderMindbox($order, $settings);
+        $customer = new Customer((int)$order->getUserId());
+
+        $orderData = array_filter([
+            'ids' => $mindboxOrder->getIds(),
+            'totalPrice' => $mindboxOrder->getTotalPrice(),
+            'deliveryCost' => $mindboxOrder->getDeliveryCost(),
+            'lines' => $mindboxOrder->getLines()->getData(),
+            'customFields' => $mindboxOrder->getCustomFields(),
+            'payments' => $mindboxOrder->getPayments(),
+            'coupons' => $mindboxOrder->getCoupons(),
+            'email' => $mindboxOrder->getEmail(),
+            'mobilePhone' => $mindboxOrder->getMobilePhone(),
+        ]);
+
+        $customerData = array_filter([
+            'ids' => $customer->getIds(),
+            'email' => $customer->getEmail(),
+            'mobilePhone' => $customer->getMobilePhone(),
+        ]);
+
+        $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
+        $DTO->setOrder($orderData);
+        $DTO->setCustomer($customerData);
+
+        /** @var CreateUnauthorizedOrder $createUnauthorizedOrder */
+        $createUnauthorizedOrder = $this->serviceLocator->get('mindboxLoyalty.createUnauthorizedOrder');
+
+        try {
+            $response = $createUnauthorizedOrder->execute($DTO);
+        } catch (MindboxUnavailableException $e) {
+            // необходим повторный вызов
+        }
     }
 }

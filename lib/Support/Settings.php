@@ -139,7 +139,41 @@ final class Settings
         $fields = $this->settings[SettingsEnum::USER_FIELDS_MATCH];
 
         if (!empty($fields)) {
-            $decode = json_decode($fields, true);
+            $decode = \json_decode($fields, true);
+
+            if (\json_last_error() === \JSON_ERROR_NONE) {
+                $result = $decode;
+            }
+        }
+
+        return $result;
+    }
+
+    public function getOrderFieldsMatch(): array
+    {
+        $result = [];
+
+        $fields = $this->settings[SettingsEnum::ORDER_FIELDS_MATCH];
+
+        if (!empty($fields)) {
+            $decode = \json_decode($fields, true);
+
+            if (\json_last_error() === \JSON_ERROR_NONE) {
+                $result = $decode;
+            }
+        }
+
+        return $result;
+    }
+
+    public function getOrderStatusFieldsMatch(): array
+    {
+        $result = [];
+
+        $fields = $this->settings[SettingsEnum::ORDER_STATUS_MATCH];
+
+        if (!empty($fields)) {
+            $decode = \json_decode($fields, true);
 
             if (\json_last_error() === \JSON_ERROR_NONE) {
                 $result = $decode;

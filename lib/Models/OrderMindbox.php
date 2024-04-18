@@ -6,6 +6,7 @@ namespace Mindbox\Loyalty\Models;
 
 use Bitrix\Sale\Order;
 use Mindbox\DTO\V3\Requests\OrderRequestDTO;
+use Mindbox\Helper;
 use Mindbox\Loyalty\PropertyCodeEnum;
 use Mindbox\Loyalty\Support\SessionStorage;
 use Mindbox\Loyalty\Support\Settings;
@@ -154,7 +155,46 @@ class OrderMindbox
     {
         $customFields = [];
 
-        // todo сделать получение кастом полей
+        /** @var \Bitrix\Sale\PropertyValueCollection $propertyCollection */
+        $propertyCollection = $this->order->getPropertyCollection();
+
+        $matches = $this->settings->getOrderFieldsMatch();
+
+        /** @var \Bitrix\Sale\PropertyValue $property */
+        foreach ($propertyCollection as $property) {
+            if (!array_key_exists($property->getPropertyId(), $matches)) {
+                continue;
+            }
+            $value = $property->getValue();
+
+            if (is_array($value) && count($value) >= 1) {
+                $value = current($value);
+            }
+
+            if ($property->getType() === 'LOCATION' && !empty($value)) {
+                if (!\CSaleLocation::checkIsCode($value)) {
+                    $value = \CSaleLocation::getLocationCODEbyID($value);
+                }
+
+                $arLocs = \CSaleLocation::GetList(
+                    [
+                        'SORT' => 'ASC',
+                        'COUNTRY_NAME_LANG' => 'ASC',
+                        'CITY_NAME_LANG' => 'ASC'
+                    ],
+                    ['CODE' => $value, 'LID' => $this->settings->getSiteId()],
+                    false,
+                    false,
+                    ['REGION_NAME', 'CITY_NAME', 'CODE', 'COUNTRY_NAME']
+                )->fetch();
+
+                $value = sprintf('%s, %s', $arLocs['COUNTRY_NAME_LANG'], $arLocs['CITY_NAME_LANG']);
+            }
+
+            $customName = \Mindbox\Loyalty\Helper::sanitizeNamesForMindbox($matches[$property->getPropertyId()]);
+            $customFields[$customName] = $value;
+        }
+
         return array_filter($customFields);
     }
 
@@ -177,21 +217,5 @@ class OrderMindbox
             'email' => $this->getEmail(),
             'mobilePhone' => $this->getMobilePhone(),
         ]);
-    }
-
-    public function getDto()
-    {
-        return new OrderRequestDTO(array_filter([
-            'ids' => $this->getIds(),
-            'totalPrice' => $this->getTotalPrice(),
-            'lines' => $this->getLines()->getData(),
-            'customFields' => $this->getCustomFields(),
-            'payments' => $this->getPayments(),
-            'coupons' => $this->getCoupons(),
-            'bonusPoints' => $this->getBonusPoints(),
-            'deliveryCost' => $this->getDeliveryCost(),
-            'email' => $this->getEmail(),
-            'mobilePhone' => $this->getMobilePhone(),
-        ]));
     }
 }

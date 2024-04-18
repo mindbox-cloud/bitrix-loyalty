@@ -114,7 +114,7 @@ class mindbox_loyalty extends CModule
             'sale',
             'OnBeforeSaleOrderFinalAction',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\OrderEvent::class,
+            \Mindbox\Loyalty\Events\OrderEvent::class,
             'onBeforeSaleOrderFinalAction'
         );
 
@@ -122,7 +122,7 @@ class mindbox_loyalty extends CModule
             'sale',
             'OnSaleOrderBeforeSaved',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\OrderEvent::class,
+            \Mindbox\Loyalty\Events\OrderEvent::class,
             'onSaleOrderBeforeSaved'
         );
 
@@ -130,7 +130,7 @@ class mindbox_loyalty extends CModule
             'sale',
             'OnSaleOrderSaved',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\OrderEvent::class,
+            \Mindbox\Loyalty\Events\OrderEvent::class,
             'onSaleOrderSaved'
         );
 
@@ -173,7 +173,7 @@ class mindbox_loyalty extends CModule
             'sale',
             'OnBeforeSaleOrderFinalAction',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\OrderEvent::class,
+            \Mindbox\Loyalty\Events\OrderEvent::class,
             'onBeforeSaleOrderFinalAction'
         );
 
@@ -181,7 +181,7 @@ class mindbox_loyalty extends CModule
             'sale',
             'OnSaleOrderBeforeSaved',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\OrderEvent::class,
+            \Mindbox\Loyalty\Events\OrderEvent::class,
             'onSaleOrderBeforeSaved'
         );
 
@@ -189,7 +189,7 @@ class mindbox_loyalty extends CModule
             'sale',
             'OnSaleOrderSaved',
             $this->MODULE_ID,
-            \Mindbox\Loyalty\Event\OrderEvent::class,
+            \Mindbox\Loyalty\Events\OrderEvent::class,
             'onSaleOrderSaved'
         );
 

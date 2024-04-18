@@ -104,4 +104,18 @@ class Helper
             mt_rand(0, 65535)
         ));
     }
+
+    public static function sanitizeNamesForMindbox(string $name): string
+    {
+        $regexNotChars = '/[^a-zA-Z0-9]/m';
+        $regexFirstLetter = '/^[a-zA-Z]/m';
+
+        $name = preg_replace($regexNotChars, '', $name);
+
+        if (!empty($name) && preg_match($regexFirstLetter, $name) === 1) {
+            return $name;
+        }
+
+        return '';
+    }
 }

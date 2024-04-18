@@ -29,9 +29,11 @@ class LineStatus
 
         if ($order instanceof \Bitrix\Sale\Order && $order->getField('ID') !== null) {
             $orderStatus = (string) $order->getField('STATUS_ID');
+            $matchStatuses = $this->settings->getOrderStatusFieldsMatch();
 
-            // todo доработать на получение статуса из настроек
-            return $orderStatus;
+            if ($matchStatuses[$orderStatus]) {
+                return $matchStatuses[$orderStatus];
+            }
         }
 
         return self::$defaultStatus;
