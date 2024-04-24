@@ -11,9 +11,12 @@ use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Operations\AuthorizeCustomer;
 use Mindbox\Loyalty\Operations\CheckCustomer;
+use Mindbox\Loyalty\Operations\CheckMobilePhoneCode;
+use Mindbox\Loyalty\Operations\ConfirmMobilePhone;
 use Mindbox\Loyalty\Operations\EditCustomer;
+use Mindbox\Loyalty\Operations\GetCustomerInfo;
 use Mindbox\Loyalty\Operations\RegisterCustomer;
-use Mindbox\Loyalty\Operations\SendMobileAuthenticationCode;
+use Mindbox\Loyalty\Operations\SendMobilePhoneCode;
 use Mindbox\Loyalty\Support\Settings;
 
 class CustomerService
@@ -27,54 +30,18 @@ class CustomerService
         $this->settings = $settings;
     }
 
-    /**
-     * @throws ObjectNotFoundException
-     * @throws ErrorCallOperationException
-     * @throws ValidationErrorCallOperationException
-     */
-    public function register(Customer $customer): bool
-    {
-        /** @var RegisterCustomer $operationRegisterCustomer */
-        $operationRegisterCustomer = $this->serviceLocator->get('mindboxLoyalty.registerCustomer');
-        $operationRegisterCustomer->setSettings($this->settings);
-
-
-        if (!$this->exists($customer)) {
-            if ($operationRegisterCustomer->execute($customer->getDto())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     /**
      * @throws ErrorCallOperationException
-     * @throws ValidationErrorCallOperationException
      * @throws ObjectNotFoundException
      */
     public function authorize(Customer $customer): bool
     {
-        /** @var RegisterCustomer $operationRegisterCustomer */
-        $operationRegisterCustomer = $this->serviceLocator->get('mindboxLoyalty.registerCustomer');
-        $operationRegisterCustomer->setSettings($this->settings);
-
-
         /** @var AuthorizeCustomer $operationAuthorizeCustomer */
         $operationAuthorizeCustomer = $this->serviceLocator->get('mindboxLoyalty.authorizeCustomer');
         $operationAuthorizeCustomer->setSettings($this->settings);
 
-        $exists = $this->exists($customer);
-
-        if (!$exists) {
-            $operationRegisterCustomer->execute($customer->getDto());
-        }
-
-        if (!$operationAuthorizeCustomer->execute($customer->getDto())) {
-            return false;
-        }
-
-        return true;
+        return $operationAuthorizeCustomer->execute($customer->getDto());
     }
 
     /**
@@ -84,29 +51,15 @@ class CustomerService
      */
     public function edit(Customer $customer): bool
     {
-        /** @var RegisterCustomer $operationRegisterCustomer */
-        $operationRegisterCustomer = $this->serviceLocator->get('mindboxLoyalty.registerCustomer');
-        $operationRegisterCustomer->setSettings($this->settings);
-
         /** @var EditCustomer $operationEditCustomer */
         $operationEditCustomer = $this->serviceLocator->get('mindboxLoyalty.editCustomer');
         $operationEditCustomer->setSettings($this->settings);
 
-        $exists = $this->exists($customer);
-
-        if (!$exists) {
-            $operationRegisterCustomer->execute($customer->getDto());
-            return true;
-        }
-
-        if ($operationEditCustomer->execute($customer->getDto())) {
-            return true;
-        }
-
-        return false;
+        return $operationEditCustomer->execute($customer->getDto());
     }
 
     /**
+     * @todo эту пока оставляю, думаю пригодиться
      * @throws ErrorCallOperationException
      * @throws ObjectNotFoundException
      */
@@ -130,16 +83,89 @@ class CustomerService
     }
 
     /**
+     * @throws ObjectNotFoundException
+     * @throws ErrorCallOperationException
+     */
+    public function sync(Customer $customer): ?\Mindbox\DTO\V3\Responses\CustomerResponseDTO
+    {
+        /** @var GetCustomerInfo $operation */
+        $operation = $this->serviceLocator->get('mindboxLoyalty.getCustomerInfo');
+        $operation->setSettings($this->settings);
+
+        return $operation->execute($customer->getDto());
+    }
+
+    /**
+     * @throws ObjectNotFoundException
+     * @throws ErrorCallOperationException
+     */
+    public function checkMobilePhoneCode(string $phone, string $code): bool
+    {
+        /** @var CheckMobilePhoneCode $operation */
+        $operation = $this->serviceLocator->get('mindboxLoyalty.checkMobilePhoneCode');
+        $operation->setSettings($this->settings);
+
+        $result = $operation->execute($phone, $code);
+
+        if ($result) {
+            // todo delay event
+            $session = \Bitrix\Main\Application::getInstance()->getSession();
+            $session->set('mindbox_need_confirm_phone', true);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @throws ErrorCallOperationException
+     * @throws ObjectNotFoundException
+     */
+    public function confirmMobilePhone(Customer $customer): bool
+    {
+        /** @var ConfirmMobilePhone $operation */
+        $operation = $this->serviceLocator->get('mindboxLoyalty.confirmMobilePhone');
+        $operation->setSettings($this->settings);
+
+        return $operation->execute(new CustomerRequestDTO([
+            'mobilePhone' => $customer->getMobilePhone(),
+            'ids' => $customer->getIds()
+        ]));
+    }
+
+    /**
+     * @throws ErrorCallOperationException
+     * @throws ObjectNotFoundException
+     */
+    public function autoConfirmMobilePhone(Customer $customer): void
+    {
+        $customerInfo = $this->sync($customer);
+
+        if ($customerInfo && !$customerInfo->getIsMobilePhoneConfirmed()) {
+            $this->confirmMobilePhone($customer);
+        }
+    }
+
+
+    /**
+     * @throws ErrorCallOperationException
+     * @throws ObjectNotFoundException
+     */
+    public function confirmMobilePhoneByUserId(int $userId): bool
+    {
+        return $this->confirmMobilePhone(new Customer($userId));
+    }
+
+    /**
      * @param string $phone
      * @return bool
      * @throws ErrorCallOperationException
      * @throws ObjectNotFoundException
      * @throws ValidationErrorCallOperationException
      */
-    public function sendAuthorizeCode(string $phone): bool
+    public function sendMobilePhoneCode(string $phone): bool
     {
-        /** @var SendMobileAuthenticationCode $operation */
-        $operation = $this->serviceLocator->get('mindboxLoyalty.sendMobilePhoneAuthorizationCode');
+        /** @var SendMobilePhoneCode $operation */
+        $operation = $this->serviceLocator->get('mindboxLoyalty.sendMobilePhoneCode');
         $operation->setSettings($this->settings);
 
         return $operation->execute($phone);

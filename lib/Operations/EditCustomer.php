@@ -40,7 +40,7 @@ class EditCustomer extends AbstractOperation
                     operationName: $operation,
                     validationMessage: $result->getValidationMessages()
                 );
-            } elseif ($result->getStatus() === 'Success' && $result->getCustomer()->getProcessingStatus() === 'Changed') {
+            } elseif ($result->getStatus() === 'Success') {
                 return true;
             }
         } catch (MindboxUnavailableException $e) {

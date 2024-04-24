@@ -10,7 +10,7 @@ use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 
-class SendMobileAuthenticationCode extends AbstractOperation
+class SendMobilePhoneCode extends AbstractOperation
 {
     /**
      * @throws ErrorCallOperationException|ValidationErrorCallOperationException
@@ -56,6 +56,6 @@ class SendMobileAuthenticationCode extends AbstractOperation
 
     protected function operation(): string
     {
-        return 'SendMobileAuthenticationCode';
+        return 'SendMobilePhoneCode';
     }
 }

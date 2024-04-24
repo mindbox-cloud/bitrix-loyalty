@@ -32,8 +32,24 @@ class CustomerEvent
             $logger->info('onAfterUserAdd', $arFields);
 
             try {
+                $customer = new Customer($arFields['ID']);
+
                 $service = new CustomerService($settings);
-                $service->register(new Customer($arFields['ID']));
+                $customerData = $service->sync($customer);
+
+                $session = \Bitrix\Main\Application::getInstance()->getSession();
+
+                if (
+                    !$customerData->getIsMobilePhoneConfirmed()
+                    && $session->has('mindbox_need_confirm_phone')
+                ) {
+                    $logger->info('onAfterUserAdd confirm phone');
+
+                    $session->remove('mindbox_need_confirm_phone');
+
+                    $service->confirmMobilePhone($customer);
+                }
+
             } catch (ObjectNotFoundException $e) {
                 $logger->error('ObjectNotFoundException', ['exception' => $e]);
             } catch (ErrorCallOperationException $e) {
@@ -48,6 +64,7 @@ class CustomerEvent
 
     public static function onAfterUserAuthorize($arUser)
     {
+
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::AUTH)) {
             return true;
         }
@@ -63,8 +80,25 @@ class CustomerEvent
         $logger->info('id', [$arUser['user_fields']['ID']]);
 
         try {
+            $customer = new Customer((int)$arUser['user_fields']['ID']);
+
             $service = new CustomerService($settings);
-            $service->authorize(new Customer((int)$arUser['user_fields']['ID']));
+            $customerData = $service->sync($customer);
+
+            $service->authorize($customer);
+
+            $session = \Bitrix\Main\Application::getInstance()->getSession();
+
+            if (!$customerData->getIsMobilePhoneConfirmed()
+                && $session->has('mindbox_need_confirm_phone')
+            ) {
+                $logger->info('onAfterUserAuthorize confirm phone');
+
+                $session->remove('mindbox_need_confirm_phone');
+
+                $service->confirmMobilePhone($customer);
+            }
+
             $logger->info('success');
         } catch (ObjectNotFoundException $e) {
             $logger->error('ObjectNotFoundException', ['exception' => $e]);
