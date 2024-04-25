@@ -14,7 +14,7 @@ use Mindbox\Loyalty\Operations\CheckCustomer;
 use Mindbox\Loyalty\Operations\CheckMobilePhoneCode;
 use Mindbox\Loyalty\Operations\ConfirmMobilePhone;
 use Mindbox\Loyalty\Operations\EditCustomer;
-use Mindbox\Loyalty\Operations\GetCustomerInfo;
+use Mindbox\Loyalty\Operations\SyncCustomer;
 use Mindbox\Loyalty\Operations\RegisterCustomer;
 use Mindbox\Loyalty\Operations\SendMobilePhoneCode;
 use Mindbox\Loyalty\Support\Settings;
@@ -88,7 +88,7 @@ class CustomerService
      */
     public function sync(Customer $customer): ?\Mindbox\DTO\V3\Responses\CustomerResponseDTO
     {
-        /** @var GetCustomerInfo $operation */
+        /** @var SyncCustomer $operation */
         $operation = $this->serviceLocator->get('mindboxLoyalty.getCustomerInfo');
         $operation->setSettings($this->settings);
 

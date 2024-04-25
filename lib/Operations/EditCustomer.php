@@ -46,7 +46,6 @@ class EditCustomer extends AbstractOperation
         } catch (MindboxUnavailableException $e) {
             // todo тут нужно будет делать ретрай отправки на очереди
         } catch (MindboxClientException $e) {
-            // todo log this or log service?
             throw new ErrorCallOperationException(
                 message: sprintf('The operation %s failed', $this->getOperation()),
                 previous: $e,

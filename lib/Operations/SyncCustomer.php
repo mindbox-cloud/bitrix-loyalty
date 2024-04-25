@@ -9,7 +9,7 @@ use Mindbox\DTO\V3\Responses\CustomerResponseDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 
-class GetCustomerInfo extends AbstractOperation
+class SyncCustomer extends AbstractOperation
 {
     /**
      * @param CustomerRequestDTO $dto
@@ -46,6 +46,6 @@ class GetCustomerInfo extends AbstractOperation
 
     protected function operation(): string
     {
-        return 'GetCustomerInfo';
+        return 'SyncCustomer';
     }
 }
