@@ -9,6 +9,8 @@ class CatalogRepository implements RepositoryInterface
 {
     protected int $stepSize = 1000;
     protected ?int $offersCatalogId = null;
+    protected array $products = [];
+    protected array $offers = [];
 
     public function getProducts(): \Iterator
     {

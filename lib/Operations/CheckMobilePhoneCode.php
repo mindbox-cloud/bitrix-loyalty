@@ -10,7 +10,7 @@ use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 
-class CheckAuthenticationCode extends AbstractOperation
+class CheckMobilePhoneCode extends AbstractOperation
 {
     /**
      * @throws ErrorCallOperationException
@@ -48,6 +48,6 @@ class CheckAuthenticationCode extends AbstractOperation
 
     protected function operation(): string
     {
-        return 'CheckAuthentificationCode';
+        return 'CheckMobilePhoneCode';
     }
 }

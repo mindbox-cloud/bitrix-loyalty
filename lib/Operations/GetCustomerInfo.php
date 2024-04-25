@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Operations;
 
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
+use Mindbox\DTO\V3\Responses\CustomerResponseDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 
-class CheckCustomer extends AbstractOperation
+class GetCustomerInfo extends AbstractOperation
 {
     /**
      * @param CustomerRequestDTO $dto
-     * @return bool
+     * @return ?CustomerResponseDTO
      * @throws ErrorCallOperationException
      */
-    public function execute(CustomerRequestDTO $dto): bool
+    public function execute(CustomerRequestDTO $dto): ?CustomerResponseDTO
     {
         try {
             $client = $this->api();
@@ -28,10 +29,9 @@ class CheckCustomer extends AbstractOperation
                 )->sendRequest();
 
             if (
-                $response->getResult()->getStatus() === 'Success' &&
-                $response->getResult()->getCustomer()->getProcessingStatus() === 'Found')
+                $response->getResult()->getStatus() === 'Success')
             {
-                return true;
+                return $response->getResult()->getCustomer();
             }
         } catch (MindboxClientException $e) {
             throw new ErrorCallOperationException(
@@ -41,11 +41,11 @@ class CheckCustomer extends AbstractOperation
             );
         }
 
-        return false;
+        return null;
     }
 
     protected function operation(): string
     {
-        return 'CheckCustomer';
+        return 'GetCustomerInfo';
     }
 }

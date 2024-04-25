@@ -4,35 +4,37 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Operations;
 
+use Mindbox\DTO\DTO;
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 
-class CheckCustomer extends AbstractOperation
+class ConfirmMobilePhone extends AbstractOperation
 {
     /**
-     * @param CustomerRequestDTO $dto
-     * @return bool
      * @throws ErrorCallOperationException
      */
     public function execute(CustomerRequestDTO $dto): bool
     {
+        $operation = $this->getOperation();
+
         try {
             $client = $this->api();
 
-            $response = $client->customer()
-                ->checkCustomer(
-                    customer: $dto,
-                    operationName: $this->getOperation(),
+            $request = $client->getClientV3()->prepareRequest(
+                    method: 'POST',
+                    operationName: $operation,
+                    body: new DTO(['customer' => $dto]),
+                    isSync: true,
                     addDeviceUUID: false
-                )->sendRequest();
+            );
 
-            if (
-                $response->getResult()->getStatus() === 'Success' &&
-                $response->getResult()->getCustomer()->getProcessingStatus() === 'Found')
-            {
+            $response = $request->sendRequest();
+
+            if ($response->getResult()->getStatus() === 'Success') {
                 return true;
             }
+
         } catch (MindboxClientException $e) {
             throw new ErrorCallOperationException(
                 message: sprintf('The operation %s failed', $this->getOperation()),
@@ -46,6 +48,6 @@ class CheckCustomer extends AbstractOperation
 
     protected function operation(): string
     {
-        return 'CheckCustomer';
+        return 'ConfirmMobilePhone';
     }
 }

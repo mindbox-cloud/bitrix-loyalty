@@ -15,8 +15,17 @@ return [
             'mindboxLoyalty.editCustomer' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\EditCustomer()
             ],
-            'mindboxLoyalty.sendMobilePhoneAuthorizationCode' => [
-                'constructor' => fn() => new \Mindbox\Loyalty\Operations\SendMobilePhoneAuthorizationCode()
+            'mindboxLoyalty.getCustomerInfo' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\GetCustomerInfo()
+            ],
+            'mindboxLoyalty.checkMobilePhoneCode' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CheckMobilePhoneCode()
+            ],
+            'mindboxLoyalty.confirmMobilePhone' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\ConfirmMobilePhone()
+            ],
+            'mindboxLoyalty.sendMobilePhoneCode' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\SendMobilePhoneCode()
             ],
             'mindboxLoyalty.feedGenerator' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Feed\YmlFeedMindbox()

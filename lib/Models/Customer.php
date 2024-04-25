@@ -15,6 +15,7 @@ use Mindbox\Loyalty\Support\SettingsFactory;
 class Customer
 {
     protected int $userId;
+    protected string $testPrefix = 'test-';
 
     protected array $data = [
         'NAME' => null,
@@ -171,7 +172,12 @@ class Customer
     public function getIds(): array
     {
         return [
-            $this->settings->getExternalUserId() => $this->getId()
+            $this->settings->getExternalUserId() => $this->prepareId((string)$this->getId())
         ];
+    }
+
+    protected function prepareId(mixed $value): string
+    {
+        return ($this->settings->isTestMode()) ? $this->testPrefix . $value : $value;
     }
 }
