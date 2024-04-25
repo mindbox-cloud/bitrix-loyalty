@@ -75,6 +75,12 @@ class mindbox_loyalty extends CModule
             $transactionTableInstance->createDbTable();
         }
 
+        $orderOperationTypeTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\OrderOperationTypeTable::class);
+
+        if (!$orderOperationTypeTableInstance->getConnection()->isTableExists($orderOperationTypeTableInstance->getDBTableName())) {
+            $orderOperationTypeTableInstance->createDbTable();
+        }
+
         $siteId = $this->getCurrentSiteId();
         (new OrderGroupPropertyInstaller($siteId))->up();
         (new OrderPropertyInstaller($siteId))->up();
@@ -87,6 +93,10 @@ class mindbox_loyalty extends CModule
 //
 //        $discountTableInstance->getConnection()
 //            ->queryExecute("drop table if exists " . $discountTableInstance->getDBTableName());
+
+//        $orderOperationTypeTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\OrderOperationTypeTable::class);
+//        $orderOperationTypeTableInstance->getConnection()
+//            ->queryExecute("drop table if exists " . $orderOperationTypeTableInstance->getDBTableName());
 
         $iterSite = \Bitrix\Main\SiteTable::getList([
             'select' => ['*'],

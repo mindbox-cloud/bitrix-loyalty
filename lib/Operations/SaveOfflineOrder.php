@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Operations;
 
-use Mindbox\DTO\ResultDTO;
 use Mindbox\DTO\V3\Requests\OrderRequestDTO;
-use Mindbox\DTO\V3\Requests\PreorderRequestDTO;
-use Mindbox\Exceptions\MindboxClientException;
-use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\MindboxResponse;
 use Mindbox\Responses\MindboxOrderResponse;
 
-class ChangeStatus extends AbstractOperation
+class SaveOfflineOrder extends AbstractOperation
 {
     public function execute(OrderRequestDTO $DTO): MindboxResponse
     {
@@ -37,6 +33,6 @@ class ChangeStatus extends AbstractOperation
 
     protected function operation(): string
     {
-        return 'ChangeStatus';
+        return 'SaveOfflineOrder';
     }
 }

@@ -40,7 +40,19 @@ class OrderMindbox
 
     public function getDeliveryCost()
     {
-        // todo Переделать на передачу стоимости доставки без скикдки
+        /** @var \Bitrix\Sale\Shipment $shipment */
+        foreach ($this->order->getShipmentCollection() as $shipment) {
+            if ($shipment->isSystem()) {
+                continue;
+            }
+
+            if ($shipment->getField('CUSTOM_PRICE_DELIVERY') === 'Y') {
+                return $this->order->getDeliveryPrice();
+            }
+
+            return $shipment->getField('BASE_PRICE_DELIVERY');
+        }
+
         return $this->order->getDeliveryPrice();
     }
 

@@ -51,6 +51,12 @@ return [
             'mindboxLoyalty.createUnauthorizedOrder' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\CreateUnauthorizedOrder()
             ],
+            'mindboxLoyalty.changeStatus' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\ChangeStatus()
+            ],
+            'mindboxLoyalty.saveOfflineOrder' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\SaveOfflineOrder()
+            ],
 		],
 		'readonly' => true,
 	],

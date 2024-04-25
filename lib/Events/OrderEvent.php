@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Events;
 
 use Bitrix\Sale\Order;
+use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\PriceHasBeenChangedException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 use Mindbox\Loyalty\Models\Transaction;
@@ -37,11 +38,16 @@ class OrderEvent
             return;
         }
 
-//        $order->isNew() ID === null
         try {
+            SessionStorage::getInstance()->clearField(SessionStorage::MINDBOX_ORDER_ID);
             $service = new OrderService();
+            $transactionId = null;
 
-            $transactionId = Transaction::getInstance()->get($order);
+            if ($order->isNew()) {
+                // Временый идентификатор заказа
+                $transactionId = Transaction::getInstance()->get($order);
+            }
+
 
             $mindboxId = $service->saveOrder($order, $transactionId);
 
@@ -49,6 +55,8 @@ class OrderEvent
         } catch (PriceHasBeenChangedException $exception) {
             // тут заказ в мб не должен создаться
             SessionStorage::getInstance()->clear();
+
+            // Временый идентификатор заказа следует удалить, так как заказ на стороне МБ не был создан
             Transaction::getInstance()->close($order);
 
             return new \Bitrix\Main\EventResult(
@@ -57,7 +65,30 @@ class OrderEvent
                 'sale'
             );
         } catch (ValidationErrorCallOperationException $exception) {
+            // Временый идентификатор заказа следует удалить, так как заказ на стороне МБ не был создан
             Transaction::getInstance()->close($order);
+
+            return new \Bitrix\Main\EventResult(
+                \Bitrix\Main\EventResult::ERROR,
+                new \Bitrix\Sale\ResultError($exception->getMessage(), 'ValidationErrorCallOperationException'),
+                'sale'
+            );
+        } catch (MindboxUnavailableException $exception) {
+            // тут заказ в мб не должен создаться
+            SessionStorage::getInstance()->clear();
+
+            // Временый идентификатор заказа следует удалить, так как заказ на стороне МБ не был создан
+            // Заказ будет создавться через оффлайн
+            Transaction::getInstance()->close($order);
+
+            $service = new CalculateService();
+            $service->resetDiscount($order);
+
+            return new \Bitrix\Main\EventResult(
+                \Bitrix\Main\EventResult::ERROR,
+                new \Bitrix\Sale\ResultError($exception->getMessage(), 'MindboxUnavailableException'),
+                'sale'
+            );
         }
     }
 
@@ -66,43 +97,24 @@ class OrderEvent
     {
         /** @var Order $order */
         $order = $event->getParameter('ENTITY');
+        $isNew = $event->getParameter('IS_NEW');
 
         if (!$order instanceof Order) {
             return;
         }
 
-        // На прошлом этапе произошла ошибка
-        if (!Transaction::getInstance()->has($order)) {
-            return;
-        }
-
-        /*
-         * saveOrder
-         * if PriceHasBeenChangedException
-         *
-         *  calculate -> Необходимо пересчиать заказ на стороне сайта и занова его пересохранить
-         *  saveOrder
-         *
-         *  if PriceHasBeenChangedException
-         *      saveOfflineOrder
-         * elseif ValidationErrorCallOperationException
-         *  saveOfflineOrder
-         * endif
-         *
-         */
-        try {
-            // $order->isNew() ID === null
-
-            $service = new OrderService();
-
-            $transactionId = Transaction::getInstance()->get($order);
-            $service->saveOrder($order, $transactionId);
-        } catch (PriceHasBeenChangedException $exception) {
-            // тут заказ не сохранен
-        } catch (ValidationErrorCallOperationException $exception) {
+        if ($isNew) {
+            // На прошлом этапе произошла ошибка
+            if (Transaction::getInstance()->has($order)) {
+                $service = new OrderService();
+                $service->confirmSaveOrder($order);
+                Transaction::getInstance()->close($order);
+            } else {
+                $service = new OrderService();
+                $service->saveOfflineOrder($order);
+            }
         }
 
         SessionStorage::getInstance()->clear();
-        Transaction::getInstance()->close($order);
     }
 }

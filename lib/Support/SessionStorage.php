@@ -9,22 +9,22 @@ class SessionStorage
     private const GROUPS = 'MINDBOX';
 
     /** @var string - Количество списываемых бонусов за заказ */
-    private const PAY_BONUSES = 'PAY_BONUSES';
+    public const PAY_BONUSES = 'PAY_BONUSES';
 
     /** @var string - Финальная стоимость заказа в МБ */
-    private const TOTAL_PRICE = 'TOTAL_PRICE';
+    public const TOTAL_PRICE = 'TOTAL_PRICE';
 
     /** @var string Доступное количество бонусов для списания */
-    private const ORDER_AVAILABLE_BONUSES = 'ORDER_AVAILABLE_BONUSES';
+    public const ORDER_AVAILABLE_BONUSES = 'ORDER_AVAILABLE_BONUSES';
 
     /** @var string Общий бонусный баланс пользователя */
-    private const BONUSES_BALANCE_AVAILABLE = 'BONUSES_BALANCE_AVAILABLE';
+    public const BONUSES_BALANCE_AVAILABLE = 'BONUSES_BALANCE_AVAILABLE';
 
     /** @var string Количество бонусов начисляемые за заказ */
-    private const ORDER_EARNED_BONUSES = 'ORDER_EARNED_BONUSES';
-    private const PROMOCODE_VALUE = 'PROMOCODE_VALUE';
-    private const PROMOCODE_ERROR = 'PROMOCODE_ERROR';
-    private const MINDBOX_ORDER_ID = 'MINDBOX_ORDER_ID';
+    public const ORDER_EARNED_BONUSES = 'ORDER_EARNED_BONUSES';
+    public const PROMOCODE_VALUE = 'PROMOCODE_VALUE';
+    public const PROMOCODE_ERROR = 'PROMOCODE_ERROR';
+    public const MINDBOX_ORDER_ID = 'MINDBOX_ORDER_ID';
 
     /**
      * @var SessionStorage|null
@@ -192,6 +192,13 @@ class SessionStorage
     public function getMindboxOrderId()
     {
         return $_SESSION[self::GROUPS][self::MINDBOX_ORDER_ID];
+    }
+
+    public function clearField(string $fieldName): void
+    {
+        if (isset($_SESSION[self::GROUPS][$fieldName])) {
+            unset($_SESSION[self::GROUPS][$fieldName]);
+        }
     }
 
     public function clear()

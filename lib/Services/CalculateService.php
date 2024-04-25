@@ -7,6 +7,7 @@ namespace Mindbox\Loyalty\Services;
 use Bitrix\Main\Context;
 use Bitrix\Main\Type\DateTime;
 use Bitrix\Main\UserTable;
+use Bitrix\Sale\BasketItem;
 use Bitrix\Sale\Order;
 use Mindbox\DTO\V3\Responses\OrderResponseDTO;
 use Mindbox\Loyalty\ORM\BasketDiscountTable;
@@ -176,4 +177,22 @@ class CalculateService
         return $calculateAuthorizedCart->execute($DTO);
     }
 
+    public function resetDiscount(Order $order)
+    {
+        $basket = $order->getBasket();
+
+        /** @var BasketItem $basketItem */
+        foreach ($basket as $basketItem) {
+            $lineIds[] = $basketItem->getId();
+        }
+
+        $iterator = BasketDiscountTable::getList([
+            'filter' => ['BASKET_ITEM_ID' => $lineIds],
+            'select' => ['ID']
+        ]);
+
+        while ($line = $iterator->fetch()) {
+            BasketDiscountTable::delete($line['ID']);
+        }
+    }
 }

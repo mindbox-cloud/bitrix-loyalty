@@ -8,6 +8,7 @@ use Mindbox\DTO\V3\Requests\PreorderRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
+use Mindbox\Loyalty\ORM\OrderOperationTypeTable;
 use Mindbox\MindboxResponse;
 use Mindbox\Responses\MindboxOrderResponse;
 
@@ -46,5 +47,10 @@ class CreateAuthorizedOrder extends AbstractOperation
     protected function operation(): string
     {
         return 'CreateAuthorizedOrder';
+    }
+
+    public function getType(): string
+    {
+        return OrderOperationTypeTable::OPERATION_TYPE_AUTH;
     }
 }
