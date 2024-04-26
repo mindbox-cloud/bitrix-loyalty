@@ -14,7 +14,7 @@ return [
             'mindboxLoyalty.editCustomer' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\EditCustomer()
             ],
-            'mindboxLoyalty.getCustomerInfo' => [
+            'mindboxLoyalty.syncCustomer' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\SyncCustomer()
             ],
             'mindboxLoyalty.checkMobilePhoneCode' => [

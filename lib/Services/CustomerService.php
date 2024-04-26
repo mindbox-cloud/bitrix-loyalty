@@ -89,7 +89,7 @@ class CustomerService
     public function sync(Customer $customer): ?\Mindbox\DTO\V3\Responses\CustomerResponseDTO
     {
         /** @var SyncCustomer $operation */
-        $operation = $this->serviceLocator->get('mindboxLoyalty.getCustomerInfo');
+        $operation = $this->serviceLocator->get('mindboxLoyalty.syncCustomer');
         $operation->setSettings($this->settings);
 
         return $operation->execute($customer->getDto());
