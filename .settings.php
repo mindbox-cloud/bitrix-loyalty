@@ -32,6 +32,9 @@ return [
             'mindboxLoyalty.feedCatalogRepository' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Feed\CatalogRepository()
             ],
+            'mindboxLoyalty.subscribeCustomer' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\SubscribeCustomer()
+            ],
 		],
 		'readonly' => true,
 	],
