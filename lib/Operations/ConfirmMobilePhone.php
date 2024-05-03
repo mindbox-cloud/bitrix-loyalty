@@ -21,7 +21,7 @@ class ConfirmMobilePhone extends AbstractOperation
         try {
             $client = $this->api();
 
-            $request = $client->getClientV3()->prepareRequest(
+            $request = $client->prepareRequest(
                     method: 'POST',
                     operationName: $operation,
                     body: new DTO(['customer' => $dto]),

@@ -10,53 +10,73 @@ use Bitrix\Main\UserTable;
 use Bitrix\Sale\BasketItem;
 use Bitrix\Sale\Order;
 use Mindbox\DTO\V3\Responses\OrderResponseDTO;
+use Mindbox\Loyalty\Exceptions\ResponseErrorExceprion;
 use Mindbox\Loyalty\ORM\BasketDiscountTable;
 use Mindbox\Loyalty\Helper;
 use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Models\OrderMindbox;
 use Mindbox\Loyalty\Operations\CalculateAuthorizedCart;
+use Mindbox\Loyalty\ORM\OrderOperationTypeTable;
+use Mindbox\Loyalty\PropertyCodeEnum;
 use Mindbox\Loyalty\Support\SessionStorage;
 use Mindbox\Loyalty\Support\SettingsFactory;
+use Mindbox\MindboxResponse;
 
 class CalculateService
 {
     /** @var int Расхождение в секундах */
     private static $userRegisterDelta = 30;
     protected \Bitrix\Main\DI\ServiceLocator $serviceLocator;
+    protected SessionStorage $sessionStorage;
 
     public function __construct()
     {
         $this->serviceLocator = \Bitrix\Main\DI\ServiceLocator::getInstance();
+        $this->sessionStorage = SessionStorage::getInstance();
     }
 
     public function calculateOrder(Order $order)
     {
-        if (Context::getCurrent()->getRequest()->isAdminSection()) {
-            $orderResponseDTO = $this->calculateOrderAdmin($order);
-        } elseif (Helper::isUserUnAuthorized((int) $order->getField('USER_ID'))) {
-            $orderResponseDTO = $this->calculateUnauthorizedOrder($order);
+        if ($order->isNew()) {
+            if (Helper::isUserUnAuthorized((int) $order->getField('USER_ID'))) {
+                $response = $this->calculateUnauthorizedOrder($order);
+            } else {
+                $response = $this->calculateAuthorizedOrder($order);
+            }
         } else {
-            $orderResponseDTO = $this->calculateAuthorizedOrder($order);
+            $type = OrderOperationTypeTable::getOrderType((string) $order->getField('ACCOUNT_NUMBER'));
+
+            if ($type === OrderOperationTypeTable::OPERATION_TYPE_AUTH) {
+                $response = $this->calculateAuthorizedOrder($order);
+            } else {
+                $response = $this->calculateUnauthorizedOrder($order);
+            }
         }
+
+        if ($response->isError()) {
+            throw new ResponseErrorExceprion();
+        }
+
+        $orderResponseDTO = $response->getResult()->getOrder();
 
         $orderData = $orderResponseDTO->getFieldsAsArray();
 
         // расчетная стоимость заказа из МБ
         $mbTotalPrice = $orderData['totalPrice'] ?? $order->getPrice();
-        SessionStorage::getInstance()->setTotalPrice(floatval($mbTotalPrice));
+        $this->sessionStorage->setTotalPrice(floatval($mbTotalPrice));
 
         // проверяем списанные бонусы, чтобы не списывали больше доступного
         if (isset($orderData['totalBonusPointsInfo'])) {
             $totalBonusPointInfo = $orderData['totalBonusPointsInfo'];
-            if (!empty($totalBonusPointInfo) && $totalBonusPointInfo['availableAmountForCurrentOrder'] < SessionStorage::getInstance()->getPayBonuses()) {
+            if (!empty($totalBonusPointInfo) && $totalBonusPointInfo['availableAmountForCurrentOrder'] < $this->sessionStorage->getPayBonuses()) {
                 // Списываю за заказ, больше чем доступно
-                SessionStorage::getInstance()->setPayBonuses(intval($totalBonusPointInfo['availableAmountForCurrentOrder']));
+                $this->sessionStorage->setPayBonuses(intval($totalBonusPointInfo['availableAmountForCurrentOrder']));
             }
 
             // Доступно для заказа
-            SessionStorage::getInstance()->setOrderAvailableBonuses(intval($totalBonusPointInfo['availableAmountForCurrentOrder']));
+            $this->sessionStorage->setOrderAvailableBonuses(intval($totalBonusPointInfo['availableAmountForCurrentOrder']));
             // Всего бонусов
-            SessionStorage::getInstance()->setBonusesBalanceAvailable(intval($totalBonusPointInfo['balance']['available']));
+            $this->sessionStorage->setBonusesBalanceAvailable(intval($totalBonusPointInfo['balance']['available']));
             unset($totalBonusPointInfo);
         }
 
@@ -65,13 +85,13 @@ class CalculateService
             $bonusPointsChanges = current($orderData['bonusPointsChanges']);
             // Будет начислено за заказ
             $earnedAmount = $bonusPointsChanges['earnedAmount'] ?? 0;
-            SessionStorage::getInstance()->setOrderEarnedBonuses(intval($earnedAmount));
+            $this->sessionStorage->setOrderEarnedBonuses(intval($earnedAmount));
 
             unset($bonusPointsChanges, $earnedAmount);
         }
 
         // проверяем, применение промокода
-        SessionStorage::getInstance()->setPromocodeError('');
+        $this->sessionStorage->setPromocodeError('');
         if (isset($orderData['couponsInfo']) && is_array($orderData['couponsInfo'])) {
             $couponsInfo = current($orderData['couponsInfo']);
             if ($couponsInfo['coupon']['status'] === 'NotFound') {
@@ -83,7 +103,7 @@ class CalculateService
             }
 
             if ($setCouponError !== null) {
-                SessionStorage::getInstance()->setPromocodeError($setCouponError);
+                $this->sessionStorage->setPromocodeError($setCouponError);
             }
 
             unset($couponsInfo, $setCouponError);
@@ -111,7 +131,7 @@ class CalculateService
         unset($mindboxBasket, $line, $lineId, $discountedPrice, $quantity, $mindboxPrice);
     }
 
-    public function calculateOrderAdmin(Order $order): OrderResponseDTO
+    public function calculateOrderAdmin(Order $order): MindboxResponse
     {
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
@@ -133,7 +153,7 @@ class CalculateService
         return $calculateAuthorizedCart->execute($DTO);
     }
 
-    public function calculateAuthorizedOrder(Order $order): OrderResponseDTO
+    public function calculateAuthorizedOrder(Order $order): MindboxResponse
     {
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
         $mindboxOrder = new OrderMindbox($order, $settings);
@@ -142,8 +162,8 @@ class CalculateService
         /** @var CalculateAuthorizedCart $calculateAuthorizedCart */
         $calculateAuthorizedCart = $this->serviceLocator->get('mindboxLoyalty.calculateAuthorizedCart');
 
-        $mindboxOrder->setBonuses(SessionStorage::getInstance()->getPayBonuses());
-        $mindboxOrder->setCoupons(SessionStorage::getInstance()->getPromocodeValue());
+        $mindboxOrder->setBonuses($this->sessionStorage->getPayBonuses());
+        $mindboxOrder->setCoupons($this->sessionStorage->getPromocodeValue());
 
         $customerDTO = new \Mindbox\DTO\V3\Requests\CustomerRequestDTO();
         $customerDTO->setIds($customer->getIds());
@@ -157,7 +177,7 @@ class CalculateService
         return $calculateAuthorizedCart->execute($DTO);
     }
 
-    public function calculateUnauthorizedOrder(Order $order): OrderResponseDTO
+    public function calculateUnauthorizedOrder(Order $order): MindboxResponse
     {
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
@@ -166,8 +186,7 @@ class CalculateService
         /** @var CalculateAuthorizedCart $calculateAuthorizedCart */
         $calculateAuthorizedCart = $this->serviceLocator->get('mindboxLoyalty.calculateUnauthorizedCart');
 
-        $mindboxOrder->setCoupons(SessionStorage::getInstance()->getPromocodeValue());
-
+        $mindboxOrder->setCoupons($this->sessionStorage->getPromocodeValue());
 
         $orderData = $mindboxOrder->getData();
 
@@ -193,6 +212,17 @@ class CalculateService
 
         while ($line = $iterator->fetch()) {
             BasketDiscountTable::delete($line['ID']);
+        }
+
+        $propertyBonus = $order->getPropertyCollection()->getItemByOrderPropertyCode(PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS);
+        if ($propertyBonus instanceof \Bitrix\Sale\PropertyValue) {
+            $propertyBonus->setValue("");
+        }
+
+        $propertyCoupon = $order->getPropertyCollection()->getItemByOrderPropertyCode(PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE);
+
+        if ($propertyCoupon instanceof \Bitrix\Sale\PropertyValue) {
+            $propertyCoupon->setValue("");
         }
     }
 }

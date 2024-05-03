@@ -7,6 +7,7 @@ namespace Mindbox\Loyalty\Operations;
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Exceptions\MindboxUnavailableException;
+use Mindbox\Helpers\CustomerHelper;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 
@@ -26,7 +27,7 @@ class SendMobilePhoneCode extends AbstractOperation
                 'mobilePhone' => $phone,
             ]);
 
-            $response = $client->customer()
+            $response = (new CustomerHelper($client))
                 ->sendAuthorizationCode(
                     customer: $dto,
                     operationName: $operation,

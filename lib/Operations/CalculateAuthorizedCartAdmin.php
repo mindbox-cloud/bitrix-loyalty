@@ -11,8 +11,4 @@ use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 
 class CalculateAuthorizedCartAdmin extends CalculateAuthorizedCart
 {
-    protected function operation(): string
-    {
-        return 'CalculateAuthorizedCartAdmin';
-    }
 }

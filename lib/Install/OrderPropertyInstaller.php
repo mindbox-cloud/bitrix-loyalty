@@ -113,7 +113,7 @@ class OrderPropertyInstaller implements InstallerInterface
      */
     private function getMindboxProperiesCodes()
     {
-        return [PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE, PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS];
+        return [PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE, PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS, PropertyCodeEnum::PROPERTIES_MINDBOX_ORDER_ID];
     }
 
     private function addProperty($fields)
@@ -141,6 +141,13 @@ class OrderPropertyInstaller implements InstallerInterface
                 'NAME' => 'Бонусы Mindbox',
                 'TYPE' => 'TEXT',
                 'CODE' => PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS,
+                'REQUIED' => 'N',
+                'UTIL' => 'Y'
+            ],
+            PropertyCodeEnum::PROPERTIES_MINDBOX_ORDER_ID => [
+                'NAME' => 'mindboxID',
+                'TYPE' => 'TEXT',
+                'CODE' => PropertyCodeEnum::PROPERTIES_MINDBOX_ORDER_ID,
                 'REQUIED' => 'N',
                 'UTIL' => 'Y'
             ],

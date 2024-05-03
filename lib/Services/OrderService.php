@@ -8,7 +8,6 @@ use Bitrix\Main\Context;
 use Bitrix\Sale\Order;
 use Mindbox\DTO\V3\Requests\PreorderRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
-use Mindbox\Exceptions\MindboxException;
 use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\PriceHasBeenChangedException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
@@ -22,8 +21,11 @@ use Mindbox\Loyalty\Operations\CreateAuthorizedOrder;
 use Mindbox\Loyalty\Operations\CreateAuthorizedOrderAdmin;
 use Mindbox\Loyalty\Operations\CreateUnauthorizedOrder;
 use Mindbox\Loyalty\Operations\SaveOfflineOrder;
+use Mindbox\Loyalty\ORM\OrderOperationTypeTable;
 use Mindbox\Loyalty\Support\SessionStorage;
 use Mindbox\Loyalty\Support\SettingsFactory;
+use Mindbox\MindboxRequest;
+use Mindbox\MindboxResponse;
 
 class OrderService
 {
@@ -44,12 +46,24 @@ class OrderService
      */
     public function saveOrder(Order $order, ?string $transactionId)
     {
-        if (Context::getCurrent()->getRequest()->isAdminSection()) {
-            $response = $this->saveOrderAdmin($order, $transactionId);
-        } elseif (Helper::isUserUnAuthorized((int) $order->getField('USER_ID'))) {
-            $response = $this->saveUnauthorizedOrder($order, $transactionId);
+        if ($order->isNew()) {
+            if (Helper::isUserUnAuthorized((int) $order->getField('USER_ID'))) {
+                $response = $this->saveUnauthorizedOrder($order, $transactionId);
+                $type = OrderOperationTypeTable::OPERATION_TYPE_NOT_AUTH;
+            } else {
+                $response = $this->saveAuthorizedOrder($order, $transactionId);
+                $type = OrderOperationTypeTable::OPERATION_TYPE_AUTH;
+            }
+
+            SessionStorage::getInstance()->setOperationType($type);
         } else {
-            $response = $this->saveAuthorizedOrder($order, $transactionId);
+            $type = \Mindbox\Loyalty\ORM\OrderOperationTypeTable::getOrderType((string) $order->getField('ACCOUNT_NUMBER'));
+
+            if ($type === OrderOperationTypeTable::OPERATION_TYPE_AUTH) {
+                $response = $this->saveAuthorizedOrder($order, $transactionId);
+            } else {
+                $response = $this->saveUnauthorizedOrder($order, $transactionId);
+            }
         }
 
         $resultDTO = $response->getResult();
@@ -68,8 +82,13 @@ class OrderService
             );
         }
 
-        $orderData = $responceData['order'];
+        if ($response->isError()) {
+            throw new ValidationErrorCallOperationException(
+                message: 'Response error!!!',
+            );
+        }
 
+        $orderData = $responceData['order'];
         if ($orderData['processingStatus'] === 'PriceHasBeenChanged') {
             $statusDescription = $orderData['statusDescription'] ?? 'PriceHasBeenChanged';
 
@@ -120,6 +139,7 @@ class OrderService
 
         /** @var CreateAuthorizedOrderAdmin $createAuthorizedOrderAdmin */
         $createAuthorizedOrderAdmin = $this->serviceLocator->get('mindboxLoyalty.createAuthorizedOrderAdmin');
+        $createAuthorizedOrderAdmin->setSettings($settings);
 
         return $this->execute($createAuthorizedOrderAdmin, $DTO);
     }
@@ -129,6 +149,12 @@ class OrderService
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
         $mindboxOrder = new OrderMindbox($order, $settings);
+
+        if ($mindboxOrder->getOrder()->isNew()) {
+            $mindboxOrder->setBonuses(SessionStorage::getInstance()->getPayBonuses());
+            $mindboxOrder->setCoupons(SessionStorage::getInstance()->getPromocodeValue());
+        }
+
         $customer = new Customer((int)$order->getUserId());
 
         $ids = $mindboxOrder->getIds();
@@ -161,6 +187,7 @@ class OrderService
 
         /** @var CreateAuthorizedOrder $createAuthorizedOrder */
         $createAuthorizedOrder = $this->serviceLocator->get('mindboxLoyalty.createAuthorizedOrder');
+        $createAuthorizedOrder->setSettings($settings);
 
         return $this->execute($createAuthorizedOrder, $DTO);
     }
@@ -205,17 +232,19 @@ class OrderService
 
         /** @var CreateUnauthorizedOrder $createUnauthorizedOrder */
         $createUnauthorizedOrder = $this->serviceLocator->get('mindboxLoyalty.createUnauthorizedOrder');
+        $createUnauthorizedOrder->setSettings($settings);
 
         return $this->execute($createUnauthorizedOrder, $DTO);
     }
 
-    protected function execute(AbstractOperation $operation, PreorderRequestDTO $DTO)
+    protected function execute(AbstractOperation $operation, PreorderRequestDTO $DTO): MindboxResponse
     {
         $transactionId = \spl_object_hash($DTO);
 
-        for ($i = 0, $i < 3; $i++;) {
+        for ($i = 1; $i < 3; $i++) {
             try {
-                $response = $operation->execute($DTO, $transactionId);
+                $operation->execute($DTO, $transactionId);
+                $response = $operation->getResponse();
                 break;
             } catch (MindboxUnavailableException $e) {
             }
@@ -228,15 +257,18 @@ class OrderService
         return $response;
     }
 
-    public function confirmSaveOrder(Order $order)
+    public function confirmSaveOrder(Order $order, string $transactionId)
     {
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
         $mindboxOrder = new OrderMindbox($order, $settings);
         $statusOrder = new OrderStatus($order, $settings);
 
+        $ids = $mindboxOrder->getIds();
+        $ids[$settings->getTmpOrderId()] = $transactionId;
+
         $orderData = array_filter([
-            'ids' => array_merge($mindboxOrder->getIds(), ['mindboxId' => SessionStorage::getInstance()->getMindboxOrderId()]),
+            'ids' => $ids,
             'email' => $mindboxOrder->getEmail(),
             'mobilePhone' => $mindboxOrder->getMobilePhone(),
         ]);
@@ -248,11 +280,53 @@ class OrderService
 
         /** @var ChangeStatus $changeStatus */
         $changeStatus = $this->serviceLocator->get('mindboxLoyalty.changeStatus');
+        $changeStatus->setSettings($settings);
+
         try {
-            $response = $changeStatus->execute($DTO);
+            $changeStatus->execute($DTO);
         } catch (MindboxClientException $e) {
-            // todo добавить в очередь или сразу его в очередь
+            $request = $changeStatus->getRequest();
+            if ($request instanceof MindboxRequest) {
+                \Mindbox\Loyalty\ORM\QueueTable::push($request, $order->getSiteId());
+            }
         }
+    }
+
+    public function cancelBrokenOrder(string $transactionId, string $siteId): bool
+    {
+        $settings = SettingsFactory::createBySiteId($siteId);
+
+        $matchStatuses = $settings->getOrderStatusFieldsMatch();
+        $cancelStatus = $matchStatuses['CANCEL'];
+
+        if (!$cancelStatus) {
+            return false;
+        }
+
+        $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO([
+            'orderLinesStatus' => $cancelStatus,
+            'order' => [
+                'ids' => [
+                    $settings->getTmpOrderId() => $transactionId
+                ]
+            ]
+        ]);
+
+        /** @var ChangeStatus $changeStatus */
+        $changeStatus = $this->serviceLocator->get('mindboxLoyalty.changeStatus');
+        $changeStatus->setSettings($settings);
+
+        try {
+            $changeStatus->execute($DTO);
+        } catch (MindboxClientException $e) {
+            $request = $changeStatus->getRequest();
+
+            if ($request instanceof MindboxRequest) {
+                \Mindbox\Loyalty\ORM\QueueTable::push($request, $settings->getSiteId());
+            }
+        }
+
+        return true;
     }
 
     public function saveOfflineOrder(Order $order)
@@ -283,10 +357,15 @@ class OrderService
 
         /** @var SaveOfflineOrder $saveOfflineOrder */
         $saveOfflineOrder = $this->serviceLocator->get('mindboxLoyalty.saveOfflineOrder');
+        $saveOfflineOrder->setSettings($settings);
+
         try {
-            $response = $saveOfflineOrder->execute($DTO);
+            $saveOfflineOrder->execute($DTO);
         } catch (MindboxClientException $e) {
-            // todo добавить в очередь или сразу его в очередь
+            $request = $saveOfflineOrder->getRequest();
+            if ($request instanceof MindboxRequest) {
+                \Mindbox\Loyalty\ORM\QueueTable::push($request, $order->getSiteId());
+            }
         }
     }
 }

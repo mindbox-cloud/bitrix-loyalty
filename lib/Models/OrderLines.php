@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Models;
 
 use Bitrix\Sale\Basket;
+use Mindbox\Loyalty\Exceptions\EmptyLineException;
 use Mindbox\Loyalty\Support\Settings;
 
 class OrderLines
@@ -20,6 +21,10 @@ class OrderLines
 
     public function getData()
     {
+        if ($this->basket->isEmpty()) {
+            throw new EmptyLineException();
+        }
+
         $lines = [];
         OrderLine::resetNumber();
         /** @var \Bitrix\Sale\BasketItem $basketItem */

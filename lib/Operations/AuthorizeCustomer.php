@@ -7,6 +7,7 @@ namespace Mindbox\Loyalty\Operations;
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Exceptions\MindboxUnavailableException;
+use Mindbox\Helpers\CustomerHelper;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Models\Customer;
 
@@ -20,7 +21,7 @@ class AuthorizeCustomer extends AbstractOperation
         try {
             $client = $this->api();
 
-            $response = $client->customer()
+            $response = (new CustomerHelper($client))
                 ->authorize(
                     customer: $dto,
                     operationName: $this->getOperation(),

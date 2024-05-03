@@ -6,5 +6,4 @@ namespace Mindbox\Loyalty\Operations;
 
 class CreateAuthorizedOrderAdmin extends CreateAuthorizedOrder
 {
-
 }

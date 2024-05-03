@@ -25,14 +25,16 @@ class Transaction
         return self::$instance === null ? self::$instance = new static() : self::$instance;
     }
 
-    public function get(Order $order)
+    public function get(Order $order): string
     {
         $this->collectGarbage();
 
         if (!isset($this->storage[\WeakReference::create($order)])) {
-            $this->storage[\WeakReference::create($order)] = self::GUID();
+            $uniq = \Bitrix\Main\Security\Random::getString(32);
 
-            TransactionTable::set($this->storage[\WeakReference::create($order)]);
+            $this->storage[\WeakReference::create($order)] = $uniq;
+
+            TransactionTable::setTmpId($this->storage[\WeakReference::create($order)], $order->getSiteId());
         }
 
         return $this->storage[\WeakReference::create($order)];
@@ -46,14 +48,21 @@ class Transaction
     }
 
 
-    public function close(Order $order)
+    public function close(Order $order): void
     {
-        $this->collectGarbage();
+        if ($this->has($order)) {
+            TransactionTable::unset($this->get($order));
 
-        if (isset($this->storage[\WeakReference::create($order)])) {
-            TransactionTable::unset($this->storage[\WeakReference::create($order)]);
             unset($this->storage[\WeakReference::create($order)]);
         }
+    }
+
+    public function save(Order $order): void
+    {
+        $tmpOrderId = $this->get($order);
+        $orderId = (int) $order->getId();
+
+        TransactionTable::setOrderId($tmpOrderId, $orderId);
     }
 
     private function collectGarbage(): void
@@ -66,7 +75,7 @@ class Transaction
         }
     }
 
-    public static function GUID()
+    public static function GUID(): string
     {
         if (function_exists('com_create_guid') === true) {
             return strtolower(trim(\com_create_guid(), '{}'));

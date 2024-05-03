@@ -29,6 +29,8 @@ if ($request->isPost() && $request->get('save') && check_bitrix_sessid()) {
     $notSaveOption = [
         'USER_BITRIX_FIELDS',
         'USER_MINDBOX_FIELDS',
+        'ORDER_BITRIX_STATUS',
+        'ORDER_MINDBOX_STATUS',
     ];
 
     $queryObject = \Bitrix\Main\SiteTable::getList([

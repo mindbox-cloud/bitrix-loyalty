@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Operations;
 
+use Mindbox\Clients\AbstractMindboxClient;
 use Mindbox\Loyalty\Api;
 use Mindbox\Loyalty\Support\Settings;
 use Mindbox\Loyalty\Support\SettingsFactory;
@@ -12,9 +13,9 @@ abstract class AbstractOperation
 {
     private ?Settings $settings = null;
 
-    protected function api(): \Mindbox\Mindbox
+    protected function api(): AbstractMindboxClient
     {
-        return Api::getInstance()->getClient();
+        return Api::getInstance($this->getSettings()->getSiteId())->getClient();
     }
 
     protected function getOperation(): string

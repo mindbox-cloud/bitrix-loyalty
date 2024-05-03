@@ -25,6 +25,7 @@ class SessionStorage
     public const PROMOCODE_VALUE = 'PROMOCODE_VALUE';
     public const PROMOCODE_ERROR = 'PROMOCODE_ERROR';
     public const MINDBOX_ORDER_ID = 'MINDBOX_ORDER_ID';
+    public const OPERATION_TYPE = 'OPERATION_TYPE';
 
     /**
      * @var SessionStorage|null
@@ -192,6 +193,25 @@ class SessionStorage
     public function getMindboxOrderId()
     {
         return $_SESSION[self::GROUPS][self::MINDBOX_ORDER_ID];
+    }
+
+    /**
+     * @param string $value
+     * @return void
+     */
+    public function setOperationType(string $value)
+    {
+        $_SESSION[self::GROUPS][self::OPERATION_TYPE] = $value;
+    }
+
+    /**
+     * Тип операции
+     *
+     * @return string|null
+     */
+    public function getOperationType()
+    {
+        return $_SESSION[self::GROUPS][self::OPERATION_TYPE];
     }
 
     public function clearField(string $fieldName): void

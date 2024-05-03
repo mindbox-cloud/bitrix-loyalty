@@ -10,29 +10,33 @@ use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\ORM\OrderOperationTypeTable;
+use Mindbox\MindboxRequest;
 use Mindbox\MindboxResponse;
 use Mindbox\Responses\MindboxOrderResponse;
 
 class CreateUnauthorizedOrder extends AbstractOperation
 {
-    public function execute(PreorderRequestDTO $DTO, ?string $transactionId): MindboxResponse
+    private ?MindboxRequest $request = null;
+    private ?MindboxResponse $response = null;
+
+    public function execute(PreorderRequestDTO $DTO, ?string $transactionId): void
     {
         $operation = $this->getOperation();
 
         try {
-            $client = $this->api()->getClientV3();
+            $client = $this->api();
 
             $client->setResponseType(MindboxOrderResponse::class);
 
-            $response = $client->prepareRequest(
-                'POST',
-                $operation,
-                $DTO,
-                'create',
-                array_filter(['transactionId' => $transactionId])
-            )->sendRequest();
+            $this->request = $client->prepareRequest(
+                method: 'POST',
+                operationName: $operation,
+                body: $DTO,
+                additionalUrl: 'create',
+                queryParams: array_filter(['transactionId' => $transactionId])
+            )->getRequest();
 
-            return $response;
+            $this->response = $client->sendRequest();
         } catch (MindboxUnavailableException $e) {
             throw new MindboxUnavailableException($e->getMessage());
         } catch (MindboxClientException $e) {
@@ -43,6 +47,16 @@ class CreateUnauthorizedOrder extends AbstractOperation
                 operationName: $this->getOperation()
             );
         }
+    }
+
+    public function getRequest(): ?MindboxRequest
+    {
+        return $this->request;
+    }
+
+    public function getResponse(): ?MindboxResponse
+    {
+        return $this->response;
     }
 
     protected function operation(): string
