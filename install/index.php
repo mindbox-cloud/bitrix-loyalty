@@ -46,6 +46,7 @@ class mindbox_loyalty extends CModule
     public function DoInstall()
     {
         \Bitrix\Main\ModuleManager::registerModule($this->MODULE_ID);
+        \Bitrix\Main\Loader::includeModule($this->MODULE_ID);
         $this->InstallDB();
         $this->InstallFiles();
         $this->InstallEvents();
