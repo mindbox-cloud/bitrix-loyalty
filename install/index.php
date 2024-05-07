@@ -55,11 +55,11 @@ class mindbox_loyalty extends CModule
 
     public function DoUninstall()
     {
-        \Bitrix\Main\ModuleManager::unRegisterModule($this->MODULE_ID);
         $this->UnInstallEvents();
         $this->UnInstallDB();
         $this->UnInstallFiles();
         $this->unInstallAgents();
+        \Bitrix\Main\ModuleManager::unRegisterModule($this->MODULE_ID);
     }
 
     public function InstallDB()
