@@ -29,6 +29,8 @@ if ($request->isPost() && $request->get('save') && check_bitrix_sessid()) {
     $notSaveOption = [
         'USER_BITRIX_FIELDS',
         'USER_MINDBOX_FIELDS',
+        'ORDER_BITRIX_STATUS',
+        'ORDER_MINDBOX_STATUS',
     ];
 
     $queryObject = \Bitrix\Main\SiteTable::getList([
@@ -75,7 +77,6 @@ if ($request->isPost() && $request->get('save') && check_bitrix_sessid()) {
         LocalRedirect("/bitrix/admin/settings.php?lang=" . LANGUAGE_ID . "&mid=" . urlencode($mid) . "&tabControl_active_tab=" . urlencode($_REQUEST["tabControl_active_tab"] ?? '') . "&back_url_settings=" . urlencode($_REQUEST["back_url_settings"] ?? ''));
     }
 }
-
 
 $queryObject = \Bitrix\Main\SiteTable::getList([
     'select' => ['LID', 'NAME'],
@@ -197,6 +198,16 @@ foreach ($listSite as $site) {
             'origin' => SettingsEnum::EXTERNAL_USER,
             'label' => Loc::getMessage('MINDBOX_LOYALTY_EXTERNAL_USER', ['#LID#' => $site]),
             'hints' => Loc::getMessage('MINDBOX_LOYALTY_EXTERNAL_USER_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
+        SettingsEnum::TEMP_EXTERNAL_ORDER => [
+            'id' => SettingsEnum::TEMP_EXTERNAL_ORDER . '__' . $site,
+            'origin' => SettingsEnum::TEMP_EXTERNAL_ORDER,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_TEMP_EXTERNAL_ORDER', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_TEMP_EXTERNAL_ORDER_HINTS', ['#LID#' => $site]),
             'type' => [
                 'type' => 'text',
                 'size' => 60,

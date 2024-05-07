@@ -6,6 +6,7 @@ namespace Mindbox\Loyalty\Operations;
 
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
+use Mindbox\Helpers\CustomerHelper;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 
 class CheckCustomer extends AbstractOperation
@@ -20,7 +21,7 @@ class CheckCustomer extends AbstractOperation
         try {
             $client = $this->api();
 
-            $response = $client->customer()
+            $response = (new CustomerHelper($client))
                 ->checkCustomer(
                     customer: $dto,
                     operationName: $this->getOperation(),

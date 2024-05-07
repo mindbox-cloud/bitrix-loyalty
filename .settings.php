@@ -1,4 +1,5 @@
 <?php
+
 return [
     'services' => [
 		'value' => [
@@ -34,6 +35,30 @@ return [
             ],
             'mindboxLoyalty.subscribeCustomer' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\SubscribeCustomer()
+            ],
+            'mindboxLoyalty.calculateAuthorizedCart' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CalculateAuthorizedCart()
+            ],
+            'mindboxLoyalty.calculateAuthorizedCartAdmin' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CalculateAuthorizedCartAdmin()
+            ],
+            'mindboxLoyalty.calculateUnauthorizedCart' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CalculateUnauthorizedCart()
+            ],
+            'mindboxLoyalty.createAuthorizedOrder' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CreateAuthorizedOrder()
+            ],
+            'mindboxLoyalty.createAuthorizedOrderAdmin' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CreateAuthorizedOrderAdmin()
+            ],
+            'mindboxLoyalty.createUnauthorizedOrder' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CreateUnauthorizedOrder()
+            ],
+            'mindboxLoyalty.changeStatus' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\ChangeStatus()
+            ],
+            'mindboxLoyalty.saveOfflineOrder' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\SaveOfflineOrder()
             ],
 		],
 		'readonly' => true,

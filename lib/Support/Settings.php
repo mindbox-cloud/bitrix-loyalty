@@ -30,6 +30,7 @@ final class Settings
         SettingsEnum::USER_BITRIX_FIELDS => null,
         SettingsEnum::USER_MINDBOX_FIELDS => null,
         SettingsEnum::USER_FIELDS_MATCH => null,
+        SettingsEnum::ORDER_STATUS_MATCH => null,
         SettingsEnum::LOYALTY_ENABLE_EVENTS => null,
         SettingsEnum::YML_FEED_ENABLED => null,
         SettingsEnum::YML_CATALOG_IBLOCK_ID => null,
@@ -50,7 +51,7 @@ final class Settings
 
         foreach ($this->settings as $settingCode => $value) {
             $this->settings[$settingCode] = \Bitrix\Main\Config\Option::get(
-                moduleId: 'mindbox.loyalty',
+                moduleId: $this->getModuleId(),
                 name: $settingCode,
                 siteId: $this->siteId
             );
@@ -62,6 +63,11 @@ final class Settings
         foreach (DefaultOperations::getMap() as $defaultOperationName) {
             $this->settings[$defaultOperationName] = null;
         }
+    }
+
+    public function getModuleId(): string
+    {
+        return 'mindbox.loyalty';
     }
 
     public function enabledLoyalty(): bool
@@ -106,7 +112,7 @@ final class Settings
 
     public function getHttpTimeout(): ?int
     {
-        return (int)$this->settings[SettingsEnum::TIMEOUT];
+        return (int) $this->settings[SettingsEnum::TIMEOUT];
     }
 
     public function getExternalProductId(): ?string
@@ -117,6 +123,11 @@ final class Settings
     public function getExternalUserId(): ?string
     {
         return $this->settings[SettingsEnum::EXTERNAL_USER];
+    }
+
+    public function getTmpOrderId(): ?string
+    {
+        return $this->settings[SettingsEnum::TEMP_EXTERNAL_ORDER];
     }
 
     public function getExternalOrderId(): ?string
@@ -134,7 +145,41 @@ final class Settings
         $fields = $this->settings[SettingsEnum::USER_FIELDS_MATCH];
 
         if (!empty($fields)) {
-            $decode = json_decode($fields, true);
+            $decode = \json_decode($fields, true);
+
+            if (\json_last_error() === \JSON_ERROR_NONE) {
+                $result = $decode;
+            }
+        }
+
+        return $result;
+    }
+
+    public function getOrderFieldsMatch(): array
+    {
+        $result = [];
+
+        $fields = $this->settings[SettingsEnum::ORDER_FIELDS_MATCH];
+
+        if (!empty($fields)) {
+            $decode = \json_decode($fields, true);
+
+            if (\json_last_error() === \JSON_ERROR_NONE) {
+                $result = $decode;
+            }
+        }
+
+        return $result;
+    }
+
+    public function getOrderStatusFieldsMatch(): array
+    {
+        $result = [];
+
+        $fields = $this->settings[SettingsEnum::ORDER_STATUS_MATCH];
+
+        if (!empty($fields)) {
+            $decode = \json_decode($fields, true);
 
             if (\json_last_error() === \JSON_ERROR_NONE) {
                 $result = $decode;
@@ -229,6 +274,11 @@ final class Settings
     public function getCustomOperation(string $operationName): ?string
     {
         return $this->settings[$operationName];
+    }
+
+    public function getSiteId(): string
+    {
+        return $this->siteId;
     }
 
     protected function __clone()

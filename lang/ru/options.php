@@ -51,6 +51,9 @@ $MESS['MINDBOX_LOYALTY_EXTERNAL_PRODUCT_HINTS'] = 'Укажите названи
 $MESS['MINDBOX_LOYALTY_EXTERNAL_USER'] = 'Идентификатор пользователя';
 $MESS['MINDBOX_LOYALTY_EXTERNAL_USER_HINTS'] = 'Укажите название идентификатора пользователя в системе mindbox';
 
+$MESS['MINDBOX_LOYALTY_TEMP_EXTERNAL_ORDER'] = 'Временный идентификатор заказа';
+$MESS['MINDBOX_LOYALTY_TEMP_EXTERNAL_ORDER_HINTS'] = 'Укажите название временного идентификатора заказа в системе mindbox';
+
 $MESS['MINDBOX_LOYALTY_EXTERNAL_ORDER'] = 'Идентификатор заказа';
 $MESS['MINDBOX_LOYALTY_EXTERNAL_ORDER_HINTS'] = 'Укажите название идентификатора заказа в системе mindbox';
 

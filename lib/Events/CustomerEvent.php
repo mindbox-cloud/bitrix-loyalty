@@ -8,6 +8,7 @@ use Bitrix\Main\ObjectNotFoundException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 use Mindbox\Loyalty\Models\Customer;
+use Mindbox\Loyalty\ORM\DeliveryDiscountTable;
 use Mindbox\Loyalty\Services\CustomerService;
 use Mindbox\Loyalty\Support\LoyalityEvents;
 use Mindbox\Loyalty\Support\SettingsFactory;
@@ -138,6 +139,20 @@ class CustomerEvent
             $logger->error('ValidationErrorCallOperationException', ['exception' => $e]);
         } catch (\Throwable $throwable) {
             $logger->error('Throwable', ['exception' => $throwable]);
+        }
+    }
+
+    public static function onSaleUserDelete($id)
+    {
+        if (class_exists('\\\Mindbox\\Loyalty\\ORM\\DeliveryDiscountTable')) {
+            $iterator = DeliveryDiscountTable::getList([
+                'filter' => ['=FUSER_ID' => $id, 'ORDER_ID' => null],
+                'select' => ['ID'],
+            ]);
+
+            while ($row = $iterator->fetch()) {
+                DeliveryDiscountTable::delete($row['ID']);
+            }
         }
     }
 }

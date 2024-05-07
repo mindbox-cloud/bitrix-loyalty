@@ -8,6 +8,7 @@ use Mindbox\DTO\DTO;
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Exceptions\MindboxUnavailableException;
+use Mindbox\Helpers\CustomerHelper;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 
 class CheckMobilePhoneCode extends AbstractOperation
@@ -22,7 +23,7 @@ class CheckMobilePhoneCode extends AbstractOperation
         try {
             $client = $this->api();
 
-            $request = $client->customer()->checkAuthorizationCode(
+            $request = (new CustomerHelper($client))->checkAuthorizationCode(
                 customer: new CustomerRequestDTO(['mobilePhone' => $phone]),
                 authentificationCode: $code,
                 operationName: $operation,

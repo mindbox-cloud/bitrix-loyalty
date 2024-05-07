@@ -8,6 +8,7 @@ use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\DTO\V3\Responses\CustomerResponseDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Exceptions\MindboxUnavailableException;
+use Mindbox\Helpers\CustomerHelper;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 
@@ -24,7 +25,7 @@ class RegisterCustomer extends AbstractOperation
         try {
             $client = $this->api();
 
-            $response = $client->customer()
+            $response = (new CustomerHelper($client))
                 ->register(
                     $dto,
                     $operation
