@@ -16,6 +16,7 @@ use Mindbox\Loyalty\Helper;
 use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Models\OrderMindbox;
 use Mindbox\Loyalty\Operations\CalculateAuthorizedCart;
+use Mindbox\Loyalty\ORM\DeliveryDiscountTable;
 use Mindbox\Loyalty\ORM\OrderOperationTypeTable;
 use Mindbox\Loyalty\PropertyCodeEnum;
 use Mindbox\Loyalty\Support\SessionStorage;
@@ -24,8 +25,6 @@ use Mindbox\MindboxResponse;
 
 class CalculateService
 {
-    /** @var int Расхождение в секундах */
-    private static $userRegisterDelta = 30;
     protected \Bitrix\Main\DI\ServiceLocator $serviceLocator;
     protected SessionStorage $sessionStorage;
 
@@ -109,6 +108,7 @@ class CalculateService
             unset($couponsInfo, $setCouponError);
         }
 
+        /** функционал применения скидки на корзину Mindbox  */
         $mindboxBasket = [];
         foreach ($orderData['lines'] as $line) {
             $lineId = (int) $line['lineId'];
@@ -117,18 +117,46 @@ class CalculateService
 
             // todo необходимо реализовать скидку в МБ, которое бы нарушало данное условие
             if (!isset($mindboxBasket[$lineId]) && $lineId > 0) {
-                $mindboxPrice = $discountedPrice / $quantity;
+                $basketPrice = $discountedPrice / $quantity;
 
                 $mindboxBasket[$lineId] = [
-                    'price' => $mindboxPrice,
+                    'price' => $basketPrice,
                     'quantity' => $quantity,
                 ];
 
-                BasketDiscountTable::set($lineId, $mindboxPrice);
+                BasketDiscountTable::set($lineId, $basketPrice);
             }
         }
 
-        unset($mindboxBasket, $line, $lineId, $discountedPrice, $quantity, $mindboxPrice);
+        /** функционал применения скидки на доставку Mindbox  */
+        $deliveryPrice = $orderData['deliveryCost'];
+        if ((int) $order->getField('USER_ID') > 0) {
+            $fUserId = \Bitrix\Sale\Fuser::getIdByUserId((int)$order->getField('USER_ID'));
+        } else {
+            $fUserId = \Bitrix\Sale\Fuser::getId();
+        }
+
+        $deliveryFilter = [
+            'FUSER_ID' => $fUserId ?: null,
+            'DELIVERY_ID' => $order->getField('DELIVERY_ID'),
+            'ORDER_ID' => $order->getField('ID')
+        ];
+
+        if (isset($deliveryPrice)
+            && ($findRow = DeliveryDiscountTable::getRowByFilter($deliveryFilter))
+        ) {
+            DeliveryDiscountTable::update((int)$findRow['ID'], [
+                'UF_DISCOUNTED_PRICE' => (float) $deliveryPrice
+            ]);
+        } elseif (isset($deliveryPrice)) {
+            DeliveryDiscountTable::add(array_merge([
+                'UF_DISCOUNTED_PRICE' => (float) $deliveryPrice
+            ], $deliveryFilter));
+        } else {
+            DeliveryDiscountTable::deleteByFilter($deliveryFilter);
+        }
+
+        unset($mindboxBasket, $line, $lineId, $discountedPrice, $quantity, $deliveryFilter);
     }
 
     public function calculateOrderAdmin(Order $order): MindboxResponse
@@ -220,9 +248,21 @@ class CalculateService
         }
 
         $propertyCoupon = $order->getPropertyCollection()->getItemByOrderPropertyCode(PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE);
-
         if ($propertyCoupon instanceof \Bitrix\Sale\PropertyValue) {
             $propertyCoupon->setValue("");
         }
+
+        if ((int) $order->getField('USER_ID') > 0) {
+            $fUserId = \Bitrix\Sale\Fuser::getIdByUserId((int)$order->getField('USER_ID'));
+        } else {
+            $fUserId = \Bitrix\Sale\Fuser::getId();
+        }
+
+        $deliveryFilter = [
+            'FUSER_ID' => $fUserId,
+            'DELIVERY_ID' => $order->getField('DELIVERY_ID'),
+            'ORDER_ID' => null
+        ];
+        DeliveryDiscountTable::deleteByFilter($deliveryFilter);
     }
 }

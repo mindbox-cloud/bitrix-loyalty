@@ -6,12 +6,13 @@ namespace Mindbox\Loyalty\Install;
 
 use Bitrix\Main\Loader;
 use Mindbox\Loyalty\Discount\BasketRuleAction;
+use Mindbox\Loyalty\Discount\DeliveryRuleAction;
 
-class DiscountRuleInstaller implements InstallerInterface
+class DeliveryDiscountRuleInstaller implements InstallerInterface
 {
-    protected static $discountName = 'MindboxBasket';
+    protected static $discountName = 'MindboxDeliveryDiscount';
 
-    protected static $discountXmlId = 'MINDBOX_BASKET';
+    protected static $discountXmlId = 'MINDBOX_DELIVERY';
 
     private string $siteId;
 
@@ -26,7 +27,8 @@ class DiscountRuleInstaller implements InstallerInterface
     {
         Loader::IncludeModule('currency');
 
-        $id = self::getIdMindboxBasketRule($this->siteId);
+        $id = self::getIdDiscountRule($this->siteId);
+
         if ($id > 0) {
             return;
         }
@@ -51,8 +53,8 @@ class DiscountRuleInstaller implements InstallerInterface
                 'CHILDREN' =>
                     [
                         0 => [
-                            'CLASS_ID' => BasketRuleAction::GetControlID(),
-                            'DATA' => [BasketRuleAction::INPUT_NAME => BasketRuleAction::INPUT_NAME],
+                            'CLASS_ID' => DeliveryRuleAction::GetControlID(),
+                            'DATA' => [DeliveryRuleAction::INPUT_NAME => DeliveryRuleAction::INPUT_NAME],
                             'CHILDREN' => [],
                         ],
                     ],
@@ -75,14 +77,14 @@ class DiscountRuleInstaller implements InstallerInterface
 
     public function down()
     {
-        $id = self::getIdMindboxBasketRule($this->siteId);
+        $id = self::getIdDiscountRule($this->siteId);
 
         if ($id > 0) {
             \Bitrix\Sale\Internals\DiscountTable::delete($id);
         }
     }
 
-    private static function getIdMindboxBasketRule(string $siteId): int
+    private static function getIdDiscountRule(string $siteId): int
     {
         $iterator = \Bitrix\Sale\Internals\DiscountTable::getList([
             'filter' => ['XML_ID' => self::$discountXmlId, 'LID' => $siteId],
@@ -90,7 +92,7 @@ class DiscountRuleInstaller implements InstallerInterface
         ]);
 
         if ($discount = $iterator->Fetch()) {
-            return (int)$discount['ID'];
+            return (int) $discount['ID'];
         }
 
         return 0;

@@ -21,6 +21,7 @@ use Mindbox\Loyalty\Operations\CreateAuthorizedOrder;
 use Mindbox\Loyalty\Operations\CreateAuthorizedOrderAdmin;
 use Mindbox\Loyalty\Operations\CreateUnauthorizedOrder;
 use Mindbox\Loyalty\Operations\SaveOfflineOrder;
+use Mindbox\Loyalty\ORM\DeliveryDiscountTable;
 use Mindbox\Loyalty\ORM\OrderOperationTypeTable;
 use Mindbox\Loyalty\Support\SessionStorage;
 use Mindbox\Loyalty\Support\SettingsFactory;
@@ -44,14 +45,14 @@ class OrderService
      * @throws ValidationErrorCallOperationException
      * @throws MindboxUnavailableException
      */
-    public function saveOrder(Order $order, ?string $transactionId)
+    public function saveOrder(Order $order, ?string $tmpOrderId)
     {
         if ($order->isNew()) {
             if (Helper::isUserUnAuthorized((int) $order->getField('USER_ID'))) {
-                $response = $this->saveUnauthorizedOrder($order, $transactionId);
+                $response = $this->saveUnauthorizedOrder($order, $tmpOrderId);
                 $type = OrderOperationTypeTable::OPERATION_TYPE_NOT_AUTH;
             } else {
-                $response = $this->saveAuthorizedOrder($order, $transactionId);
+                $response = $this->saveAuthorizedOrder($order, $tmpOrderId);
                 $type = OrderOperationTypeTable::OPERATION_TYPE_AUTH;
             }
 
@@ -60,9 +61,9 @@ class OrderService
             $type = \Mindbox\Loyalty\ORM\OrderOperationTypeTable::getOrderType((string) $order->getField('ACCOUNT_NUMBER'));
 
             if ($type === OrderOperationTypeTable::OPERATION_TYPE_AUTH) {
-                $response = $this->saveAuthorizedOrder($order, $transactionId);
+                $response = $this->saveAuthorizedOrder($order, $tmpOrderId);
             } else {
-                $response = $this->saveUnauthorizedOrder($order, $transactionId);
+                $response = $this->saveUnauthorizedOrder($order, $tmpOrderId);
             }
         }
 
@@ -102,7 +103,7 @@ class OrderService
         return $mindboxId;
     }
 
-    public function saveOrderAdmin(Order $order, ?string $transactionId)
+    public function saveOrderAdmin(Order $order, ?string $tmpOrderId)
     {
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
@@ -111,8 +112,8 @@ class OrderService
 
         $ids = $mindboxOrder->getIds();
 
-        if (isset($transactionId)) {
-            $ids[$settings->getTmpOrderId()] = $transactionId;
+        if (isset($tmpOrderId)) {
+            $ids[$settings->getTmpOrderId()] = $tmpOrderId;
         }
 
         $orderData = array_filter([
@@ -144,7 +145,7 @@ class OrderService
         return $this->execute($createAuthorizedOrderAdmin, $DTO);
     }
 
-    public function saveAuthorizedOrder(Order $order, ?string $transactionId)
+    public function saveAuthorizedOrder(Order $order, ?string $tmpOrderId)
     {
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
@@ -159,8 +160,8 @@ class OrderService
 
         $ids = $mindboxOrder->getIds();
 
-        if (isset($transactionId)) {
-            $ids[$settings->getTmpOrderId()] = $transactionId;
+        if (isset($tmpOrderId)) {
+            $ids[$settings->getTmpOrderId()] = $tmpOrderId;
         }
 
         $orderData = array_filter([
@@ -192,7 +193,7 @@ class OrderService
         return $this->execute($createAuthorizedOrder, $DTO);
     }
 
-    public function saveUnauthorizedOrder(Order $order, ?string $transactionId)
+    public function saveUnauthorizedOrder(Order $order, ?string $tmpOrderId)
     {
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
@@ -201,8 +202,8 @@ class OrderService
 
         $ids = $mindboxOrder->getIds();
 
-        if (isset($transactionId)) {
-            $ids[$settings->getTmpOrderId()] = $transactionId;
+        if (isset($tmpOrderId)) {
+            $ids[$settings->getTmpOrderId()] = $tmpOrderId;
         }
 
         $orderData = array_filter([
@@ -239,7 +240,7 @@ class OrderService
 
     protected function execute(AbstractOperation $operation, PreorderRequestDTO $DTO): MindboxResponse
     {
-        $transactionId = \spl_object_hash($DTO);
+        $transactionId = md5(\spl_object_hash($DTO) . time());
 
         for ($i = 1; $i < 3; $i++) {
             try {
@@ -257,7 +258,7 @@ class OrderService
         return $response;
     }
 
-    public function confirmSaveOrder(Order $order, string $transactionId)
+    public function confirmSaveOrder(Order $order, string $tmpOrderId)
     {
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
@@ -265,7 +266,7 @@ class OrderService
         $statusOrder = new OrderStatus($order, $settings);
 
         $ids = $mindboxOrder->getIds();
-        $ids[$settings->getTmpOrderId()] = $transactionId;
+        $ids[$settings->getTmpOrderId()] = $tmpOrderId;
 
         $orderData = array_filter([
             'ids' => $ids,
@@ -292,7 +293,37 @@ class OrderService
         }
     }
 
-    public function cancelBrokenOrder(string $transactionId, string $siteId): bool
+    public function confirmDeliveryDiscount(Order $order): void
+    {
+        $deliveryId = 0;
+        /** @var \Bitrix\Sale\Shipment $shipment */
+        foreach ($order->getShipmentCollection() as $shipment) {
+            if ($shipment->isSystem()) {
+                continue;
+            }
+
+            $deliveryId = $shipment->getDeliveryId();
+            break;
+        }
+
+        $fUserId = \Bitrix\Sale\Fuser::getIdByUserId((int) $order->getField('USER_ID'));
+
+        $deliveryFilter = [
+            'FUSER_ID' => $fUserId,
+            'DELIVERY_ID' => $deliveryId,
+            'ORDER_ID' => null
+        ];
+
+        if ($findRow = DeliveryDiscountTable::getRowByFilter($deliveryFilter)) {
+            DeliveryDiscountTable::update((int) $findRow['ID'], [
+                'ORDER_ID' => $order->getId()
+            ]);
+        }
+
+        DeliveryDiscountTable::deleteByFilter($deliveryFilter);
+    }
+
+    public function cancelBrokenOrder(string $tmpOrderId, string $siteId): bool
     {
         $settings = SettingsFactory::createBySiteId($siteId);
 
@@ -307,7 +338,7 @@ class OrderService
             'orderLinesStatus' => $cancelStatus,
             'order' => [
                 'ids' => [
-                    $settings->getTmpOrderId() => $transactionId
+                    $settings->getTmpOrderId() => $tmpOrderId
                 ]
             ]
         ]);
@@ -363,6 +394,38 @@ class OrderService
             $saveOfflineOrder->execute($DTO);
         } catch (MindboxClientException $e) {
             $request = $saveOfflineOrder->getRequest();
+            if ($request instanceof MindboxRequest) {
+                \Mindbox\Loyalty\ORM\QueueTable::push($request, $order->getSiteId());
+            }
+        }
+    }
+
+    public function changeStatus(Order $order)
+    {
+        $settings = SettingsFactory::createBySiteId($order->getSiteId());
+
+        $mindboxOrder = new OrderMindbox($order, $settings);
+        $statusOrder = new OrderStatus($order, $settings);
+
+        $orderData = array_filter([
+            'ids' => $mindboxOrder->getIds(),
+            'email' => $mindboxOrder->getEmail(),
+            'mobilePhone' => $mindboxOrder->getMobilePhone(),
+        ]);
+
+        $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO([
+            'orderLinesStatus' => $statusOrder->getStatus(),
+            'order' => $orderData
+        ]);
+
+        /** @var ChangeStatus $changeStatus */
+        $changeStatus = $this->serviceLocator->get('mindboxLoyalty.changeStatus');
+        $changeStatus->setSettings($settings);
+
+        try {
+            $changeStatus->execute($DTO);
+        } catch (MindboxClientException $e) {
+            $request = $changeStatus->getRequest();
             if ($request instanceof MindboxRequest) {
                 \Mindbox\Loyalty\ORM\QueueTable::push($request, $order->getSiteId());
             }

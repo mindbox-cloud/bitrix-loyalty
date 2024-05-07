@@ -14,6 +14,8 @@ class SettingsEnum
     public const BRAND = 'brand';
     public const EXTERNAL_PRODUCT = 'external_product';
     public const EXTERNAL_USER = 'external_user';
+    public const TEMP_EXTERNAL_ORDER = 'temp_external_order';
+
     public const EXTERNAL_ORDER = 'external_order';
     public const API_DOMAIN = 'api_domain';
     public const HTTP_CLIENT = 'http_client';

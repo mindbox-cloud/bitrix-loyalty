@@ -77,7 +77,7 @@ class TransactionTable extends DataManager
     public static function unset(string $transactionId)
     {
         $find = self::getList([
-            'filter' => ['=TRANSACTION_ID' => $transactionId],
+            'filter' => ['=TEMP_ORDER_ID' => $transactionId],
             'select' => ['*'],
         ]);
 

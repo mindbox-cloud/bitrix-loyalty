@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Events;
 
+use Bitrix\Main\Context;
 use Bitrix\Sale\Order;
 use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Support\CallBlocking;
@@ -36,7 +37,6 @@ class OrderEvent
 
         $service = new CalculateService();
         try {
-
             $service->calculateOrder($order);
         } catch (EmptyLineException $e) {
         } catch (ResponseErrorExceprion $e) {
@@ -52,6 +52,21 @@ class OrderEvent
     {
         /** @var Order $order */
         $order = $event->getParameter('ENTITY');
+        $oldValues = $event->getParameter('VALUES');
+
+        $changeValue = array_keys($oldValues);
+        $continueValues = [
+            'STATUS_ID',
+            'DATE_STATUS',
+            'DATE_PAYED',
+            'EMP_PAYED_ID',
+            'PAYED',
+            'SUM_PAID',
+        ];
+
+        if (!$order->isNew() && array_diff($continueValues, $changeValue) === []) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
 
         if (!$order instanceof Order) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
@@ -73,13 +88,17 @@ class OrderEvent
                 $transactionId = Transaction::getInstance()->get($order);
             }
 
+            if (Context::getCurrent()->getRequest()->isAdminSection()) {
+                // @info сохраним корзину, чтобы получить корректный lineId
+                $order->getBasket()->save();
+            }
+
             $mindboxId = $service->saveOrder($order, $transactionId);
 
             if ($order->isNew() && $mindboxId) {
                 $propertyMindboxId = $order->getPropertyCollection()->getItemByOrderPropertyCode(PropertyCodeEnum::PROPERTIES_MINDBOX_ORDER_ID);
-
                 if ($propertyMindboxId instanceof \Bitrix\Sale\PropertyValue) {
-                    $propertyMindboxId->setValue($propertyMindboxId);
+                    $propertyMindboxId->setValue($mindboxId);
                 }
             }
         } catch (PriceHasBeenChangedException $exception) {
@@ -154,6 +173,7 @@ class OrderEvent
         if (Transaction::getInstance()->has($order)) {
             $service = new OrderService();
             $service->confirmSaveOrder($order, Transaction::getInstance()->get($order));
+            $service->confirmDeliveryDiscount($order);
 
             Transaction::getInstance()->save($order);
             Transaction::getInstance()->close($order);
@@ -175,5 +195,16 @@ class OrderEvent
         SessionStorage::getInstance()->clear();
 
         return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+    }
+
+    public static function onSaleStatusOrderChange(\Bitrix\Main\Event $event)
+    {
+        $order = $event->getParameter('ENTITY');
+
+        if (!isset($order)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);;
+        }
+        $service = new OrderService();
+        $service->changeStatus($order);
     }
 }

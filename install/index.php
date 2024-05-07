@@ -3,12 +3,13 @@ defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
 
 use Bitrix\Main\Context;
 use Bitrix\Main\Localization\Loc;
-use Mindbox\Loyalty\Install\DiscountRuleInstaller;
+use Mindbox\Loyalty\Install\BasketDiscountRuleInstaller;
+use Mindbox\Loyalty\Install\DeliveryDiscountRuleInstaller;
 use Mindbox\Loyalty\Install\OrderGroupPropertyInstaller;
 use Mindbox\Loyalty\Install\OrderPropertyInstaller;
 use Bitrix\Main\Type\DateTime;
 
-if (class_exists('mindbox.loyalty')) {
+if (class_exists('mindbox_loyalty')) {
     return;
 }
 
@@ -49,7 +50,7 @@ class mindbox_loyalty extends CModule
         $this->InstallFiles();
         $this->InstallEvents();
         $this->installAgents();
-        $this->installBasketRule();
+        $this->installDiscountRule();
     }
 
     public function DoUninstall()
@@ -64,19 +65,26 @@ class mindbox_loyalty extends CModule
     public function InstallDB()
     {
         $discountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\BasketDiscountTable::class);
-
         if (!$discountTableInstance->getConnection()->isTableExists($discountTableInstance->getDBTableName())) {
             $discountTableInstance->createDbTable();
         }
 
-        $transactionTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\TransactionTable::class);
+        $deliveryDiscountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\DeliveryDiscountTable::class);
+        if (!$deliveryDiscountTableInstance->getConnection()->isTableExists($deliveryDiscountTableInstance->getDBTableName())) {
+            $deliveryDiscountTableInstance->createDbTable();
+        }
 
+        $queueTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\QueueTable::class);
+        if (!$queueTableInstance->getConnection()->isTableExists($queueTableInstance->getDBTableName())) {
+            $queueTableInstance->createDbTable();
+        }
+
+        $transactionTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\TransactionTable::class);
         if (!$transactionTableInstance->getConnection()->isTableExists($transactionTableInstance->getDBTableName())) {
             $transactionTableInstance->createDbTable();
         }
 
         $orderOperationTypeTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\OrderOperationTypeTable::class);
-
         if (!$orderOperationTypeTableInstance->getConnection()->isTableExists($orderOperationTypeTableInstance->getDBTableName())) {
             $orderOperationTypeTableInstance->createDbTable();
         }
@@ -90,13 +98,26 @@ class mindbox_loyalty extends CModule
     {
 //        @todo Насчет удаления надо обговорить
 //        $discountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\Discount\BasketDiscountTable::class);
-//
 //        $discountTableInstance->getConnection()
 //            ->queryExecute("drop table if exists " . $discountTableInstance->getDBTableName());
+
+//        $deliveryDiscountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\DeliveryDiscountTable::class);
+//        $deliveryDiscountTableInstance->getConnection()
+//            ->queryExecute("drop table if exists " . $deliveryDiscountTableInstance->getDBTableName());
+
+//        $queueTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\QueueTable::class);
+//        $queueTableInstance->getConnection()
+//            ->queryExecute("drop table if exists " . $queueTableInstance->getDBTableName());
+
+//        $transactionTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\TransactionTable::class);
+//        $transactionTableInstance->getConnection()
+//            ->queryExecute("drop table if exists " . $transactionTableInstance->getDBTableName());
 
 //        $orderOperationTypeTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\OrderOperationTypeTable::class);
 //        $orderOperationTypeTableInstance->getConnection()
 //            ->queryExecute("drop table if exists " . $orderOperationTypeTableInstance->getDBTableName());
+
+
 
         $iterSite = \Bitrix\Main\SiteTable::getList([
             'select' => ['*'],
@@ -105,7 +126,8 @@ class mindbox_loyalty extends CModule
         foreach ($iterSite as $site) {
             (new OrderGroupPropertyInstaller($site['LID']))->down();
             (new OrderPropertyInstaller($site['LID']))->down();
-            (new DiscountRuleInstaller($site['LID']))->down();
+            (new BasketDiscountRuleInstaller($site['LID']))->down();
+            (new DeliveryDiscountRuleInstaller($site['LID']))->down();
         }
 
     }
@@ -117,6 +139,14 @@ class mindbox_loyalty extends CModule
             'OnCondSaleActionsControlBuildList',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Discount\BasketRuleAction::class,
+            'GetControlDescr'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'sale',
+            'OnCondSaleActionsControlBuildList',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Discount\DeliveryRuleAction::class,
             'GetControlDescr'
         );
 
@@ -142,6 +172,22 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\OrderEvent::class,
             'onSaleOrderSaved'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'sale',
+            'OnSaleUserDelete',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
+            'onSaleUserDelete'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'sale',
+            'OnSaleStatusOrderChange',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\OrderEvent::class,
+            'onSaleStatusOrderChange'
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
@@ -181,6 +227,14 @@ class mindbox_loyalty extends CModule
 
         \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
             'sale',
+            'OnCondSaleActionsControlBuildList',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Discount\DeliveryRuleAction::class,
+            'GetControlDescr'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'sale',
             'OnBeforeSaleOrderFinalAction',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\OrderEvent::class,
@@ -201,6 +255,22 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\OrderEvent::class,
             'onSaleOrderSaved'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'sale',
+            'OnSaleUserDelete',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
+            'onSaleUserDelete'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'sale',
+            'OnSaleStatusOrderChange',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\OrderEvent::class,
+            'onSaleStatusOrderChange'
         );
 
         \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
@@ -241,12 +311,34 @@ class mindbox_loyalty extends CModule
             $now,
             30
         );
+
+        CAgent::AddAgent(
+            "\Mindbox\Loyalty\Agents::sendQueueOperation();",
+            $this->MODULE_ID,
+            "N",
+            600,
+            $now,
+            "Y",
+            $now,
+            40
+        );
+
+        CAgent::AddAgent(
+            "\Mindbox\Loyalty\Agents::cancelBrokenOrder();",
+            $this->MODULE_ID,
+            "N",
+            3600,
+            $now,
+            "Y",
+            $now,
+            50
+        );
+
     }
 
     public function unInstallAgents(): void
     {
-        CAgent::RemoveAgent(
-            "\Mindbox\Loyalty\Feed\AgentRunner::run();",
+        CAgent::RemoveModuleAgents(
             $this->MODULE_ID
         );
     }
@@ -263,10 +355,11 @@ class mindbox_loyalty extends CModule
      * Необходимо вызывать после того, как добавлено событие OnCondSaleActionsControlBuildList
      * @return void
      */
-    public function installBasketRule()
+    public function installDiscountRule()
     {
         $siteId = $this->getCurrentSiteId();
-        (new DiscountRuleInstaller($siteId))->up();
+        (new BasketDiscountRuleInstaller($siteId))->up();
+        (new DeliveryDiscountRuleInstaller($siteId))->up();
     }
 
     protected function getCurrentSiteId()

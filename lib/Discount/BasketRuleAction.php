@@ -22,7 +22,10 @@ class BasketRuleAction extends \CSaleActionCtrlBasketGroup
 
     public static function GetControlDescr()
     {
-        return parent::GetControlDescr();
+        $description = parent::GetControlDescr();
+        $description['EXECUTE_MODULE'] = 'sale';
+
+        return $description;
     }
 
     public static function GetAtoms()

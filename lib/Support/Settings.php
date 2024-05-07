@@ -127,7 +127,7 @@ final class Settings
 
     public function getTmpOrderId(): ?string
     {
-        return 'tpmOrderID'; // $this->settings[SettingsEnum::EXTERNAL_ORDER];
+        return $this->settings[SettingsEnum::TEMP_EXTERNAL_ORDER];
     }
 
     public function getExternalOrderId(): ?string
