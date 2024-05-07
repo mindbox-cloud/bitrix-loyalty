@@ -15,8 +15,8 @@ return [
             'mindboxLoyalty.editCustomer' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\EditCustomer()
             ],
-            'mindboxLoyalty.getCustomerInfo' => [
-                'constructor' => fn() => new \Mindbox\Loyalty\Operations\GetCustomerInfo()
+            'mindboxLoyalty.syncCustomer' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\SyncCustomer()
             ],
             'mindboxLoyalty.checkMobilePhoneCode' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\CheckMobilePhoneCode()
@@ -32,6 +32,9 @@ return [
             ],
             'mindboxLoyalty.feedCatalogRepository' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Feed\CatalogRepository()
+            ],
+            'mindboxLoyalty.subscribeCustomer' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\SubscribeCustomer()
             ],
             'mindboxLoyalty.calculateAuthorizedCart' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\CalculateAuthorizedCart()
