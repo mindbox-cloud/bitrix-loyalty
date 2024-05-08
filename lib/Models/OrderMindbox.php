@@ -13,6 +13,7 @@ use Mindbox\Loyalty\Support\Settings;
 
 class OrderMindbox
 {
+    protected string $testPrefix = 'test-';
     private Order $order;
     private Settings $settings;
 
@@ -153,7 +154,11 @@ class OrderMindbox
 
     public function getExternalOrderId()
     {
-        return $this->order->getField('ACCOUNT_NUMBER') ? $this->order->getField('ACCOUNT_NUMBER') : '';
+        return $this->order->getField('ACCOUNT_NUMBER')
+            ? $this->settings->isTestMode()
+                ? $this->testPrefix . $this->order->getField('ACCOUNT_NUMBER')
+                : $this->order->getField('ACCOUNT_NUMBER')
+            : '';
     }
 
     public function getIds()
