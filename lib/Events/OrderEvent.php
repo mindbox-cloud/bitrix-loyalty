@@ -64,7 +64,7 @@ class OrderEvent
             'SUM_PAID',
         ];
 
-        if (!$order->isNew() && array_diff($continueValues, $changeValue) === []) {
+        if (!$order->isNew() && array_diff($changeValue, $continueValues) === []) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
