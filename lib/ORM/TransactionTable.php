@@ -42,6 +42,8 @@ class TransactionTable extends DataManager
             new IntegerField(
                 'ORDER_ID',
                 [
+                    'title' => 'ORDER_ID',
+                    'nullable' => true
                 ]
             ),
             new StringField(

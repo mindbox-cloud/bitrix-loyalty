@@ -78,7 +78,10 @@ class QueueTable extends Entity\DataManager
             new Entity\DatetimeField('DATE_INSERT', [
                 'default_value' => new \Bitrix\Main\Type\DateTime()
             ]),
-            new Entity\DatetimeField('DATE_EXEC'),
+            new Entity\DatetimeField('DATE_EXEC',[
+                'title' => 'DATE_EXEC',
+                'nullable' => true
+            ]),
             new Entity\IntegerField('COUNT_CALL', [
                     'default_value' => 0
             ]),
