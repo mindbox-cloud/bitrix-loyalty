@@ -122,6 +122,7 @@ class CalculateService
                 $mindboxBasket[$lineId] = [
                     'price' => $basketPrice,
                     'quantity' => $quantity,
+                    'lineId' => $lineId,
                 ];
 
                 BasketDiscountTable::set($lineId, $basketPrice);
@@ -146,11 +147,11 @@ class CalculateService
             && ($findRow = DeliveryDiscountTable::getRowByFilter($deliveryFilter))
         ) {
             DeliveryDiscountTable::update((int)$findRow['ID'], [
-                'UF_DISCOUNTED_PRICE' => (float) $deliveryPrice
+                'DISCOUNTED_PRICE' => (float) $deliveryPrice
             ]);
         } elseif (isset($deliveryPrice)) {
             DeliveryDiscountTable::add(array_merge([
-                'UF_DISCOUNTED_PRICE' => (float) $deliveryPrice
+                'DISCOUNTED_PRICE' => (float) $deliveryPrice
             ], $deliveryFilter));
         } else {
             DeliveryDiscountTable::deleteByFilter($deliveryFilter);
