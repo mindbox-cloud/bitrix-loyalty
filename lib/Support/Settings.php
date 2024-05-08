@@ -19,6 +19,7 @@ final class Settings
         SettingsEnum::BRAND => null,
         SettingsEnum::EXTERNAL_PRODUCT => null,
         SettingsEnum::EXTERNAL_USER => null,
+        SettingsEnum::TEMP_EXTERNAL_ORDER => null,
         SettingsEnum::EXTERNAL_ORDER => null,
         SettingsEnum::API_DOMAIN => null,
         SettingsEnum::HTTP_CLIENT => null,
