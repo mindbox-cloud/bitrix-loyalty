@@ -253,4 +253,26 @@ class OrderEvent
 
         return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
     }
+
+    public static function onSaleOrderDeleted(\Bitrix\Main\Event $event)
+    {
+        $order = $event->getParameter('ENTITY');
+        $isSuccess =  $event->getParameter('VALUE');
+
+        if (!isset($order)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);;
+        }
+        if (!$isSuccess) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);;
+        }
+
+        try {
+            $service = new OrderService();
+            $service->cancelOrder($order);
+        } catch (IntegrationLoyaltyException $exception) {
+        }
+
+
+        return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+    }
 }
