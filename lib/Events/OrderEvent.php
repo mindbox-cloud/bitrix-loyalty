@@ -100,6 +100,11 @@ class OrderEvent
             $service = new OrderService();
             $transactionId = null;
 
+            if ($order->isNew()) {
+                // Временый идентификатор заказа
+                $transactionId = Transaction::getInstance()->get($order);
+            }
+
             if ($order->isNew() && !Context::getCurrent()->getRequest()->isAdminSection()) {
                 $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
