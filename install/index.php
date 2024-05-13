@@ -1,8 +1,11 @@
 <?php
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
 
+use Bitrix\Main\Application;
 use Bitrix\Main\Context;
+use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\ModuleManager;
 use Mindbox\Loyalty\Install\BasketDiscountRuleInstaller;
 use Mindbox\Loyalty\Install\DeliveryDiscountRuleInstaller;
 use Mindbox\Loyalty\Install\OrderGroupPropertyInstaller;
@@ -45,8 +48,8 @@ class mindbox_loyalty extends CModule
 
     public function DoInstall()
     {
-        \Bitrix\Main\ModuleManager::registerModule($this->MODULE_ID);
-        \Bitrix\Main\Loader::includeModule($this->MODULE_ID);
+        ModuleManager::registerModule($this->MODULE_ID);
+        Loader::includeModule($this->MODULE_ID);
         $this->InstallDB();
         $this->InstallFiles();
         $this->InstallEvents();
@@ -56,12 +59,25 @@ class mindbox_loyalty extends CModule
 
     public function DoUninstall()
     {
-        \Bitrix\Main\Loader::includeModule($this->MODULE_ID);
-        $this->UnInstallEvents();
-        $this->UnInstallDB();
-        $this->UnInstallFiles();
-        $this->unInstallAgents();
-        \Bitrix\Main\ModuleManager::unRegisterModule($this->MODULE_ID);
+        global $APPLICATION;
+        $request = Application::getInstance()->getContext()->getRequest();
+
+        Loader::includeModule($this->MODULE_ID);
+
+        if ($request->get('step') < 2) {
+            $APPLICATION->IncludeAdminFile('Удалить модуль?', __DIR__ . '/unstep1.php');
+        } elseif ($request->get('step') === 2) {
+            $this->UnInstallEvents();
+
+            if ($request->get('savedata') !== 'Y') {
+                $this->UnInstallDB();
+            }
+
+            $this->UnInstallFiles();
+            $this->unInstallAgents();
+            ModuleManager::unRegisterModule($this->MODULE_ID);
+            $APPLICATION->IncludeAdminFile('Модуль удален', __DIR__ . '/unstep2.php');
+        }
     }
 
     public function InstallDB()
@@ -98,27 +114,25 @@ class mindbox_loyalty extends CModule
 
     public function UnInstallDB()
     {
-//        @todo Насчет удаления надо обговорить
-//        $discountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\Discount\BasketDiscountTable::class);
-//        $discountTableInstance->getConnection()
-//            ->queryExecute("drop table if exists " . $discountTableInstance->getDBTableName());
+        $discountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\Discount\BasketDiscountTable::class);
+        $discountTableInstance->getConnection()
+            ->queryExecute("drop table if exists " . $discountTableInstance->getDBTableName());
 
-//        $deliveryDiscountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\DeliveryDiscountTable::class);
-//        $deliveryDiscountTableInstance->getConnection()
-//            ->queryExecute("drop table if exists " . $deliveryDiscountTableInstance->getDBTableName());
+        $deliveryDiscountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\DeliveryDiscountTable::class);
+        $deliveryDiscountTableInstance->getConnection()
+            ->queryExecute("drop table if exists " . $deliveryDiscountTableInstance->getDBTableName());
 
-//        $queueTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\QueueTable::class);
-//        $queueTableInstance->getConnection()
-//            ->queryExecute("drop table if exists " . $queueTableInstance->getDBTableName());
+        $queueTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\QueueTable::class);
+        $queueTableInstance->getConnection()
+            ->queryExecute("drop table if exists " . $queueTableInstance->getDBTableName());
 
-//        $transactionTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\TransactionTable::class);
-//        $transactionTableInstance->getConnection()
-//            ->queryExecute("drop table if exists " . $transactionTableInstance->getDBTableName());
+        $transactionTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\TransactionTable::class);
+        $transactionTableInstance->getConnection()
+            ->queryExecute("drop table if exists " . $transactionTableInstance->getDBTableName());
 
-//        $orderOperationTypeTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\OrderOperationTypeTable::class);
-//        $orderOperationTypeTableInstance->getConnection()
-//            ->queryExecute("drop table if exists " . $orderOperationTypeTableInstance->getDBTableName());
-
+        $orderOperationTypeTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\OrderOperationTypeTable::class);
+        $orderOperationTypeTableInstance->getConnection()
+            ->queryExecute("drop table if exists " . $orderOperationTypeTableInstance->getDBTableName());
 
 
         $iterSite = \Bitrix\Main\SiteTable::getList([
@@ -190,6 +204,22 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\OrderEvent::class,
             'onSaleStatusOrderChange'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'sale',
+            'OnSaleOrderCanceled',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\OrderEvent::class,
+            'onSaleOrderCanceled'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'sale',
+            'OnSaleBeforeOrderDelete',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\OrderEvent::class,
+            'onSaleOrderDeleted'
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
@@ -276,6 +306,22 @@ class mindbox_loyalty extends CModule
         );
 
         \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'sale',
+            'OnSaleOrderCanceled',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\OrderEvent::class,
+            'onSaleOrderCanceled'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'sale',
+            'OnSaleBeforeOrderDelete',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\OrderEvent::class,
+            'onSaleOrderDeleted'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
             'main',
             'OnAfterUserAdd',
             $this->MODULE_ID,
@@ -357,14 +403,14 @@ class mindbox_loyalty extends CModule
      * Необходимо вызывать после того, как добавлено событие OnCondSaleActionsControlBuildList
      * @return void
      */
-    public function installDiscountRule()
+    public function installDiscountRule(): void
     {
         $siteId = $this->getCurrentSiteId();
         (new BasketDiscountRuleInstaller($siteId))->up();
         (new DeliveryDiscountRuleInstaller($siteId))->up();
     }
 
-    protected function getCurrentSiteId()
+    protected function getCurrentSiteId(): string
     {
         if (Context::getCurrent()->getRequest()->get('site_id') !== null) {
             return Context::getCurrent()->getRequest()->get('site_id');

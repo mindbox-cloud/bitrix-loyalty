@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Services;
 
-use Bitrix\Main\Context;
 use Bitrix\Sale\Order;
 use Mindbox\DTO\V3\Requests\PreorderRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
@@ -150,12 +149,6 @@ class OrderService
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
         $mindboxOrder = new OrderMindbox($order, $settings);
-
-        if ($mindboxOrder->getOrder()->isNew()) {
-            $mindboxOrder->setBonuses(SessionStorage::getInstance()->getPayBonuses());
-            $mindboxOrder->setCoupons(SessionStorage::getInstance()->getPromocodeValue());
-        }
-
         $customer = new Customer((int)$order->getUserId());
 
         $ids = $mindboxOrder->getIds();
@@ -415,6 +408,36 @@ class OrderService
 
         $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO([
             'orderLinesStatus' => $statusOrder->getStatus(),
+            'order' => $orderData
+        ]);
+
+        /** @var ChangeStatus $changeStatus */
+        $changeStatus = $this->serviceLocator->get('mindboxLoyalty.changeStatus');
+        $changeStatus->setSettings($settings);
+
+        try {
+            $changeStatus->execute($DTO);
+        } catch (MindboxClientException $e) {
+            $request = $changeStatus->getRequest();
+            if ($request instanceof MindboxRequest) {
+                \Mindbox\Loyalty\ORM\QueueTable::push($request, $order->getSiteId());
+            }
+        }
+    }
+
+    public function cancelOrder(Order $order)
+    {
+        $settings = SettingsFactory::createBySiteId($order->getSiteId());
+        $mindboxOrder = new OrderMindbox($order, $settings);
+
+        $orderData = array_filter([
+            'ids' => $mindboxOrder->getIds(),
+            'email' => $mindboxOrder->getEmail(),
+            'mobilePhone' => $mindboxOrder->getMobilePhone(),
+        ]);
+
+        $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO([
+            'orderLinesStatus' => \Mindbox\Loyalty\Models\OrderStatus::getCancelStatus($settings),
             'order' => $orderData
         ]);
 

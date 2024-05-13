@@ -7,6 +7,8 @@ namespace Mindbox\Loyalty\Events;
 use Bitrix\Main\Context;
 use Bitrix\Sale\Order;
 use Mindbox\Exceptions\MindboxUnavailableException;
+use Mindbox\Loyalty\Exceptions\IntegrationLoyaltyException;
+use Mindbox\Loyalty\Models\OrderMindbox;
 use Mindbox\Loyalty\Support\CallBlocking;
 use Mindbox\Loyalty\Exceptions\EmptyLineException;
 use Mindbox\Loyalty\Exceptions\PriceHasBeenChangedException;
@@ -18,12 +20,12 @@ use Mindbox\Loyalty\PropertyCodeEnum;
 use Mindbox\Loyalty\Services\CalculateService;
 use Mindbox\Loyalty\Services\OrderService;
 use Mindbox\Loyalty\Support\SessionStorage;
+use Mindbox\Loyalty\Support\SettingsFactory;
 
 class OrderEvent
 {
     public static function onBeforeSaleOrderFinalAction(\Bitrix\Main\Event $event)
     {
-
         /** @var Order $order */
         $order = $event->getParameter('ENTITY');
 
@@ -33,6 +35,15 @@ class OrderEvent
 
         if (CallBlocking::getInstance()->isLocked()) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        // В админке бонусы сразу в свойства записываются
+        if ($order->isNew() && !Context::getCurrent()->getRequest()->isAdminSection()) {
+            $settings = SettingsFactory::createBySiteId($order->getSiteId());
+
+            $mindboxOrder = new OrderMindbox($order, $settings);
+            $mindboxOrder->setBonuses(SessionStorage::getInstance()->getPayBonuses());
+            $mindboxOrder->setCoupons(SessionStorage::getInstance()->getPromocodeValue());
         }
 
         $service = new CalculateService();
@@ -56,12 +67,18 @@ class OrderEvent
 
         $changeValue = array_keys($oldValues);
         $continueValues = [
+            // Смена статуса
             'STATUS_ID',
             'DATE_STATUS',
+            // Оплата
             'DATE_PAYED',
             'EMP_PAYED_ID',
             'PAYED',
             'SUM_PAID',
+            // Отмена просто
+            'CANCELED',
+            'DATE_CANCELED',
+            'EMP_CANCELED_ID',
         ];
 
         if (!$order->isNew() && array_diff($changeValue, $continueValues) === []) {
@@ -83,9 +100,12 @@ class OrderEvent
             $service = new OrderService();
             $transactionId = null;
 
-            if ($order->isNew()) {
-                // Временый идентификатор заказа
-                $transactionId = Transaction::getInstance()->get($order);
+            if ($order->isNew() && !Context::getCurrent()->getRequest()->isAdminSection()) {
+                $settings = SettingsFactory::createBySiteId($order->getSiteId());
+
+                $mindboxOrder = new OrderMindbox($order, $settings);
+                $mindboxOrder->setBonuses(SessionStorage::getInstance()->getPayBonuses());
+                $mindboxOrder->setCoupons(SessionStorage::getInstance()->getPromocodeValue());
             }
 
             if (Context::getCurrent()->getRequest()->isAdminSection()) {
@@ -202,9 +222,57 @@ class OrderEvent
         $order = $event->getParameter('ENTITY');
 
         if (!isset($order)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        try {
+            $service = new OrderService();
+            $service->changeStatus($order);
+        } catch (IntegrationLoyaltyException $exception) {
+
+        }
+
+        return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+    }
+
+    public static function onSaleOrderCanceled(\Bitrix\Main\Event $event)
+    {
+        $order = $event->getParameter('ENTITY');
+
+        if (!isset($order)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);;
         }
-        $service = new OrderService();
-        $service->changeStatus($order);
+
+        try {
+            $service = new OrderService();
+            $service->cancelOrder($order);
+        } catch (IntegrationLoyaltyException $exception) {
+
+        }
+
+
+        return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+    }
+
+    public static function onSaleOrderDeleted(\Bitrix\Main\Event $event)
+    {
+        $order = $event->getParameter('ENTITY');
+        $isSuccess =  $event->getParameter('VALUE');
+
+        if (!isset($order)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);;
+        }
+        if (!$isSuccess) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);;
+        }
+
+        try {
+            $service = new OrderService();
+            $service->cancelOrder($order);
+        } catch (IntegrationLoyaltyException $exception) {
+        }
+
+
+        return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
     }
 }

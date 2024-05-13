@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Models;
 
 use Bitrix\Sale\Order;
+use Mindbox\Loyalty\Exceptions\NotMatchedOrderStatuses;
 use Mindbox\Loyalty\Support\Settings;
 
 class OrderStatus
@@ -49,5 +50,17 @@ class OrderStatus
                 'externalId' => $this->getStatus()
             ]
         ];
+    }
+
+    public static function getCancelStatus(Settings $settings): string
+    {
+        $orderStatus = 'CANCEL';
+        $matchStatuses = $settings->getOrderStatusFieldsMatch();
+
+        if ($matchStatuses[$orderStatus]) {
+            return $matchStatuses[$orderStatus];
+        }
+
+        throw new NotMatchedOrderStatuses('Cancel status not matched');
     }
 }
