@@ -23,7 +23,8 @@ class Customer
         'LAST_NAME' => null,
         'EMAIL' => null,
         'PERSONAL_PHONE' => null,
-        'PHONE_AUTH' => null,
+        'PERSONAL_MOBILE' => null,
+        'USER_PHONE_AUTH' => null,
         'PERSONAL_BIRTHDAY' => null,
         'PERSONAL_GENDER' => null,
     ];
@@ -49,9 +50,10 @@ class Customer
             'LAST_NAME',
             'EMAIL',
             'PERSONAL_PHONE',
+            'PERSONAL_MOBILE',
             'PERSONAL_BIRTHDAY',
             'PERSONAL_GENDER',
-            'PHONE_AUTH'
+            'USER_PHONE_AUTH' => 'PHONE_AUTH.PHONE_NUMBER'
         ];
 
         if (!empty($userFieldsMatch)) {
@@ -128,8 +130,8 @@ class Customer
             case $this->data['PERSONAL_MOBILE']:
                 $value = $this->data['PERSONAL_MOBILE'];
                 break;
-            case $this->data['PHONE_AUTH']:
-                $value = $this->data['PHONE_AUTH'];
+            case $this->data['USER_PHONE_AUTH']:
+                $value = $this->data['USER_PHONE_AUTH'];
                 break;
         }
 
