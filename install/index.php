@@ -66,7 +66,7 @@ class mindbox_loyalty extends CModule
 
         if ($request->get('step') < 2) {
             $APPLICATION->IncludeAdminFile('Удалить модуль?', __DIR__ . '/unstep1.php');
-        } elseif ($request->get('step') === 2) {
+        } elseif ($request->get('step') == 2) {
             $this->UnInstallEvents();
 
             if ($request->get('savedata') !== 'Y') {
