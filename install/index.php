@@ -216,7 +216,7 @@ class mindbox_loyalty extends CModule
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
             'sale',
-            'OnSaleBeforeOrderDelete',
+            'OnSaleOrderDeleted',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\OrderEvent::class,
             'onSaleOrderDeleted'
@@ -315,7 +315,7 @@ class mindbox_loyalty extends CModule
 
         \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
             'sale',
-            'OnSaleBeforeOrderDelete',
+            'OnSaleOrderDeleted',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\OrderEvent::class,
             'onSaleOrderDeleted'
