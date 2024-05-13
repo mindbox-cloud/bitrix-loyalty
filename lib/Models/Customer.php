@@ -24,7 +24,7 @@ class Customer
         'EMAIL' => null,
         'PERSONAL_PHONE' => null,
         'PERSONAL_MOBILE' => null,
-        'PHONE_AUTH' => null,
+        'USER_PHONE_AUTH' => null,
         'PERSONAL_BIRTHDAY' => null,
         'PERSONAL_GENDER' => null,
     ];
