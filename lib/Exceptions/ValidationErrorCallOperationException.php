@@ -6,7 +6,7 @@ namespace Mindbox\Loyalty\Exceptions;
 
 use Mindbox\DTO\V3\Responses\ValidationMessageResponseCollection;
 
-class ValidationErrorCallOperationException extends \Exception
+class ValidationErrorCallOperationException extends IntegrationLoyaltyException
 {
     protected ?ValidationMessageResponseCollection $validationMessage = null;
 

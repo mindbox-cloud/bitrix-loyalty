@@ -131,7 +131,6 @@ final class Options
             'TECH_CREATE_ORDER' => Loc::getMessage('TECH_CREATE_ORDER_LABEL'),
             'CANCEL' => Loc::getMessage('CANCEL_ORDER_LABEL'),
             'DELETE' => Loc::getMessage('DELETE_ORDER_LABEL'),
-            'PAY' => Loc::getMessage('PAY_ORDER_LABEL'),
         ];
 
         if (Loader::includeModule('sale')) {
