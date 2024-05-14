@@ -79,6 +79,7 @@ class OrderEvent
             'CANCELED',
             'DATE_CANCELED',
             'EMP_CANCELED_ID',
+            'REASON_CANCELED',
         ];
 
         if (!$order->isNew() && array_diff($changeValue, $continueValues) === []) {
