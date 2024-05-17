@@ -145,7 +145,6 @@ class mindbox_loyalty extends CModule
             (new BasketDiscountRuleInstaller($site['LID']))->down();
             (new DeliveryDiscountRuleInstaller($site['LID']))->down();
         }
-
     }
 
     public function InstallEvents()
@@ -155,7 +154,8 @@ class mindbox_loyalty extends CModule
             'OnCondSaleActionsControlBuildList',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Discount\BasketRuleAction::class,
-            'GetControlDescr'
+            'GetControlDescr',
+            1000
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
@@ -163,7 +163,8 @@ class mindbox_loyalty extends CModule
             'OnCondSaleActionsControlBuildList',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Discount\DeliveryRuleAction::class,
-            'GetControlDescr'
+            'GetControlDescr',
+            1000
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
@@ -171,7 +172,8 @@ class mindbox_loyalty extends CModule
             'OnBeforeSaleOrderFinalAction',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\OrderEvent::class,
-            'onBeforeSaleOrderFinalAction'
+            'onBeforeSaleOrderFinalAction',
+            1000
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
@@ -179,7 +181,8 @@ class mindbox_loyalty extends CModule
             'OnSaleOrderBeforeSaved',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\OrderEvent::class,
-            'onSaleOrderBeforeSaved'
+            'onSaleOrderBeforeSaved',
+            1000
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
@@ -187,7 +190,8 @@ class mindbox_loyalty extends CModule
             'OnSaleOrderSaved',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\OrderEvent::class,
-            'onSaleOrderSaved'
+            'onSaleOrderSaved',
+            1000
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
@@ -195,7 +199,8 @@ class mindbox_loyalty extends CModule
             'OnSaleUserDelete',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CustomerEvent::class,
-            'onSaleUserDelete'
+            'onSaleUserDelete',
+            1000
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
@@ -203,7 +208,8 @@ class mindbox_loyalty extends CModule
             'OnSaleStatusOrderChange',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\OrderEvent::class,
-            'onSaleStatusOrderChange'
+            'onSaleStatusOrderChange',
+            1000
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
@@ -211,7 +217,8 @@ class mindbox_loyalty extends CModule
             'OnSaleOrderCanceled',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\OrderEvent::class,
-            'onSaleOrderCanceled'
+            'onSaleOrderCanceled',
+            1000
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
@@ -219,7 +226,8 @@ class mindbox_loyalty extends CModule
             'OnSaleOrderDeleted',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\OrderEvent::class,
-            'onSaleOrderDeleted'
+            'onSaleOrderDeleted',
+            1000
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
@@ -227,7 +235,8 @@ class mindbox_loyalty extends CModule
             'OnAfterUserAdd',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CustomerEvent::class,
-            'onAfterUserAdd'
+            'onAfterUserAdd',
+            1000
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
@@ -235,7 +244,8 @@ class mindbox_loyalty extends CModule
             'OnAfterUserAuthorize',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CustomerEvent::class,
-            'onAfterUserAuthorize'
+            'onAfterUserAuthorize',
+            1000
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
@@ -243,7 +253,8 @@ class mindbox_loyalty extends CModule
             'OnAfterUserUpdate',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CustomerEvent::class,
-            'onAfterUserUpdate'
+            'onAfterUserUpdate',
+            1000
         );
     }
 
