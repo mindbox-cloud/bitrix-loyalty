@@ -399,7 +399,7 @@ class RequestedPromotions
 
         $catalogGroupId = 0;
         foreach ($productPrices as $productPrice) {
-            if (roundEx($productPrice['PRICE'], 2) === roundEx($basketItem->getBasePrice(), 2)) {
+            if (PriceMaths::roundPrecision($productPrice['PRICE']) === PriceMaths::roundPrecision($basketItem->getBasePrice())) {
                 $catalogGroupId = $productPrice['CATALOG_GROUP_ID'];
             }
         }
@@ -407,7 +407,7 @@ class RequestedPromotions
 
         foreach ($productPrices as $productPrice) {
             if (
-                $productPrice['CATALOG_GROUP_ID'] === $basePriceGroupId
+                (int) $productPrice['CATALOG_GROUP_ID'] === $basePriceGroupId
                 && $productPrice['PRICE'] > $basketItem->getBasePrice()
                 && $catalogGroupId > 0
             ) {
