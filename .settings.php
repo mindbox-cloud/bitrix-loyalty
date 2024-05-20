@@ -27,6 +27,9 @@ return [
             'mindboxLoyalty.sendMobilePhoneCode' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\SendMobilePhoneCode()
             ],
+            'mindboxLoyalty.confirmEmail' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\ConfirmEmail()
+            ],
             'mindboxLoyalty.feedGenerator' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Feed\YmlFeedMindbox()
             ],

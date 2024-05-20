@@ -13,6 +13,7 @@ use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Operations\AuthorizeCustomer;
 use Mindbox\Loyalty\Operations\CheckCustomer;
 use Mindbox\Loyalty\Operations\CheckMobilePhoneCode;
+use Mindbox\Loyalty\Operations\ConfirmEmail;
 use Mindbox\Loyalty\Operations\ConfirmMobilePhone;
 use Mindbox\Loyalty\Operations\EditCustomer;
 use Mindbox\Loyalty\Operations\SubscribeCustomer;
@@ -31,7 +32,6 @@ class CustomerService
         $this->serviceLocator = \Bitrix\Main\DI\ServiceLocator::getInstance();
         $this->settings = $settings;
     }
-
 
     /**
      * @throws ErrorCallOperationException
@@ -130,6 +130,22 @@ class CustomerService
 
         return $operation->execute(new CustomerRequestDTO([
             'mobilePhone' => $customer->getMobilePhone(),
+            'ids' => $customer->getIds()
+        ]));
+    }
+
+    /**
+     * @throws ErrorCallOperationException
+     * @throws ObjectNotFoundException
+     */
+    public function confirmEmail(Customer $customer): bool
+    {
+        /** @var ConfirmEmail $operation */
+        $operation = $this->serviceLocator->get('mindboxLoyalty.confirmEmail');
+        $operation->setSettings($this->settings);
+
+        return $operation->execute(new CustomerRequestDTO([
+            'email' => $customer->getEmail(),
             'ids' => $customer->getIds()
         ]));
     }
