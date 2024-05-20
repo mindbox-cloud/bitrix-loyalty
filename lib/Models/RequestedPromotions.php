@@ -51,17 +51,18 @@ class RequestedPromotions
         $currentPrice = $basePrice;
         $basketCode = $basketItem->getId();
         $requestedPromotions = [];
+        $result = $this->result;
 
         if ($arPriceTypeDiscount = self::getDiscountByPriceType($basketItem)) {
-            $this->result['ORDER'][] = $arPriceTypeDiscount['BASKET'];
-            $this->result['DISCOUNT_LIST'][$arPriceTypeDiscount['DISCOUNT']['ID']] = $arPriceTypeDiscount['DISCOUNT'];
+            $result['ORDER'][] = $arPriceTypeDiscount['BASKET'];
+            $result['DISCOUNT_LIST'][$arPriceTypeDiscount['DISCOUNT']['ID']] = $arPriceTypeDiscount['DISCOUNT'];
         }
 
         // Обработка скидок каталога
-        if (isset($this->result['BASKET']) && is_array($this->result['BASKET']) && isset($this->result['BASKET'][$basketCode])) {
-            $arDiscountList = $this->result['DISCOUNT_LIST'];
+        if (isset($result['BASKET']) && is_array($result['BASKET']) && isset($result['BASKET'][$basketCode])) {
+            $arDiscountList = $result['DISCOUNT_LIST'];
 
-            foreach ($this->result['BASKET'][$basketCode] as $discountBasket) {
+            foreach ($result['BASKET'][$basketCode] as $discountBasket) {
                 $discountPrice = 0;
                 $externalId = '';
                 $quantity = $basketItem->getQuantity();
@@ -209,9 +210,9 @@ class RequestedPromotions
         }
 
         // Обработка правил работы с корзиной
-        if (isset($this->result['ORDER']) && is_array($this->result['ORDER'])) {
-            $arDiscountList = $this->result['DISCOUNT_LIST'];
-            foreach ($this->result['ORDER'] as $discountBasket) {
+        if (isset($result['ORDER']) && is_array($result['ORDER'])) {
+            $arDiscountList = $result['DISCOUNT_LIST'];
+            foreach ($result['ORDER'] as $discountBasket) {
                 // Скидка на товар, если будет на доставку, то будет ['RESULT']['DELIVERY']
                 if (!isset($discountBasket['RESULT']['BASKET'])) {
                     continue;
@@ -397,10 +398,12 @@ class RequestedPromotions
         }
         $arDiscount = [];
 
-        $catalogGroupId = 0;
-        foreach ($productPrices as $productPrice) {
-            if (PriceMaths::roundPrecision($productPrice['PRICE']) === PriceMaths::roundPrecision($basketItem->getBasePrice())) {
-                $catalogGroupId = $productPrice['CATALOG_GROUP_ID'];
+        $catalogGroupId = (int) $basketItem->getField('PRICE_TYPE_ID');
+        if ($catalogGroupId === 0) {
+            foreach ($productPrices as $productPrice) {
+                if (PriceMaths::roundPrecision($productPrice['PRICE']) === PriceMaths::roundPrecision($basketItem->getBasePrice())) {
+                    $catalogGroupId = (int) $productPrice['CATALOG_GROUP_ID'];
+                }
             }
         }
         unset($productPrice);

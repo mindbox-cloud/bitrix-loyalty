@@ -38,11 +38,11 @@ class CustomerEvent
                 $service = new CustomerService($settings);
                 $customerData = $service->sync($customer);
 
+                // Пользователь создается на сайте через СМС авторизацию, считаем телефон подтвержденным
                 $session = \Bitrix\Main\Application::getInstance()->getSession();
-
                 if (
-                    !$customerData->getIsMobilePhoneConfirmed()
-                    && $session->has('mindbox_need_confirm_phone')
+                    $session->has('mindbox_need_confirm_phone')
+                    && !$customerData->getIsMobilePhoneConfirmed()
                 ) {
                     $logger->info('onAfterUserAdd confirm phone');
 
@@ -88,10 +88,11 @@ class CustomerEvent
 
             $service->authorize($customer);
 
+            // На случай, если авторизация по телефону не через МБ
             $session = \Bitrix\Main\Application::getInstance()->getSession();
-
-            if (!$customerData->getIsMobilePhoneConfirmed()
-                && $session->has('mindbox_need_confirm_phone')
+            if (
+                $session->has('mindbox_need_confirm_phone')
+                && !$customerData->getIsMobilePhoneConfirmed()
             ) {
                 $logger->info('onAfterUserAuthorize confirm phone');
 
@@ -129,8 +130,29 @@ class CustomerEvent
         $logger->info('id', [$arUser['user_fields']['ID']]);
 
         try {
+            $customer = new Customer((int) $arUser['ID']);
             $service = new CustomerService($settings);
-            $service->edit(new Customer($arUser['ID']));
+
+            // Если при смене телефона происходит его подтверждение по СМС, не через МБ
+            $session = \Bitrix\Main\Application::getInstance()->getSession();
+            if ($session->has('mindbox_need_confirm_phone')) {
+                $session->remove('mindbox_need_confirm_phone');
+                $customerData = $service->sync($customer);
+                if (!$customerData->getIsMobilePhoneConfirmed()) {
+                    $service->confirmMobilePhone($customer);
+                }
+            }
+
+            // При смене email следует отправлять запрос на его подтверждение
+            if ($session->has('mindbox_need_confirm_email')) {
+                $session->remove('mindbox_need_confirm_email');
+                $customerData = $service->sync($customer);
+                if (!$customerData->getIsEmailConfirmed()) {
+                    $service->confirmEmail($customer);
+                }
+            }
+
+            $service->edit($customer);
         } catch (ObjectNotFoundException $e) {
             $logger->error('ObjectNotFoundException', ['exception' => $e]);
         } catch (ErrorCallOperationException $e) {
