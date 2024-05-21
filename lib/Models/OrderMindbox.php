@@ -158,14 +158,14 @@ class OrderMindbox
             ? $this->settings->isTestMode()
                 ? $this->testPrefix . $this->order->getField('ACCOUNT_NUMBER')
                 : $this->order->getField('ACCOUNT_NUMBER')
-            : '';
+            : null;
     }
 
     public function getIds()
     {
-        return [
+        return array_filter([
             $this->settings->getExternalOrderId() => $this->getExternalOrderId()
-        ];
+        ]);
     }
 
     public function getCustomFields()
