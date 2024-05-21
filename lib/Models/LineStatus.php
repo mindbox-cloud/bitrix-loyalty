@@ -48,7 +48,7 @@ class LineStatus
     {
         return [
             'ids' => [
-                'externalId' => $this->status
+                'externalId' => $this->getStatus()
             ]
         ];
     }
