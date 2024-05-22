@@ -47,8 +47,15 @@ class CustomerEvent
                     $logger->info('onAfterUserAdd confirm phone');
 
                     $session->remove('mindbox_need_confirm_phone');
-
                     $service->confirmMobilePhone($customer);
+                }
+
+                // Функционал подтверждения email
+                if ($session->has('mindbox_need_confirm_email')) {
+                    $session->remove('mindbox_need_confirm_email');
+                    if (!$customerData->getIsEmailConfirmed()) {
+                        $service->confirmEmail($customer);
+                    }
                 }
 
             } catch (ObjectNotFoundException $e) {
@@ -101,6 +108,14 @@ class CustomerEvent
                 $service->confirmMobilePhone($customer);
             }
 
+            // Функционал подтверждения email
+            if ($session->has('mindbox_need_confirm_email')) {
+                $session->remove('mindbox_need_confirm_email');
+                if (!$customerData->getIsEmailConfirmed()) {
+                    $service->confirmEmail($customer);
+                }
+            }
+
             $logger->info('success');
         } catch (ObjectNotFoundException $e) {
             $logger->error('ObjectNotFoundException', ['exception' => $e]);
@@ -146,7 +161,7 @@ class CustomerEvent
             // При смене email следует отправлять запрос на его подтверждение
             if ($session->has('mindbox_need_confirm_email')) {
                 $session->remove('mindbox_need_confirm_email');
-                $customerData = $service->sync($customer);
+                $customerData ??= $service->sync($customer);
                 if (!$customerData->getIsEmailConfirmed()) {
                     $service->confirmEmail($customer);
                 }
