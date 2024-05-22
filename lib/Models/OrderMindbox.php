@@ -134,10 +134,13 @@ class OrderMindbox
         $payments = [];
         /** @var \Bitrix\Sale\Payment $payment */
         foreach ($this->order->getPaymentCollection() as $payment) {
-            $payments[] = array_filter([
-                'type'   => $payment->getPaymentSystemId(),
-                'amount' => $payment->getSum()
-            ]);
+            if ($payment->getSum() && $payment->getPaymentSystemId()) {
+                $payments[] = array_filter([
+                    'type'   => $payment->getPaymentSystemId(),
+                    'amount' => $payment->getSum()
+                ]);
+            }
+
         }
 
         return $payments;
