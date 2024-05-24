@@ -12,6 +12,9 @@ class LoyalityEvents
     public const AUTH = 'auth';
     public const REGISTRATION = 'registration';
     public const EDIT_USER = 'edit_user';
+    public const CHECK_CHANGE_USER_EMAIL = 'change_user_email';
+
+
 
     public static function getAll(): array
     {
