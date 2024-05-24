@@ -140,7 +140,7 @@ class Customer
 
     public function getDto(): \Mindbox\DTO\V3\Requests\CustomerRequestDTO
     {
-        return new \Mindbox\DTO\V3\Requests\CustomerRequestDTO([
+        return new \Mindbox\DTO\V3\Requests\CustomerRequestDTO(array_filter([
             'email' => $this->getEmail(),
             'lastName' => $this->getLastName(),
             'middleName' => $this->getSecondName(),
@@ -149,7 +149,7 @@ class Customer
             'birthDate' => $this->getBirthday()?->format('Y-m-d H:i:s'),
             'sex' => $this->getGender(),
             'ids' => $this->getIds()
-        ]);
+        ]));
     }
 
     public function getData(): array

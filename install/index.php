@@ -256,6 +256,25 @@ class mindbox_loyalty extends CModule
             'onAfterUserUpdate',
             1000
         );
+
+        // Подтверждение Email
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'main',
+            'OnBeforeUserUpdate',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
+            'onBeforeCheckedChangeEmail',
+            1000
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'main',
+            'OnAfterUserUpdate',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
+            'onCheckedChangePhone',
+            1000
+        );
     }
 
     public function UnInstallEvents()
@@ -354,6 +373,25 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CustomerEvent::class,
             'onAfterUserUpdate'
+        );
+
+        // Подтверждение Email
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'main',
+            'OnBeforeUserUpdate',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
+            'onBeforeCheckedChangeEmail',
+            1000
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'main',
+            'OnAfterUserUpdate',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
+            'onCheckedChangePhone',
+            1000
         );
     }
 

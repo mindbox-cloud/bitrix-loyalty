@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Events;
 
 use Bitrix\Main\ObjectNotFoundException;
+use Bitrix\Main\UserTable;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
+use Mindbox\Loyalty\Exceptions\IntegrationLoyaltyException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\ORM\DeliveryDiscountTable;
 use Mindbox\Loyalty\Services\CustomerService;
+use Mindbox\Loyalty\Support\EmailChangeChecker;
 use Mindbox\Loyalty\Support\LoyalityEvents;
 use Mindbox\Loyalty\Support\SettingsFactory;
 use Psr\Log\LogLevel;
@@ -102,18 +105,9 @@ class CustomerEvent
                 && !$customerData->getIsMobilePhoneConfirmed()
             ) {
                 $logger->info('onAfterUserAuthorize confirm phone');
-
                 $session->remove('mindbox_need_confirm_phone');
 
                 $service->confirmMobilePhone($customer);
-            }
-
-            // Функционал подтверждения email
-            if ($session->has('mindbox_need_confirm_email')) {
-                $session->remove('mindbox_need_confirm_email');
-                if (!$customerData->getIsEmailConfirmed()) {
-                    $service->confirmEmail($customer);
-                }
             }
 
             $logger->info('success');
@@ -152,19 +146,7 @@ class CustomerEvent
             $session = \Bitrix\Main\Application::getInstance()->getSession();
             if ($session->has('mindbox_need_confirm_phone')) {
                 $session->remove('mindbox_need_confirm_phone');
-                $customerData = $service->sync($customer);
-                if (!$customerData->getIsMobilePhoneConfirmed()) {
-                    $service->confirmMobilePhone($customer);
-                }
-            }
-
-            // При смене email следует отправлять запрос на его подтверждение
-            if ($session->has('mindbox_need_confirm_email')) {
-                $session->remove('mindbox_need_confirm_email');
-                $customerData ??= $service->sync($customer);
-                if (!$customerData->getIsEmailConfirmed()) {
-                    $service->confirmEmail($customer);
-                }
+                $service->confirmMobilePhone($customer);
             }
 
             $service->edit($customer);
@@ -190,6 +172,59 @@ class CustomerEvent
             while ($row = $iterator->fetch()) {
                 DeliveryDiscountTable::delete($row['ID']);
             }
+        }
+    }
+
+    public static function onBeforeCheckedChangeEmail(&$arFields)
+    {
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CHECK_CHANGE_USER_EMAIL)) {
+            return;
+        }
+
+        if (!isset($arFields['EMAIL']) || empty($arFields['EMAIL'])) {
+            return;
+        }
+
+        $userId = (int) $arFields['ID'];
+
+        $userData = UserTable::getRow([
+            'filter' => ['=ID' => $userId],
+            'select' => ['ID', 'EMAIL'],
+        ]);
+
+        if ($userData['EMAIL']) {
+            EmailChangeChecker::getInstance()->setEmail($userData['EMAIL']);
+        }
+    }
+
+    public static function onCheckedChangePhone(&$arFields)
+    {
+        if (!$arFields['RESULT']) {
+            return;
+        }
+
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CHECK_CHANGE_USER_EMAIL)) {
+            return;
+        }
+
+        if (!isset($arFields['EMAIL']) || empty($arFields['EMAIL'])) {
+            return;
+        }
+
+        if (!EmailChangeChecker::getInstance()->check($arFields['EMAIL'])) {
+            return;
+        }
+
+        try {
+            $userId = (int) $arFields['ID'];
+
+            $customer = new Customer($userId);
+            $settings = SettingsFactory::create();
+            $service = new CustomerService($settings);
+
+            $service->confirmEmail($customer);
+        } catch (IntegrationLoyaltyException $e) {
+            // @info Добавить логирование?
         }
     }
 }
