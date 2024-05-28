@@ -19,6 +19,7 @@ use Mindbox\Loyalty\ORM\OrderOperationTypeTable;
 use Mindbox\Loyalty\PropertyCodeEnum;
 use Mindbox\Loyalty\Services\CalculateService;
 use Mindbox\Loyalty\Services\OrderService;
+use Mindbox\Loyalty\Support\LoyalityEvents;
 use Mindbox\Loyalty\Support\SessionStorage;
 use Mindbox\Loyalty\Support\SettingsFactory;
 
@@ -26,6 +27,9 @@ class OrderEvent
 {
     public static function onBeforeSaleOrderFinalAction(\Bitrix\Main\Event $event)
     {
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CALCULATE_DISCOUNT)) {
+            return;
+        }
         /** @var Order $order */
         $order = $event->getParameter('ENTITY');
 
@@ -61,6 +65,10 @@ class OrderEvent
 
     public static function onSaleOrderBeforeSaved(\Bitrix\Main\Event $event)
     {
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CREATE_ORDER)) {
+            return;
+        }
+
         /** @var Order $order */
         $order = $event->getParameter('ENTITY');
         $oldValues = $event->getParameter('VALUES');
@@ -181,6 +189,10 @@ class OrderEvent
 
     public static function onSaleOrderSaved(\Bitrix\Main\Event $event)
     {
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CONFIRM_ORDER)) {
+            return;
+        }
+
         /** @var Order $order */
         $order = $event->getParameter('ENTITY');
         $isNew = $event->getParameter('IS_NEW');
@@ -225,6 +237,10 @@ class OrderEvent
 
     public static function onSaleStatusOrderChange(\Bitrix\Main\Event $event)
     {
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CHANGE_STATUS_ORDER)) {
+            return;
+        }
+
         $order = $event->getParameter('ENTITY');
 
         if (!isset($order)) {
@@ -243,6 +259,10 @@ class OrderEvent
 
     public static function onSaleOrderCanceled(\Bitrix\Main\Event $event)
     {
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CANCEL_ORDER)) {
+            return;
+        }
+
         $order = $event->getParameter('ENTITY');
 
         if (!isset($order)) {
@@ -262,6 +282,10 @@ class OrderEvent
 
     public static function onSaleOrderDeleted(\Bitrix\Main\Event $event)
     {
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::DELETE_ORDER)) {
+            return;
+        }
+
         $order = $event->getParameter('ENTITY');
         $isSuccess =  $event->getParameter('VALUE');
 
@@ -277,7 +301,6 @@ class OrderEvent
             $service->cancelOrder($order);
         } catch (IntegrationLoyaltyException $exception) {
         }
-
 
         return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
     }
