@@ -275,6 +275,24 @@ class mindbox_loyalty extends CModule
             'onCheckedChangePhone',
             1000
         );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'sail',
+            'OnBeforeSaleBasketItemEntityDeleted',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CartEvent::class,
+            'onBeforeSaleBasketItemEntityDeleted',
+            1000
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'sail',
+            'OnSaleBasketItemEntitySaved',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CartEvent::class,
+            'onSaleBasketItemEntitySaved',
+            1000
+        );
     }
 
     public function UnInstallEvents()

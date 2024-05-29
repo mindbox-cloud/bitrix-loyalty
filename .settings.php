@@ -63,6 +63,12 @@ return [
             'mindboxLoyalty.saveOfflineOrder' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\SaveOfflineOrder()
             ],
+            'mindboxLoyalty.editCart' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\EditCart()
+            ],
+            'mindboxLoyalty.editFavourite' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\EditFavourite()
+            ],
 		],
 		'readonly' => true,
 	],
