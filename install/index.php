@@ -277,7 +277,7 @@ class mindbox_loyalty extends CModule
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
-            'sail',
+            'sale',
             'OnBeforeSaleBasketItemEntityDeleted',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CartEvent::class,
@@ -286,7 +286,7 @@ class mindbox_loyalty extends CModule
         );
 
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
-            'sail',
+            'sale',
             'OnSaleBasketItemEntitySaved',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CartEvent::class,

@@ -8,8 +8,9 @@ use Mindbox\Loyalty\Support\SettingsFactory;
 
 class CartEvent
 {
-    public function onSaleBasketItemEntitySaved($event)
+    public static function onSaleBasketItemEntitySaved(\Bitrix\Main\Event $event)
     {
+
         global $USER;
         /** @var \Bitrix\Sale\BasketItem $basket */
         $basket = $event->getParameter("ENTITY");
@@ -47,7 +48,7 @@ class CartEvent
 
                 $service->$method(
                     new \Mindbox\Loyalty\Models\Product($basket->getProductId(), $settings),
-                    $basket->getQuantity(),
+                    (int)$basket->getQuantity(),
                     $customer
                 );
             } catch (\Mindbox\Loyalty\Exceptions\ErrorCallOperationException $e) {
@@ -56,7 +57,7 @@ class CartEvent
 
     }
 
-    public function onBeforeSaleBasketItemEntityDeleted($event)
+    public static function onBeforeSaleBasketItemEntityDeleted(\Bitrix\Main\Event $event)
     {
         global $USER;
         /** @var \Bitrix\Sale\BasketItem $basket */
