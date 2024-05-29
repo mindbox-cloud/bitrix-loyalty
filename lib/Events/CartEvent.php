@@ -35,7 +35,7 @@ class CartEvent
             $settings = SettingsFactory::create();
             $service = new \Mindbox\Loyalty\Services\ProductListService($settings);
             $customer = ($USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int)$USER->getID()) : null;
-            $method = $basket->ifsDelay() ? 'editFavourite' : 'editCart';
+            $method = $basket->isDelay() ? 'editFavourite' : 'editCart';
 
             try {
                 if (array_key_exists('PRODUCT_ID', $values)) {
