@@ -55,6 +55,10 @@ class mindbox_loyalty extends CModule
         $this->InstallEvents();
         $this->installAgents();
         $this->installDiscountRule();
+
+        if (!CopyDirFiles(__DIR__ . "/components", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/components", true, true)) {
+            return false;
+        }
     }
 
     public function DoUninstall()
