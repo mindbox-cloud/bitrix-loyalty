@@ -66,6 +66,9 @@ return [
             'mindboxLoyalty.editCart' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\EditCart()
             ],
+            'mindboxLoyalty.clearCart' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\ClearCart()
+            ],
             'mindboxLoyalty.editFavourite' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\EditFavourite()
             ],
