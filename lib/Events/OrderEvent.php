@@ -220,6 +220,9 @@ class OrderEvent
             $service->saveOfflineOrder($order);
             SessionStorage::getInstance()->clear();
 
+            $service = new OrderService();
+            $service->clearBasketByOrder($order);
+
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
@@ -231,6 +234,9 @@ class OrderEvent
         }
 
         SessionStorage::getInstance()->clear();
+
+        $service = new OrderService();
+        $service->clearBasketByOrder($order);
 
         return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Services;
 
 use Bitrix\Sale\Order;
+use Mindbox\DTO\DTO;
 use Mindbox\DTO\V3\Requests\PreorderRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Exceptions\MindboxUnavailableException;
@@ -457,6 +458,22 @@ class OrderService
             if ($request instanceof MindboxRequest) {
                 \Mindbox\Loyalty\ORM\QueueTable::push($request, $order->getSiteId());
             }
+        }
+    }
+
+    public function clearBasketByOrder(Order $order): bool
+    {
+        try {
+            $settings = SettingsFactory::createBySiteId($order->getSiteId());
+            $clearCart = $this->serviceLocator->get('mindboxLoyalty.clearCart');
+            $clearCart->setSettings($settings);
+
+            $customer = new Customer((int)$order->getUserId());
+            $clearCart->execute(new DTO(['customer' => ['ids' => $customer->getIds()]]));
+
+            return true;
+        } catch (MindboxClientException $e) {
+            return false;
         }
     }
 }
