@@ -337,6 +337,15 @@ foreach ($listSite as $site) {
                 'size' => 60,
             ]
         ],
+        SettingsEnum::USER_AUTO_SUBSCRIBE => [
+            'id' => SettingsEnum::USER_AUTO_SUBSCRIBE . '__' . $site,
+            'origin' => SettingsEnum::USER_AUTO_SUBSCRIBE,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_TEST_MODE', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_TEST_MODE_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'checkbox',
+            ]
+        ],
         Loc::getMessage('MINDBOX_LOYALTY_HEADING_ORDER_FIELDS'),
 
         SettingsEnum::ORDER_BITRIX_FIELDS => [

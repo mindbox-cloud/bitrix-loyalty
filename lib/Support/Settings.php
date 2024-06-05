@@ -156,6 +156,11 @@ final class Settings
         return $result;
     }
 
+    public function autoSubscribeEnabled(): bool
+    {
+        return $this->settings[SettingsEnum::USER_AUTO_SUBSCRIBE] === 'Y';
+    }
+
     public function getOrderFieldsMatch(): array
     {
         $result = [];
