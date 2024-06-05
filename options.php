@@ -789,7 +789,6 @@ foreach ($listSite as $site) {
         let mindboxKey = document.querySelector('[name="'+mindboxName+'"]').value;
         let bitrixKey = document.querySelector('[name="'+bitrixName+'"]').value;
 
-
         if (mindboxKey && bitrixKey) {
             setProps(bitrixKey, mindboxKey, propName);
             reInitTable(tableClass, propName);
@@ -861,7 +860,7 @@ foreach ($listSite as $site) {
     function setProps(key, value, propName) {
         let currentProps = getProps(propName);
 
-        if (Object.values(currentProps).indexOf(value) === -1) {
+        if (Object.keys(currentProps).indexOf(value) === -1) {
             currentProps[key] = value;
         }
 
