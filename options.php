@@ -340,8 +340,8 @@ foreach ($listSite as $site) {
         SettingsEnum::USER_AUTO_SUBSCRIBE => [
             'id' => SettingsEnum::USER_AUTO_SUBSCRIBE . '__' . $site,
             'origin' => SettingsEnum::USER_AUTO_SUBSCRIBE,
-            'label' => Loc::getMessage('MINDBOX_LOYALTY_TEST_MODE', ['#LID#' => $site]),
-            'hints' => Loc::getMessage('MINDBOX_LOYALTY_TEST_MODE_HINTS', ['#LID#'=>$site]),
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_HINTS', ['#LID#'=>$site]),
             'type' => [
                 'type' => 'checkbox',
             ]

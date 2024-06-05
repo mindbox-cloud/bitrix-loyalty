@@ -31,6 +31,7 @@ final class Settings
         SettingsEnum::USER_BITRIX_FIELDS => null,
         SettingsEnum::USER_MINDBOX_FIELDS => null,
         SettingsEnum::USER_FIELDS_MATCH => null,
+        SettingsEnum::USER_AUTO_SUBSCRIBE => null,
         SettingsEnum::ORDER_STATUS_MATCH => null,
         SettingsEnum::LOYALTY_ENABLE_EVENTS => null,
         SettingsEnum::YML_FEED_ENABLED => null,
