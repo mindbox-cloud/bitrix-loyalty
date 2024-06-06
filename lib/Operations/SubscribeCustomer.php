@@ -7,6 +7,7 @@ namespace Mindbox\Loyalty\Operations;
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\DTO\V3\Requests\SubscriptionRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
+use Mindbox\Helpers\CustomerHelper;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 
@@ -25,10 +26,11 @@ class SubscribeCustomer extends AbstractOperation
         try {
             $client = $this->api();
 
-            $response = $client->customer()
+            $response =(new CustomerHelper($client))
                 ->subscribeCustomer(
                     customer: $dto,
                     operationName: $operation,
+                    isSync: false
                 )->sendRequest();
 
             if ($response->getResult()->getStatus() === 'Success') {

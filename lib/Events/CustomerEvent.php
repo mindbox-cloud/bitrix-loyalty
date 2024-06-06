@@ -61,6 +61,10 @@ class CustomerEvent
                     }
                 }
 
+                if ($customer->getEmail() && $settings->autoSubscribeEnabled()) {
+                    $service->subscribeEmail($customer->getEmail());
+                }
+
             } catch (ObjectNotFoundException $e) {
                 $logger->error('ObjectNotFoundException', ['exception' => $e]);
             } catch (ErrorCallOperationException $e) {
