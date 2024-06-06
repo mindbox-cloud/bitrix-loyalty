@@ -182,6 +182,15 @@ foreach ($listSite as $site) {
                 'size' => 5
             ]
         ],
+        SettingsEnum::USER_AUTO_SUBSCRIBE => [
+            'id' => SettingsEnum::USER_AUTO_SUBSCRIBE . '__' . $site,
+            'origin' => SettingsEnum::USER_AUTO_SUBSCRIBE,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'checkbox',
+            ]
+        ],
         Loc::getMessage('MINDBOX_LOYALTY_HEADING_PRIMARY_KEY'),
         SettingsEnum::EXTERNAL_PRODUCT => [
             'id' => SettingsEnum::EXTERNAL_PRODUCT . '__' . $site,
@@ -337,15 +346,7 @@ foreach ($listSite as $site) {
                 'size' => 60,
             ]
         ],
-        SettingsEnum::USER_AUTO_SUBSCRIBE => [
-            'id' => SettingsEnum::USER_AUTO_SUBSCRIBE . '__' . $site,
-            'origin' => SettingsEnum::USER_AUTO_SUBSCRIBE,
-            'label' => Loc::getMessage('MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE', ['#LID#' => $site]),
-            'hints' => Loc::getMessage('MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_HINTS', ['#LID#'=>$site]),
-            'type' => [
-                'type' => 'checkbox',
-            ]
-        ],
+
         Loc::getMessage('MINDBOX_LOYALTY_HEADING_ORDER_FIELDS'),
 
         SettingsEnum::ORDER_BITRIX_FIELDS => [
