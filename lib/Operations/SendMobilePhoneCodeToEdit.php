@@ -7,15 +7,10 @@ namespace Mindbox\Loyalty\Operations;
 use Mindbox\DTO\V3\OperationDTO;
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
-use Mindbox\Exceptions\MindboxUnavailableException;
-use Mindbox\Helpers\CustomerHelper;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
-use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
-use Mindbox\Loyalty\Operations\AbstractOperation;
 use Mindbox\MindboxRequest;
 use Mindbox\MindboxResponse;
 use Mindbox\Responses\MindboxCustomerProcessingStatusResponse;
-use Mindbox\Responses\MindboxOrderResponse;
 
 class SendMobilePhoneCodeToEdit extends AbstractOperation
 {

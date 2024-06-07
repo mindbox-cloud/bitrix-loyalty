@@ -16,6 +16,7 @@ use Mindbox\Loyalty\Operations\CheckMobilePhoneCode;
 use Mindbox\Loyalty\Operations\ConfirmEmail;
 use Mindbox\Loyalty\Operations\ConfirmMobilePhone;
 use Mindbox\Loyalty\Operations\EditCustomer;
+use Mindbox\Loyalty\Operations\SendMobilePhoneCodeToEdit;
 use Mindbox\Loyalty\Operations\SubscribeCustomer;
 use Mindbox\Loyalty\Operations\SyncCustomer;
 use Mindbox\Loyalty\Operations\RegisterCustomer;
@@ -187,6 +188,22 @@ class CustomerService
         $operation->setSettings($this->settings);
 
         return $operation->execute($phone);
+    }
+
+    /**
+     * @param CustomerRequestDTO $customerDTO
+     * @return bool
+     * @throws ErrorCallOperationException
+     * @throws ObjectNotFoundException
+     * @throws ValidationErrorCallOperationException
+     */
+    public function sendMobilePhoneCodeToEdit(CustomerRequestDTO $customerDTO): bool
+    {
+        /** @var SendMobilePhoneCodeToEdit $operation */
+        $operation = $this->serviceLocator->get('mindboxLoyalty.sendMobilePhoneCodeToEdit');
+        $operation->setSettings($this->settings);
+
+        return $operation->execute($customerDTO);
     }
 
     /**
