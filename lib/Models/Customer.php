@@ -103,6 +103,14 @@ class Customer
         return $this->data['EMAIL'];
     }
 
+    public function setEmail(string $value): self
+    {
+        $clone = clone $this;
+        $clone->data['EMAIL'] = $value;
+
+        return $clone;
+    }
+
     public function getGender(): ?string
     {
         $return = null;
@@ -136,6 +144,14 @@ class Customer
         }
 
         return $value;
+    }
+
+    public function setMobilePhone(string $value): self
+    {
+        $clone = clone $this;
+        $clone->data['PERSONAL_PHONE'] = $value;
+
+        return $clone;
     }
 
     public function getDto(): \Mindbox\DTO\V3\Requests\CustomerRequestDTO
