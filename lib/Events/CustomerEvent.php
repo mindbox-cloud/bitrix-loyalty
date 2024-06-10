@@ -21,59 +21,59 @@ class CustomerEvent
 {
     public static function onAfterUserAdd(array &$arFields)
     {
-        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::REGISTRATION)) {
+        if (empty($arFields['ID'])) {
             return true;
         }
 
-        if (!empty($arFields['ID'])) {
-            $settings = SettingsFactory::create();
+        $userId = (int) $arFields['ID'];
+        $settings = SettingsFactory::create();
 
-            $logger = new \Mindbox\Loggers\MindboxFileLogger(
-                $settings->getLogPath(),
-                LogLevel::INFO
-            );
+        $logger = new \Mindbox\Loggers\MindboxFileLogger(
+            $settings->getLogPath(),
+            LogLevel::INFO
+        );
+        $logger->info('onAfterUserAdd', $arFields);
 
-            $logger->info('onAfterUserAdd', $arFields);
+        try {
+            $session = \Bitrix\Main\Application::getInstance()->getSession();
+            $customer = new Customer($userId);
+            $service = new CustomerService($settings);
 
-            try {
-                $customer = new Customer($arFields['ID']);
-
-                $service = new CustomerService($settings);
+            // Регистрация пользователя
+            if (LoyalityEvents::checkEnableEvent(LoyalityEvents::REGISTRATION)) {
                 $customerData = $service->sync($customer);
 
                 // Пользователь создается на сайте через СМС авторизацию, считаем телефон подтвержденным
-                $session = \Bitrix\Main\Application::getInstance()->getSession();
-                if (
-                    $session->has('mindbox_need_confirm_phone')
-                    && !$customerData->getIsMobilePhoneConfirmed()
-                ) {
-                    $logger->info('onAfterUserAdd confirm phone');
-
+                // Проставляем телефон в МБ статус Подтвержден
+                if ($session->has('mindbox_need_confirm_phone')) {
                     $session->remove('mindbox_need_confirm_phone');
                     $service->confirmMobilePhone($customer);
                 }
-
-                // Функционал подтверждения email
-                if ($session->has('mindbox_need_confirm_email')) {
-                    $session->remove('mindbox_need_confirm_email');
-                    if (!$customerData->getIsEmailConfirmed()) {
-                        $service->confirmEmail($customer);
-                    }
-                }
-
-                if ($customer->getEmail() && $settings->autoSubscribeEnabled()) {
-                    $service->subscribeEmail($customer->getEmail());
-                }
-
-            } catch (ObjectNotFoundException $e) {
-                $logger->error('ObjectNotFoundException', ['exception' => $e]);
-            } catch (ErrorCallOperationException $e) {
-                $logger->error('ErrorCallOperationException', ['exception' => $e]);
-            } catch (ValidationErrorCallOperationException $e) {
-                $logger->error('ValidationErrorCallOperationException', ['exception' => $e]);
-            } catch (\Throwable $throwable) {
-                $logger->error('Throwable', ['exception' => $throwable]);
             }
+
+            // Подтверждение email пользователя
+            if (
+                $customer->getEmail()
+                && LoyalityEvents::checkEnableEvent(LoyalityEvents::CHECK_CHANGE_USER_EMAIL)
+                && $service->confirmEmail($customer)
+            ) {
+                // @todo Перенести все коды в отдельный enum класс
+                $session->set('mindbox_send_confirm_email', 'Y');
+            }
+
+            // Подписка пользователя
+            if ($customer->getEmail() && $settings->autoSubscribeEnabled()) {
+                $service->subscribeEmail($customer->getEmail());
+            }
+
+        } catch (ObjectNotFoundException $e) {
+            $logger->error('ObjectNotFoundException', ['exception' => $e]);
+        } catch (ErrorCallOperationException $e) {
+            $logger->error('ErrorCallOperationException', ['exception' => $e]);
+        } catch (ValidationErrorCallOperationException $e) {
+            $logger->error('ValidationErrorCallOperationException', ['exception' => $e]);
+        } catch (\Throwable $throwable) {
+            $logger->error('Throwable', ['exception' => $throwable]);
         }
     }
 
