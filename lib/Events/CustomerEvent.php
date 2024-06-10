@@ -219,6 +219,7 @@ class CustomerEvent
             return;
         }
 
+        $isSend = false;
         try {
             $userId = (int) $arFields['ID'];
 
@@ -226,9 +227,13 @@ class CustomerEvent
             $settings = SettingsFactory::create();
             $service = new CustomerService($settings);
 
-            $service->confirmEmail($customer);
+            $isSend = $service->confirmEmail($customer);
         } catch (IntegrationLoyaltyException $e) {
             // @info Добавить логирование?
+        }
+
+        if ($isSend) {
+            \Bitrix\Main\Application::getInstance()->getSession()->set('mindbox_send_confirm_email_change', 'Y');
         }
     }
 

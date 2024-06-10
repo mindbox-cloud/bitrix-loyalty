@@ -8,30 +8,37 @@ use Mindbox\DTO\DTO;
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
+use Mindbox\MindboxRequest;
+use Mindbox\MindboxResponse;
+use Mindbox\Responses\MindboxCustomerProcessingStatusResponse;
 
 class ConfirmEmail extends AbstractOperation
 {
+    private ?MindboxRequest $request = null;
+    private ?MindboxResponse $response = null;
+
     /**
      * @throws ErrorCallOperationException
      */
     public function execute(CustomerRequestDTO $dto): bool
     {
-        $operation = $this->getOperation();
-
         try {
+            $operation = $this->getOperation();
             $client = $this->api();
 
-            $request = $client->prepareRequest(
+            $client->setResponseType(MindboxCustomerProcessingStatusResponse::class);
+
+            $this->request = $client->prepareRequest(
                 method: 'POST',
                 operationName: $operation,
                 body: new DTO(['customer' => $dto]),
                 isSync: false,
                 addDeviceUUID: false
-            );
+            )->getRequest();
 
-            $response = $request->sendRequest();
+            $this->response = $client->sendRequest();
 
-            if ($response->getResult()->getStatus() === 'Success') {
+            if ($this->response->getResult()->getStatus() === 'Success') {
                 return true;
             }
 
