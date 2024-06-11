@@ -114,7 +114,7 @@ class mindbox_loyalty extends CModule
 
     public function UnInstallDB()
     {
-        $discountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\Discount\BasketDiscountTable::class);
+        $discountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\BasketDiscountTable::class);
         $discountTableInstance->getConnection()
             ->queryExecute("drop table if exists " . $discountTableInstance->getDBTableName());
 
