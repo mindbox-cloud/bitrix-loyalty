@@ -9,6 +9,7 @@ use Mindbox\Clients\MindboxClientV3;
 use Mindbox\Loyalty\Support\Settings;
 use Mindbox\Loyalty\Support\SettingsFactory;
 use Psr\Log\LogLevel;
+use Psr\Log\NullLogger;
 
 class Api
 {
@@ -24,12 +25,24 @@ class Api
             LogLevel::DEBUG
         );
 
+        switch ($settings->getApiDomain()) {
+            case 'maestro':
+                $domainZone = 'io';
+                $domain = 'api.maestra';
+                break;
+            default:
+                $domainZone = 'ru';
+                $domain = 'api.mindbox';
+                break;
+        }
+
         $this->client = new MindboxClientV3(
             endpointId: $settings->getEndpoint(),
             secretKey: $settings->getSecretKey(),
             httpClient: (new \Mindbox\HttpClients\HttpClientFactory())->createHttpClient($settings->getHttpTimeout(), $settings->getHttpClient()),
             logger: $logger,
-            domainZone: 'ru'
+            domainZone: $domainZone,
+            domain: $domain
         );
     }
 
