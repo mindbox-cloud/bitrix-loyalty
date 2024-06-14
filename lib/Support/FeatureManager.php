@@ -23,4 +23,10 @@ class FeatureManager
     {
         return isset(self::$disabledHandlers[$loyaltyEvent]);
     }
+
+    public static function enableConfirmPhone(): void
+    {
+        $session = \Bitrix\Main\Application::getInstance()->getSession();
+        $session->set('mindbox_need_confirm_phone', true);
+    }
 }
