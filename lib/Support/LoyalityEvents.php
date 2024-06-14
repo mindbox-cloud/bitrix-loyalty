@@ -36,6 +36,11 @@ class LoyalityEvents
         if (!$settings->enabledLoyalty()) {
             return false;
         }
+
+        if (FeatureManager::isHandlerDisabled($eventName)) {
+            return false;
+        }
+
         return in_array($eventName, $settings->getEnableEvents());
     }
 }
