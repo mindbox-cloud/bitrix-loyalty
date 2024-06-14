@@ -5,7 +5,7 @@ namespace Mindbox\Loyalty\Support;
 
 class FeatureManager
 {
-    private static $disabledHandlers = [];
+    private static array $disabledHandlers = [];
 
     public static function disableHandler(string $loyaltyEvent): void
     {
