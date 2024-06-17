@@ -44,7 +44,26 @@ class OrderLine
 
     public function getBasePricePerItem()
     {
-        return $this->basketItem->getBasePrice();
+        static $basePrices = [];
+
+        if (!isset($basePrices[$this->getLineId()])) {
+            $iterPrices = \Bitrix\Catalog\PriceTable::getList([
+                'select' => ['PRICE'],
+                'filter' => [
+                    '=PRODUCT_ID' => $this->basketItem->getProductId(),
+                    '=CATALOG_GROUP_ID' => $this->getBasePriceId()
+                ],
+                'limit' => 1
+            ]);
+
+            if ($price = $iterPrices->fetch()) {
+                $basePrices[$this->getLineId()] = $price['PRICE'];
+            } else {
+                $basePrices[$this->getLineId()] = $this->basketItem->getBasePrice();
+            }
+        }
+
+        return $basePrices[$this->getLineId()];
     }
 
     public function getQuantity()
@@ -100,5 +119,21 @@ class OrderLine
             'status' => $this->getStatus()->getData(),
             'requestedPromotions' => $this->getRequestedPromotions()->getDataForBasketItem($this->basketItem)
         ]);
+    }
+
+    protected function getBasePriceId(): int
+    {
+        $basePriceGroupId = (int) $this->settings->getBasePriceId();
+
+        if ($basePriceGroupId !== 0) {
+            return $basePriceGroupId;
+        }
+
+        $basePrice = \Bitrix\Catalog\GroupTable::getList([
+            'filter' => ['BASE' => 'Y'],
+            'select' => ['ID']
+        ])->fetch();
+
+        return (int) $basePrice['ID'];
     }
 }
