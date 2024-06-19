@@ -21,6 +21,10 @@ class LoyalityEvents
     public const CANCEL_ORDER = 'cancel_order';
     public const DELETE_ORDER = 'delete_order';
 
+    public const INCLUDE_TRACKER = 'include_tracker';
+    public const ADD_CART = 'add_to_cart';
+    public const REMOVE_FROM_CART = 'remove_form_cart';
+
     public static function getAll(): array
     {
         $result = [];

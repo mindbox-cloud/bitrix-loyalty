@@ -67,6 +67,24 @@ class Product
         return (string)$fields['VALUE'];
     }
 
+    public function getPrice(): ?float
+    {
+        $return = null;
+
+        $getPrice = \Bitrix\Catalog\Model\Price::getList([
+            'filter'=>[
+                'CATALOG_GROUP_ID' => $this->settings->getBasePriceId(),
+                'PRODUCT_ID' => $this->productId
+            ]
+        ]);
+
+        if ($el = $getPrice->fetch()) {
+            $return = (float)$el['PRICE'];
+        }
+
+        return $return;
+    }
+
     public function getIds(): array
     {
         return [
