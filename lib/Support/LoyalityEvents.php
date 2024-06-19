@@ -32,10 +32,19 @@ class LoyalityEvents
 
     public static function checkEnableEvent(string $eventName): bool
     {
+        if (FeatureManager::isForceHandlerEnabled($eventName)) {
+            return true;
+        }
+
         $settings = SettingsFactory::create();
         if (!$settings->enabledLoyalty()) {
             return false;
         }
+
+        if (FeatureManager::isHandlerDisabled($eventName)) {
+            return false;
+        }
+
         return in_array($eventName, $settings->getEnableEvents());
     }
 }
