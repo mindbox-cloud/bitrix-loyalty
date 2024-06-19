@@ -20,6 +20,7 @@ $mindbox_loyalty_default_option = [
     'disable_user_groups' => '',
     'user_bitrix_fields' => '',
     'user_mindbox_fields' => '',
+    'user_auto_subscribe' => 'N',
     'user_fields_match' => '',
     'yml_protocol' => 'Y',
     'yml_path' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'mindbox.yml',

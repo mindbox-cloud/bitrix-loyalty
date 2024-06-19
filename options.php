@@ -182,6 +182,15 @@ foreach ($listSite as $site) {
                 'size' => 5
             ]
         ],
+        SettingsEnum::USER_AUTO_SUBSCRIBE => [
+            'id' => SettingsEnum::USER_AUTO_SUBSCRIBE . '__' . $site,
+            'origin' => SettingsEnum::USER_AUTO_SUBSCRIBE,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'checkbox',
+            ]
+        ],
         Loc::getMessage('MINDBOX_LOYALTY_HEADING_PRIMARY_KEY'),
         SettingsEnum::EXTERNAL_PRODUCT => [
             'id' => SettingsEnum::EXTERNAL_PRODUCT . '__' . $site,
@@ -337,6 +346,7 @@ foreach ($listSite as $site) {
                 'size' => 60,
             ]
         ],
+
         Loc::getMessage('MINDBOX_LOYALTY_HEADING_ORDER_FIELDS'),
 
         SettingsEnum::ORDER_BITRIX_FIELDS => [
@@ -789,7 +799,6 @@ foreach ($listSite as $site) {
         let mindboxKey = document.querySelector('[name="'+mindboxName+'"]').value;
         let bitrixKey = document.querySelector('[name="'+bitrixName+'"]').value;
 
-
         if (mindboxKey && bitrixKey) {
             setProps(bitrixKey, mindboxKey, propName);
             reInitTable(tableClass, propName);
@@ -861,7 +870,7 @@ foreach ($listSite as $site) {
     function setProps(key, value, propName) {
         let currentProps = getProps(propName);
 
-        if (Object.values(currentProps).indexOf(value) === -1) {
+        if (Object.keys(currentProps).indexOf(value) === -1) {
             currentProps[key] = value;
         }
 

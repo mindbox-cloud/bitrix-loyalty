@@ -61,6 +61,10 @@ class CustomerEvent
                     }
                 }
 
+                if ($customer->getEmail() && $settings->autoSubscribeEnabled()) {
+                    $service->subscribeEmail($customer->getEmail());
+                }
+
             } catch (ObjectNotFoundException $e) {
                 $logger->error('ObjectNotFoundException', ['exception' => $e]);
             } catch (ErrorCallOperationException $e) {
@@ -197,7 +201,7 @@ class CustomerEvent
         }
     }
 
-    public static function onCheckedChangePhone(&$arFields)
+    public static function onCheckedChangeEmail(&$arFields)
     {
         if (!$arFields['RESULT']) {
             return;
@@ -226,5 +230,10 @@ class CustomerEvent
         } catch (IntegrationLoyaltyException $e) {
             // @info Добавить логирование?
         }
+    }
+
+    public static function onUserLogout()
+    {
+        \Mindbox\Loyalty\Support\SessionStorage::getInstance()->clear();
     }
 }

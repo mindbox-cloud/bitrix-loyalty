@@ -276,7 +276,16 @@ class mindbox_loyalty extends CModule
             'OnAfterUserUpdate',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CustomerEvent::class,
-            'onCheckedChangePhone',
+            'onCheckedChangeEmail',
+            1000
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'main',
+            'OnUserLogout',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
+            'onUserLogout',
             1000
         );
 
@@ -412,7 +421,16 @@ class mindbox_loyalty extends CModule
             'OnAfterUserUpdate',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CustomerEvent::class,
-            'onCheckedChangePhone',
+            'onCheckedChangeEmail',
+            1000
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'main',
+            'OnUserLogout',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
+            'onUserLogout',
             1000
         );
     }
