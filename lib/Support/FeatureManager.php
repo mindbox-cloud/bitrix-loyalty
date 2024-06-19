@@ -34,6 +34,7 @@ class FeatureManager
     {
         return isset(self::$forceEnabledHandlers[$loyaltyEvent]);
     }
+
     public static function enableConfirmPhone(): void
     {
         $session = \Bitrix\Main\Application::getInstance()->getSession();
