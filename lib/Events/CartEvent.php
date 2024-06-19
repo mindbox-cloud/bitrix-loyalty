@@ -4,17 +4,22 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Events;
 
+use Mindbox\Loyalty\Support\LoyalityEvents;
 use Mindbox\Loyalty\Support\SettingsFactory;
 
 class CartEvent
 {
     public static function onSaleBasketItemEntitySaved(\Bitrix\Main\Event $event)
     {
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::ADD_CART)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
 
         global $USER;
+
         /** @var \Bitrix\Sale\BasketItem $basket */
-        $basket = $event->getParameter("ENTITY");
-        $values = $event->getParameter("VALUES");
+        $basket = $event->getParameter('ENTITY');
+        $values = $event->getParameter('VALUES');
 
         if (!empty($values)) {
             $needProcessedKeys = ['QUANTITY', 'ID', 'PRODUCT_ID'];
@@ -34,7 +39,7 @@ class CartEvent
 
             $settings = SettingsFactory::create();
             $service = new \Mindbox\Loyalty\Services\ProductListService($settings);
-            $customer = ($USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int)$USER->getID()) : null;
+            $customer = (is_object($USER) && $USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int)$USER->getID()) : null;
             $method = $basket->isDelay() ? 'editFavourite' : 'editCart';
 
             try {
@@ -59,16 +64,19 @@ class CartEvent
 
     public static function onBeforeSaleBasketItemEntityDeleted(\Bitrix\Main\Event $event)
     {
-        global $USER;
-        /** @var \Bitrix\Sale\BasketItem $basket */
-        $basket = $event->getParameter("ENTITY");
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::REMOVE_FROM_CART)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
 
-        \Bitrix\Main\Loader::includeModule('mindbox.loyalty');
+        global $USER;
+
+        /** @var \Bitrix\Sale\BasketItem $basket */
+        $basket = $event->getParameter('ENTITY');
         $settings = SettingsFactory::create();
 
         $service = new \Mindbox\Loyalty\Services\ProductListService($settings);
 
-        $customer = ($USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int)$USER->getID()) : null;
+        $customer = (is_object($USER) && $USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int)$USER->getID()) : null;
         $method = ($basket->isDelay()) ? 'editFavourite' : 'editCart';
 
         try {

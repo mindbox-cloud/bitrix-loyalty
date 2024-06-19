@@ -306,6 +306,15 @@ class mindbox_loyalty extends CModule
             'onSaleBasketItemEntitySaved',
             1000
         );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'main',
+            'OnProlog',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CommonEvent::class,
+            'OnProlog',
+            1000
+        );
     }
 
     public function UnInstallEvents()
@@ -431,6 +440,33 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CustomerEvent::class,
             'onUserLogout',
+            1000
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'sale',
+            'OnBeforeSaleBasketItemEntityDeleted',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CartEvent::class,
+            'onBeforeSaleBasketItemEntityDeleted',
+            1000
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'sale',
+            'OnSaleBasketItemEntitySaved',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CartEvent::class,
+            'onSaleBasketItemEntitySaved',
+            1000
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'main',
+            'OnProlog',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CommonEvent::class,
+            'OnProlog',
             1000
         );
     }

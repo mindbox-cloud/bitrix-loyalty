@@ -10,3 +10,7 @@ $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_confirm_order'] = 'Процессинг: п
 $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_change_status_order'] = 'Процессинг: смена статуса заказа';
 $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_cancel_order'] = 'Процессинг: отмена заказа';
 $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_delete_order'] = 'Процессинг: удаление заказа';
+
+$MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_include_tracker'] = 'Подключение трекера';
+$MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_add_to_cart'] = 'Добавление к корзину';
+$MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_remove_form_cart'] = 'Удаление из корзины';
