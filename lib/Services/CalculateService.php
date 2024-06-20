@@ -77,6 +77,10 @@ class CalculateService
             // Всего бонусов
             $this->sessionStorage->setBonusesBalanceAvailable(intval($totalBonusPointInfo['balance']['available']));
             unset($totalBonusPointInfo);
+        } else {
+            $this->sessionStorage->setBonusesBalanceAvailable(0);
+            $this->sessionStorage->setOrderAvailableBonuses(0);
+            $this->sessionStorage->setPayBonuses(0);
         }
 
         // проверяем начисление бонусов за заказ
