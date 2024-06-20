@@ -44,7 +44,7 @@ class OrderEvent
 
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
-        if (Helper::isDisableProccessingForUser($order->getUserId(), $settings)) {
+        if (Helper::isDisableProccessingForUser((int) $order->getUserId(), $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
@@ -102,7 +102,7 @@ class OrderEvent
 
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
-        if (Helper::isDisableProccessingForUser($order->getUserId(), $settings)) {
+        if (Helper::isDisableProccessingForUser((int) $order->getUserId(), $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
@@ -211,7 +211,7 @@ class OrderEvent
 
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
-        if (Helper::isDisableProccessingForUser($order->getUserId(), $settings)) {
+        if (Helper::isDisableProccessingForUser((int) $order->getUserId(), $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
@@ -262,7 +262,7 @@ class OrderEvent
 
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
-        if (Helper::isDisableProccessingForUser($order->getUserId(), $settings)) {
+        if (Helper::isDisableProccessingForUser((int) $order->getUserId(), $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
@@ -290,7 +290,7 @@ class OrderEvent
 
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
-        if (Helper::isDisableProccessingForUser($order->getUserId(), $settings)) {
+        if (Helper::isDisableProccessingForUser((int) $order->getUserId(), $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
@@ -323,7 +323,7 @@ class OrderEvent
 
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
-        if (Helper::isDisableProccessingForUser($order->getUserId(), $settings)) {
+        if (Helper::isDisableProccessingForUser((int) $order->getUserId(), $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 

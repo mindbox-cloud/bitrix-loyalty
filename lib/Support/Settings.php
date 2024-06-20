@@ -198,7 +198,7 @@ final class Settings
 
     public function getEnableEvents(): array
     {
-        return explode(',', $this->settings[SettingsEnum::LOYALTY_ENABLE_EVENTS]);
+        return $this->getArrayOptionValue(SettingsEnum::LOYALTY_ENABLE_EVENTS);
     }
 
     public function getLogPath(): ?string
@@ -285,7 +285,7 @@ final class Settings
 
     public function getInternalGroups()
     {
-        return $this->settings[SettingsEnum::DISABLE_PROCESSING_USER_GROUPS];
+        return $this->getArrayOptionValue(SettingsEnum::DISABLE_PROCESSING_USER_GROUPS);
     }
 
     public function getSiteId(): string
