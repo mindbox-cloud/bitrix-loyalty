@@ -6,6 +6,10 @@ $MESS['BUTTON_DELETE'] = 'Удалить';
 
 $MESS['MINDBOX_LOYALTY_SAVE'] = 'Сохранить';
 
+$MESS['MINDBOX_LOYALTY_ENABLED_LOYALTY'] = 'Включить интеграцию для сайта #LID#';
+$MESS['MINDBOX_LOYALTY_ENABLED_LOYALTY_HINTS'] = 'Включает работу лояльности на сайте #LID# для указанной точки интеграции';
+
+
 $MESS['MINDBOX_LOYALTY_ENDPOINT'] = 'Точка интеграции';
 $MESS['MINDBOX_LOYALTY_ENDPOINT_HINTS'] = 'Точка интеграции';
 
