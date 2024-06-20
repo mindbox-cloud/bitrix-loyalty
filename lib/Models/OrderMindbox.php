@@ -215,6 +215,23 @@ class OrderMindbox
             $customFields[$customName] = $value;
         }
 
+        $deliveryId = (int) $this->order->getField('DELIVERY_ID');
+        /** @var \Bitrix\Sale\ShipmentCollection $shipmentCollection */
+        $shipmentCollection = $this->order->getShipmentCollection();
+        /** @var \Bitrix\Sale\Shipment $shipment */
+        foreach ($shipmentCollection as $shipment) {
+            if ($shipment->isSystem()) {
+                continue;
+            }
+
+            $deliveryId = (int) $shipment->getDeliveryId();
+            break;
+        }
+
+        if ($deliveryId !== 0) {
+            $customFields['deliveryType'] = $deliveryId;
+        }
+
         return array_filter($customFields);
     }
 
