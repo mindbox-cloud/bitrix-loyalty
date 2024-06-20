@@ -102,15 +102,6 @@ $arAllOptions = [];
 foreach ($listSite as $site) {
     $arOptions = [
         Loc::getMessage('MINDBOX_LOYALTY_HEADING_MAIN'),
-        SettingsEnum::ENABLED_LOYALTY => [
-            'id' => SettingsEnum::ENABLED_LOYALTY . '__' . $site,
-            'origin' => SettingsEnum::ENABLED_LOYALTY,
-            'label' => Loc::getMessage('MINDBOX_LOYALTY_ENABLED_LOYALTY', ['#LID#' => $site]),
-            'hints' => Loc::getMessage('MINDBOX_LOYALTY_ENABLED_LOYALTY_HINTS', ['#LID#' => $site]),
-            'type' => [
-                'type' => 'checkbox',
-            ]
-        ],
         SettingsEnum::TEST_MODE => [
             'id' => SettingsEnum::TEST_MODE . '__' . $site,
             'origin' => SettingsEnum::TEST_MODE,

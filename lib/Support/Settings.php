@@ -283,6 +283,11 @@ final class Settings
         return $this->settings[$operationName];
     }
 
+    public function getInternalGroups()
+    {
+        return $this->settings[SettingsEnum::DISABLE_PROCESSING_USER_GROUPS];
+    }
+
     public function getSiteId(): string
     {
         return $this->siteId;
