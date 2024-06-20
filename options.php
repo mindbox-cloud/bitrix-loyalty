@@ -39,8 +39,10 @@ if ($request->isPost() && $request->get('save') && check_bitrix_sessid()) {
         'order' => ['SORT' => 'ASC'],
     ]);
     $listSite = [];
+
     while ($site = $queryObject->fetch()) {
         $listSite[] = $site['LID'];
+        \Bitrix\Main\Config\Option::delete(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, ['site_id' => $site['LID']]);
     }
 
     foreach ($request->getPostList() as $key => $option) {
