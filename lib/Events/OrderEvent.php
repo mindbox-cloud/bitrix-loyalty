@@ -8,6 +8,7 @@ use Bitrix\Main\Context;
 use Bitrix\Sale\Order;
 use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\IntegrationLoyaltyException;
+use Mindbox\Loyalty\Helper;
 use Mindbox\Loyalty\Models\OrderMindbox;
 use Mindbox\Loyalty\Support\CallBlocking;
 use Mindbox\Loyalty\Exceptions\EmptyLineException;
@@ -28,7 +29,7 @@ class OrderEvent
     public static function onBeforeSaleOrderFinalAction(\Bitrix\Main\Event $event)
     {
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CALCULATE_DISCOUNT)) {
-            return;
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
         /** @var Order $order */
         $order = $event->getParameter('ENTITY');
@@ -41,13 +42,10 @@ class OrderEvent
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
-        // В админке бонусы сразу в свойства записываются
-        if ($order->isNew() && !Context::getCurrent()->getRequest()->isAdminSection()) {
-            $settings = SettingsFactory::createBySiteId($order->getSiteId());
+        $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
-            $mindboxOrder = new OrderMindbox($order, $settings);
-            $mindboxOrder->setBonuses(SessionStorage::getInstance()->getPayBonuses());
-            $mindboxOrder->setCoupons(SessionStorage::getInstance()->getPromocodeValue());
+        if (Helper::isDisableProccessingForUser($order->getUserId(), $settings)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
         $service = new CalculateService();
@@ -66,7 +64,7 @@ class OrderEvent
     public static function onSaleOrderBeforeSaved(\Bitrix\Main\Event $event)
     {
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CREATE_ORDER)) {
-            return;
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
         /** @var Order $order */
@@ -102,6 +100,12 @@ class OrderEvent
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
+        $settings = SettingsFactory::createBySiteId($order->getSiteId());
+
+        if (Helper::isDisableProccessingForUser($order->getUserId(), $settings)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
         try {
             SessionStorage::getInstance()->clearField(SessionStorage::MINDBOX_ORDER_ID);
             SessionStorage::getInstance()->clearField(SessionStorage::OPERATION_TYPE);
@@ -115,8 +119,6 @@ class OrderEvent
             }
 
             if ($order->isNew() && !Context::getCurrent()->getRequest()->isAdminSection()) {
-                $settings = SettingsFactory::createBySiteId($order->getSiteId());
-
                 $mindboxOrder = new OrderMindbox($order, $settings);
                 $mindboxOrder->setBonuses(SessionStorage::getInstance()->getPayBonuses());
                 $mindboxOrder->setCoupons(SessionStorage::getInstance()->getPromocodeValue());
@@ -190,7 +192,7 @@ class OrderEvent
     public static function onSaleOrderSaved(\Bitrix\Main\Event $event)
     {
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CONFIRM_ORDER)) {
-            return;
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
         /** @var Order $order */
@@ -204,6 +206,12 @@ class OrderEvent
         if (!$isNew) {
             SessionStorage::getInstance()->clear();
 
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        $settings = SettingsFactory::createBySiteId($order->getSiteId());
+
+        if (Helper::isDisableProccessingForUser($order->getUserId(), $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
@@ -243,12 +251,18 @@ class OrderEvent
     public static function onSaleStatusOrderChange(\Bitrix\Main\Event $event)
     {
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CHANGE_STATUS_ORDER)) {
-            return;
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
         $order = $event->getParameter('ENTITY');
 
         if (!isset($order)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        $settings = SettingsFactory::createBySiteId($order->getSiteId());
+
+        if (Helper::isDisableProccessingForUser($order->getUserId(), $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
@@ -265,13 +279,19 @@ class OrderEvent
     public static function onSaleOrderCanceled(\Bitrix\Main\Event $event)
     {
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CANCEL_ORDER)) {
-            return;
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
         $order = $event->getParameter('ENTITY');
 
         if (!isset($order)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);;
+        }
+
+        $settings = SettingsFactory::createBySiteId($order->getSiteId());
+
+        if (Helper::isDisableProccessingForUser($order->getUserId(), $settings)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
         try {
@@ -281,14 +301,13 @@ class OrderEvent
 
         }
 
-
         return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
     }
 
     public static function onSaleOrderDeleted(\Bitrix\Main\Event $event)
     {
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::DELETE_ORDER)) {
-            return;
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
         $order = $event->getParameter('ENTITY');
@@ -297,8 +316,15 @@ class OrderEvent
         if (!isset($order)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);;
         }
+
         if (!$isSuccess) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);;
+        }
+
+        $settings = SettingsFactory::createBySiteId($order->getSiteId());
+
+        if (Helper::isDisableProccessingForUser($order->getUserId(), $settings)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
         try {
