@@ -36,9 +36,9 @@ class DeliveryDiscountRuleInstaller implements InstallerInterface
         $discountFields = [
             'LID' => $this->siteId,
             'NAME' => self::$discountName,
-            'LAST_DISCOUNT' => 'Y',
-            'LAST_LEVEL_DISCOUNT' => 'Y',
-            'PRIORITY' => 1,
+            'LAST_DISCOUNT' => 'N',
+            'LAST_LEVEL_DISCOUNT' => 'N',
+            'PRIORITY' => 2,
             'SORT' => 10000,
             'XML_ID' => self::$discountXmlId,
             'ACTIVE' => 'Y',
