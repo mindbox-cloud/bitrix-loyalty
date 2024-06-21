@@ -25,7 +25,7 @@ class Helper
         }
 
         if ($userId === null || $userId === 0) {
-            return true;
+            $userId = (int) $USER->GetID();
         }
 
         static $userRegisterDelta = 30;
