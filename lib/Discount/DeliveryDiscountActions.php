@@ -43,6 +43,7 @@ class DeliveryDiscountActions extends \Bitrix\Sale\Discount\Actions
                 return;
             }
 
+            $filter['ORDER_ID'] = null;
             $filter['FUSER_ID'] = $fuserId;
         }
 

@@ -31,10 +31,14 @@ class OrderEvent
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CALCULATE_DISCOUNT)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
+        global $USER;
         /** @var Order $order */
         $order = $event->getParameter('ENTITY');
-
         if (!$order instanceof Order) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        if ((int) $order->getField('USER_ID') === 0 && $USER->IsAuthorized()) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
