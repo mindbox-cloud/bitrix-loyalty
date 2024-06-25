@@ -68,6 +68,12 @@ class CartEvent
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
+        $values = $event->getParameter('VALUES');
+
+        if (!empty($values)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
         global $USER;
 
         /** @var \Bitrix\Sale\BasketItem $basket */
