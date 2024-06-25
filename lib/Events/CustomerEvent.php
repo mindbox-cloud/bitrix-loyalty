@@ -40,7 +40,7 @@ class CustomerEvent
 
             //подписка пользователя
             if ($settings->autoSubscribeEnabled() && $brand = $settings->getBrand()) {
-                $customer->setSubscribe($brand, true);
+                $customer->setSubscribe($brand, 'Email', true);
             }
 
             $service = new CustomerService($settings);

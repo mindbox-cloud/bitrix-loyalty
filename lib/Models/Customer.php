@@ -111,7 +111,7 @@ class Customer
         return $clone;
     }
 
-    public function setSubscribe(string $brand, bool $isSubscribed): self
+    public function setSubscribe(string $brand, string $pointOfContact, bool $isSubscribed): self
     {
         if (!isset($this->data['subscriptions'])) {
             $this->data['subscriptions'] = [];
@@ -120,6 +120,7 @@ class Customer
         $clone = clone $this;
         $clone->data['subscriptions'][] = [
             'brand' => $brand,
+            'pointOfContact' => $pointOfContact,
             'isSubscribed' => $isSubscribed
         ];
 
