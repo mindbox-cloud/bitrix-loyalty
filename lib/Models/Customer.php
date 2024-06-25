@@ -111,6 +111,22 @@ class Customer
         return $clone;
     }
 
+    public function setSubscribe(string $brand, string $pointOfContact, bool $isSubscribed): self
+    {
+        if (!isset($this->data['subscriptions'])) {
+            $this->data['subscriptions'] = [];
+        }
+
+        $clone = clone $this;
+        $clone->data['subscriptions'][] = [
+            'brand' => $brand,
+            'pointOfContact' => $pointOfContact,
+            'isSubscribed' => $isSubscribed
+        ];
+
+        return $clone;
+    }
+
     public function getGender(): ?string
     {
         $return = null;
@@ -164,7 +180,8 @@ class Customer
             'mobilePhone' => $this->getMobilePhone(),
             'birthDate' => $this->getBirthday()?->format('Y-m-d H:i:s'),
             'sex' => $this->getGender(),
-            'ids' => $this->getIds()
+            'ids' => $this->getIds(),
+            'subscriptions' => $this->getSubscriptions(),
         ]));
     }
 
@@ -178,13 +195,19 @@ class Customer
             'mobilePhone' => $this->getMobilePhone(),
             'birthDate' => $this->getBirthday()?->format('Y-m-d H:i:s'),
             'sex' => $this->getGender(),
-            'ids' => $this->getIds()
+            'ids' => $this->getIds(),
+            'subscriptions' => $this->getSubscriptions(),
         ]);
     }
 
     public function getId(): int
     {
         return $this->userId;
+    }
+
+    public function getSubscriptions(): ?array
+    {
+        return isset($this->data['subscriptions']) ? $this->data['subscriptions'] : null;
     }
 
     public function getIds(): array

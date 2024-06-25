@@ -37,6 +37,12 @@ class CustomerEvent
         try {
             $session = \Bitrix\Main\Application::getInstance()->getSession();
             $customer = new Customer($userId);
+
+            //подписка пользователя
+            if ($settings->autoSubscribeEnabled() && $brand = $settings->getBrand()) {
+                $customer = $customer->setSubscribe($brand, 'Email', true);
+            }
+
             $service = new CustomerService($settings);
 
             // Регистрация пользователя
@@ -60,12 +66,6 @@ class CustomerEvent
                 // @todo Перенести все коды в отдельный enum класс
                 $session->set('mindbox_send_confirm_email', 'Y');
             }
-
-            // Подписка пользователя
-            if ($customer->getEmail() && $settings->autoSubscribeEnabled()) {
-                $service->subscribeEmail($customer->getEmail());
-            }
-
         } catch (ObjectNotFoundException $e) {
             $logger->error('ObjectNotFoundException', ['exception' => $e]);
         } catch (ErrorCallOperationException $e) {
