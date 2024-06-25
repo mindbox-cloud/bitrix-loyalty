@@ -11,6 +11,8 @@ use Bitrix\Sale\BasketItem;
 use Bitrix\Sale\Order;
 use Mindbox\DTO\V3\Responses\OrderResponseDTO;
 use Mindbox\Loyalty\Exceptions\ResponseErrorExceprion;
+use Mindbox\Loyalty\Operations\CalculateAuthorizedCartAdmin;
+use Mindbox\Loyalty\Operations\CalculateUnauthorizedCart;
 use Mindbox\Loyalty\ORM\BasketDiscountTable;
 use Mindbox\Loyalty\Helper;
 use Mindbox\Loyalty\Models\Customer;
@@ -171,8 +173,8 @@ class CalculateService
         $mindboxOrder = new OrderMindbox($order, $settings);
         $customer = new Customer($order->getUserId());
 
-        /** @var CalculateAuthorizedCart $calculateAuthorizedCart */
-        $calculateAuthorizedCart = $this->serviceLocator->get('mindboxLoyalty.calculateAuthorizedCartAdmin');
+        /** @var CalculateAuthorizedCartAdmin $calculateAuthorizedCartAdmin */
+        $calculateAuthorizedCartAdmin = $this->serviceLocator->get('mindboxLoyalty.calculateAuthorizedCartAdmin');
 
         $customerDTO = new \Mindbox\DTO\V3\Requests\CustomerRequestDTO();
         $customerDTO->setIds($customer->getIds());
@@ -183,7 +185,7 @@ class CalculateService
         $DTO->setOrder($orderData);
         $DTO->setCustomer($customerDTO);
 
-        return $calculateAuthorizedCart->execute($DTO);
+        return $calculateAuthorizedCartAdmin->execute($DTO);
     }
 
     public function calculateAuthorizedOrder(Order $order): MindboxResponse
@@ -216,8 +218,8 @@ class CalculateService
 
         $mindboxOrder = new OrderMindbox($order, $settings);
 
-        /** @var CalculateAuthorizedCart $calculateAuthorizedCart */
-        $calculateAuthorizedCart = $this->serviceLocator->get('mindboxLoyalty.calculateUnauthorizedCart');
+        /** @var CalculateUnauthorizedCart $calculateUnauthorizedCart */
+        $calculateUnauthorizedCart = $this->serviceLocator->get('mindboxLoyalty.calculateUnauthorizedCart');
 
         $mindboxOrder->setCoupons($this->sessionStorage->getPromocodeValue());
 
@@ -226,7 +228,7 @@ class CalculateService
         $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
         $DTO->setOrder($orderData);
 
-        return $calculateAuthorizedCart->execute($DTO);
+        return $calculateUnauthorizedCart->execute($DTO);
     }
 
     public function resetDiscount(Order $order)
