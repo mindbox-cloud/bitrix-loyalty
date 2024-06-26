@@ -398,9 +398,6 @@ class OrderService
 
     public function changeStatus(Order $order)
     {
-        if ($order->isNew()) {
-            return;
-        }
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
         $mindboxOrder = new OrderMindbox($order, $settings);

@@ -258,9 +258,20 @@ class OrderEvent
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
+        /** @var Order $order */
         $order = $event->getParameter('ENTITY');
+        $value = $event->getParameter('VALUE');
+        $oldValuealue = $event->getParameter('OLD_VALUE');
 
         if (!isset($order)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        if (empty($oldValuealue) || $oldValuealue === $value) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        if ($order->isNew()) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
