@@ -193,6 +193,15 @@ foreach ($listSite as $site) {
                 'type' => 'checkbox',
             ]
         ],
+        SettingsEnum::USER_LOGIN_IS_EMAIL => [
+            'id' => SettingsEnum::USER_LOGIN_IS_EMAIL . '__' . $site,
+            'origin' => SettingsEnum::USER_LOGIN_IS_EMAIL,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_USER_EMAIL_IS_LOGIN', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_USER_EMAIL_IS_LOGIN_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'checkbox',
+            ]
+        ],
         Loc::getMessage('MINDBOX_LOYALTY_HEADING_PRIMARY_KEY'),
         SettingsEnum::EXTERNAL_PRODUCT => [
             'id' => SettingsEnum::EXTERNAL_PRODUCT . '__' . $site,
