@@ -29,7 +29,9 @@ class OrderLines
         OrderLine::resetNumber();
         /** @var \Bitrix\Sale\BasketItem $basketItem */
         foreach ($this->basket as $basketItem) {
-            $lines[] = (new OrderLine($basketItem, $this->settings))->getData();
+            if ($basketItem->canBuy() && !$basketItem->isDelay()) {
+                $lines[] = (new OrderLine($basketItem, $this->settings))->getData();
+            }
         }
 
         return $lines;
