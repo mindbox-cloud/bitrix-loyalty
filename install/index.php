@@ -271,6 +271,16 @@ class mindbox_loyalty extends CModule
             1000
         );
 
+        // Заполнение логина из почты
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'main',
+            'OnBeforeUserUpdate',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
+            'setUserLoginByEmail',
+            1000
+        );
+
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
             'main',
             'OnAfterUserUpdate',
@@ -431,6 +441,15 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CustomerEvent::class,
             'onCheckedChangeEmail',
+            1000
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'main',
+            'OnBeforeUserUpdate',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\CustomerEvent::class,
+            'setUserLoginByEmail',
             1000
         );
 

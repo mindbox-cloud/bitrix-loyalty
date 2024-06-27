@@ -241,4 +241,15 @@ class CustomerEvent
     {
         \Mindbox\Loyalty\Support\SessionStorage::getInstance()->clear();
     }
+
+    public static function setUserLoginByEmail(&$arFields)
+    {
+        $settings = SettingsFactory::create();
+
+        if ($settings->getLoginIsEmailEnabled()) {
+            if ($arFields['EMAIL']) {
+                $arFields['LOGIN'] = $arFields['EMAIL'];
+            }
+        }
+    }
 }
