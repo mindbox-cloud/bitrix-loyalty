@@ -243,6 +243,16 @@ foreach ($listSite as $site) {
                 'size' => 60,
             ]
         ],
+        SettingsEnum::BALANCE_SYSTEM_NAME => [
+            'id' => SettingsEnum::BALANCE_SYSTEM_NAME . '__' . $site,
+            'origin' => SettingsEnum::BALANCE_SYSTEM_NAME,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_BALANCE_SYSTEM_NAME', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_BALANCE_SYSTEM_NAME_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
         Loc::getMessage('MINDBOX_LOYALTY_HEADING_HTTP_CLIENT'),
         SettingsEnum::API_DOMAIN => [
             'id' => SettingsEnum::API_DOMAIN . '__' . $site,

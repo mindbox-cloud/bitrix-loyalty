@@ -75,6 +75,9 @@ return [
             'mindboxLoyalty.editFavourite' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\EditFavourite()
             ],
+            'mindboxLoyalty.getCustomerPoints' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\GetCustomerPoints()
+            ],
 		],
 		'readonly' => true,
 	],

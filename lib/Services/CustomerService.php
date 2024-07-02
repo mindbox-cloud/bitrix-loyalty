@@ -16,6 +16,7 @@ use Mindbox\Loyalty\Operations\CheckMobilePhoneCode;
 use Mindbox\Loyalty\Operations\ConfirmEmail;
 use Mindbox\Loyalty\Operations\ConfirmMobilePhone;
 use Mindbox\Loyalty\Operations\EditCustomer;
+use Mindbox\Loyalty\Operations\GetCustomerPoints;
 use Mindbox\Loyalty\Operations\SendMobilePhoneCodeToEdit;
 use Mindbox\Loyalty\Operations\SubscribeCustomer;
 use Mindbox\Loyalty\Operations\SyncCustomer;
@@ -256,5 +257,50 @@ class CustomerService
         ]);
 
         return $operation->execute($dto);
+    }
+
+    /**
+     * @param Customer $customer
+     * @return int
+     * @throws ErrorCallOperationException
+     * @throws ObjectNotFoundException
+     */
+
+    public function getAvailableBonuses(Customer $customer, ?string $balanceSystemName = null): int
+    {
+        /** @var GetCustomerPoints $operation */
+        $operation = $this->serviceLocator->get('mindboxLoyalty.getCustomerPoints');
+        $operation->setSettings($this->settings);
+
+        if (!$balanceSystemName) {
+            $balanceSystemName = $this->settings->getBalanceSystemName();
+        }
+
+        $response = $operation->execute(new CustomerRequestDTO([
+            'ids' => $customer->getIds()
+        ]));
+
+        if (!$response) {
+            return 0;
+        }
+
+        $items = $response->getResult()
+            ->getBalances();
+
+        $availableBonuses = 0;
+
+        /** @var \Mindbox\DTO\V3\Responses\BalanceResponseDTO $item */
+        foreach ($items as $item) {
+            if ($balanceSystemName) {
+                if ($balanceSystemName === $item->getField('systemName')) {
+                    $availableBonuses += $item->getField('available');
+                    break;
+                }
+            } else {
+                $availableBonuses += $item->getField('available');
+            }
+        }
+
+        return (int)$availableBonuses;
     }
 }

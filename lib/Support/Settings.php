@@ -21,6 +21,7 @@ final class Settings
         SettingsEnum::EXTERNAL_USER => null,
         SettingsEnum::TEMP_EXTERNAL_ORDER => null,
         SettingsEnum::EXTERNAL_ORDER => null,
+        SettingsEnum::BALANCE_SYSTEM_NAME => null,
         SettingsEnum::API_DOMAIN => null,
         SettingsEnum::HTTP_CLIENT => null,
         SettingsEnum::TIMEOUT => null,
@@ -131,6 +132,11 @@ final class Settings
     public function getTmpOrderId(): ?string
     {
         return $this->settings[SettingsEnum::TEMP_EXTERNAL_ORDER];
+    }
+
+    public function getBalanceSystemName(): ?string
+    {
+        return $this->settings[SettingsEnum::BALANCE_SYSTEM_NAME];
     }
 
     public function getExternalOrderId(): ?string
