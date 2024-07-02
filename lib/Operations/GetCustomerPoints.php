@@ -10,7 +10,7 @@ use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\MindboxRequest;
 use Mindbox\MindboxResponse;
-use Mindbox\Responses\MindboxCustomerProcessingStatusResponse;
+use Mindbox\Responses\MindboxBalanceResponse;
 
 class GetCustomerPoints extends AbstractOperation
 {
@@ -25,7 +25,7 @@ class GetCustomerPoints extends AbstractOperation
             $operation = $this->getOperation();
             $client = $this->api();
 
-            $client->setResponseType(MindboxCustomerProcessingStatusResponse::class);
+            $client->setResponseType(MindboxBalanceResponse::class);
 
             $this->request = $client->prepareRequest(
                 method: 'POST',

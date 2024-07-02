@@ -261,9 +261,11 @@ class CustomerService
 
     /**
      * @param Customer $customer
+     * @param string|null $balanceSystemName
      * @return int
      * @throws ErrorCallOperationException
      * @throws ObjectNotFoundException
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
 
     public function getAvailableBonuses(Customer $customer, ?string $balanceSystemName = null): int
