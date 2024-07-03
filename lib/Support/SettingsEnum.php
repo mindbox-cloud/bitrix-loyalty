@@ -17,6 +17,8 @@ class SettingsEnum
     public const TEMP_EXTERNAL_ORDER = 'temp_external_order';
 
     public const EXTERNAL_ORDER = 'external_order';
+
+    public const BALANCE_SYSTEM_NAME = 'balance_system_name';
     public const API_DOMAIN = 'api_domain';
     public const HTTP_CLIENT = 'http_client';
     public const TIMEOUT = 'timeout';
