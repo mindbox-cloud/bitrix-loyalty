@@ -6,9 +6,9 @@ namespace Mindbox\Loyalty\Operations;
 
 use Mindbox\DTO\DTO;
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
-use Mindbox\DTO\V3\Responses\BalanceResponseCollection;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
+use Mindbox\MindboxResponse;
 use Mindbox\Responses\MindboxBalanceResponse;
 
 class GetCustomerPoints extends AbstractOperation
@@ -16,7 +16,7 @@ class GetCustomerPoints extends AbstractOperation
     /**
      * @throws ErrorCallOperationException
      */
-    public function execute(CustomerRequestDTO $dto): ?BalanceResponseCollection
+    public function execute(CustomerRequestDTO $dto): MindboxResponse
     {
         try {
             $operation = $this->getOperation();
@@ -34,10 +34,7 @@ class GetCustomerPoints extends AbstractOperation
 
             $response = $client->sendRequest();
 
-            if ($response->getResult()->getStatus() === 'Success') {
-                return $response->getResult()->getBalances();
-            }
-
+            return $response;
         } catch (MindboxClientException $e) {
             throw new ErrorCallOperationException(
                 message: sprintf('The operation %s failed', $this->getOperation()),
@@ -45,8 +42,6 @@ class GetCustomerPoints extends AbstractOperation
                 operationName: $this->getOperation()
             );
         }
-
-        return null;
     }
 
     protected function operation(): string
