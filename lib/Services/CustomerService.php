@@ -286,7 +286,6 @@ class CustomerService
             return 0;
         }
 
-
         $availableBonuses = 0;
         $balanceCollection = $response->getResult()->getBalances();
 
