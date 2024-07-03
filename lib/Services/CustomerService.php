@@ -278,21 +278,18 @@ class CustomerService
             $balanceSystemName = $this->settings->getBalanceSystemName();
         }
 
-        $response = $operation->execute(new CustomerRequestDTO([
+        $balanceCollection = $operation->execute(new CustomerRequestDTO([
             'ids' => $customer->getIds()
         ]));
 
-        if (!$response) {
+        if (!$balanceCollection) {
             return 0;
         }
-
-        $items = $response->getResult()
-            ->getBalances();
 
         $availableBonuses = 0;
 
         /** @var \Mindbox\DTO\V3\Responses\BalanceResponseDTO $item */
-        foreach ($items as $item) {
+        foreach ($balanceCollection as $item) {
             if ($balanceSystemName) {
                 if ($balanceSystemName === $item->getField('systemName')) {
                     $availableBonuses += $item->getField('available');
