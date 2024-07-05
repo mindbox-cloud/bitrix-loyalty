@@ -22,6 +22,14 @@ class SubscribeService
         $this->serviceLocator = \Bitrix\Main\DI\ServiceLocator::getInstance();
         $this->settings = $settings;
     }
+
+    /**
+     * @param string $email
+     * @return bool
+     * @throws ErrorCallOperationException
+     * @throws ObjectNotFoundException
+     * @throws ValidationErrorCallOperationException
+     */
     public function subscribeEmail(string $email): bool
     {
         return $this->subscribe($email, true);
