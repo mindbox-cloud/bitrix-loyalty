@@ -13,6 +13,7 @@ use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\ORM\DeliveryDiscountTable;
 use Mindbox\Loyalty\Services\CustomerService;
 use Mindbox\Loyalty\Support\EmailChangeChecker;
+use Mindbox\Loyalty\Support\FeatureManager;
 use Mindbox\Loyalty\Support\LoyalityEvents;
 use Mindbox\Loyalty\Support\SettingsFactory;
 use Psr\Log\LogLevel;
@@ -38,9 +39,15 @@ class CustomerEvent
             $session = \Bitrix\Main\Application::getInstance()->getSession();
             $customer = new Customer($userId);
 
+            $settingsSubscribePoints = $settings->getAutoSubscribePoints();
+            $featureSubscribePoints = FeatureManager::getAutoSubscribePoints();
+
+            $autoSubscribePoints = array_unique(array_merge($settingsSubscribePoints, $featureSubscribePoints));
             //подписка пользователя
-            if ($settings->autoSubscribeEnabled() && $brand = $settings->getBrand()) {
-                $customer = $customer->setSubscribe($brand, 'Email', true);
+            if ($autoSubscribePoints && $brand = $settings->getBrand()) {
+                foreach ($autoSubscribePoints as $autoSubscribePoint) {
+                    $customer->setSubscribe($brand, $autoSubscribePoint, true);
+                }
             }
 
             $service = new CustomerService($settings);

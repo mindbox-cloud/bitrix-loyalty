@@ -32,7 +32,7 @@ final class Settings
         SettingsEnum::USER_BITRIX_FIELDS => null,
         SettingsEnum::USER_MINDBOX_FIELDS => null,
         SettingsEnum::USER_FIELDS_MATCH => null,
-        SettingsEnum::USER_AUTO_SUBSCRIBE => null,
+        SettingsEnum::USER_AUTO_SUBSCRIBE_POINTS => null,
         SettingsEnum::USER_LOGIN_IS_EMAIL => null,
         SettingsEnum::ORDER_STATUS_MATCH => null,
         SettingsEnum::LOYALTY_ENABLE_EVENTS => null,
@@ -164,9 +164,9 @@ final class Settings
         return $result;
     }
 
-    public function autoSubscribeEnabled(): bool
+    public function getAutoSubscribePoints(): array
     {
-        return $this->settings[SettingsEnum::USER_AUTO_SUBSCRIBE] === 'Y';
+        return $this->getArrayOptionValue(SettingsEnum::USER_AUTO_SUBSCRIBE_POINTS) ?? [];
     }
 
     public function getOrderFieldsMatch(): array
@@ -205,7 +205,7 @@ final class Settings
 
     public function getEnableEvents(): array
     {
-        return $this->getArrayOptionValue(SettingsEnum::LOYALTY_ENABLE_EVENTS);
+        return $this->getArrayOptionValue(SettingsEnum::LOYALTY_ENABLE_EVENTS) ?? [];
     }
 
     public function getLogPath(): ?string
@@ -290,7 +290,7 @@ final class Settings
         return $this->settings[$operationName];
     }
 
-    public function getInternalGroups()
+    public function getInternalGroups(): ?array
     {
         return $this->getArrayOptionValue(SettingsEnum::DISABLE_PROCESSING_USER_GROUPS);
     }

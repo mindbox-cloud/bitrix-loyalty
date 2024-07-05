@@ -7,6 +7,7 @@ namespace Mindbox\Loyalty;
 use Bitrix\Catalog\GroupTable;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
+use Mindbox\Loyalty\Support\PointOfSubscribeEnum;
 
 final class Options
 {
@@ -153,6 +154,17 @@ final class Options
         }
 
         return $arGroup;
+    }
+
+    public static function getSubscribePoints(): array
+    {
+        return [
+            PointOfSubscribeEnum::EMAIL => Loc::getMessage('SUBSCRIBE_POINTS_EMAIL'),
+            PointOfSubscribeEnum::SMS => Loc::getMessage('SUBSCRIBE_POINTS_SMS'),
+            PointOfSubscribeEnum::VIBER => Loc::getMessage('SUBSCRIBE_POINTS_VIBER'),
+            PointOfSubscribeEnum::WEBPUSH => Loc::getMessage('SUBSCRIBE_POINTS_WEBPUSH'),
+            PointOfSubscribeEnum::MOBILEPUSH => Loc::getMessage('SUBSCRIBE_POINTS_MOBILEPUSH'),
+        ];
     }
 
     public static function getAddOrderMatchButton(string $buttonClass = ''): string

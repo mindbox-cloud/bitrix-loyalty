@@ -103,3 +103,6 @@ $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS'] = 'Включить обработку с
 $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_HINTS'] = 'Используйте эту настройку, чтобы включить обработку событий';
 $MESS['MINDBOX_LOYALTY_HEADING_CUSTOM_OPERATIONS'] = 'Замена стандартных операций';
 $MESS['MINDBOX_LOYALTY_OPERATIONS_HINTS'] = 'Указывать полное название операции с учетом префикса';
+
+$MESS['MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_POINTS'] = 'Автоматическая подписка при регистрации';
+$MESS['MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_POINTS_HINTS'] = 'Автоматическая подписка при регистрации';

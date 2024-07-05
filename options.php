@@ -184,13 +184,15 @@ foreach ($listSite as $site) {
                 'size' => 5
             ]
         ],
-        SettingsEnum::USER_AUTO_SUBSCRIBE => [
-            'id' => SettingsEnum::USER_AUTO_SUBSCRIBE . '__' . $site,
-            'origin' => SettingsEnum::USER_AUTO_SUBSCRIBE,
-            'label' => Loc::getMessage('MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE', ['#LID#' => $site]),
-            'hints' => Loc::getMessage('MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_HINTS', ['#LID#'=>$site]),
+        SettingsEnum::USER_AUTO_SUBSCRIBE_POINTS => [
+            'id' => SettingsEnum::USER_AUTO_SUBSCRIBE_POINTS . '__' . $site,
+            'origin' => SettingsEnum::USER_AUTO_SUBSCRIBE_POINTS,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_POINTS', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_POINTS_HINTS', ['#LID#'=>$site]),
             'type' => [
-                'type' => 'checkbox',
+                'type' => 'multiselectbox',
+                'options' => \Mindbox\Loyalty\Options::getSubscribePoints(),
+                'size' => 5
             ]
         ],
         SettingsEnum::USER_LOGIN_IS_EMAIL => [

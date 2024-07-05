@@ -7,6 +7,7 @@ class FeatureManager
 {
     private static array $disabledHandlers = [];
     private static array $forceEnabledHandlers = [];
+    private static array $enabledAutoSubscribePoints = [];
 
     public static function disableHandler(string $loyaltyEvent): void
     {
@@ -39,5 +40,15 @@ class FeatureManager
     {
         $session = \Bitrix\Main\Application::getInstance()->getSession();
         $session->set('mindbox_need_confirm_phone', true);
+    }
+
+    public static function enableAutoSubscribe(string $pointOfContact): void
+    {
+        self::$enabledAutoSubscribePoints[] = $pointOfContact;
+    }
+
+    public static function getAutoSubscribePoints(): array
+    {
+        return self::$enabledAutoSubscribePoints;
     }
 }
