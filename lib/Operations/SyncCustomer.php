@@ -26,7 +26,7 @@ class SyncCustomer extends AbstractOperation
                 ->checkCustomer(
                     customer: $dto,
                     operationName: $this->getOperation(),
-                    addDeviceUUID: false
+                    addDeviceUUID: true
                 )->sendRequest();
 
             if (
