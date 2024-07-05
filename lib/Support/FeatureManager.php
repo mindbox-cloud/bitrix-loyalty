@@ -8,6 +8,7 @@ class FeatureManager
     private static array $disabledHandlers = [];
     private static array $forceEnabledHandlers = [];
     private static array $enabledAutoSubscribePoints = [];
+    private static array $unsubscribePoints = [];
 
     public static function disableHandler(string $loyaltyEvent): void
     {
@@ -50,5 +51,15 @@ class FeatureManager
     public static function getAutoSubscribePoints(): array
     {
         return self::$enabledAutoSubscribePoints;
+    }
+
+    public static function unsubscribePoint(string $pointOfContact): void
+    {
+        self::$unsubscribePoints[] = $pointOfContact;
+    }
+
+    public static function getUnsubscribePoints(): array
+    {
+        return self::$unsubscribePoints;
     }
 }

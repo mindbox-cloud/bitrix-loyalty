@@ -86,7 +86,6 @@ class CustomerEvent
 
     public static function onAfterUserAuthorize($arUser)
     {
-
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::AUTH)) {
             return true;
         }
@@ -158,6 +157,19 @@ class CustomerEvent
             if ($session->has('mindbox_need_confirm_phone')) {
                 $session->remove('mindbox_need_confirm_phone');
                 $service->confirmMobilePhone($customer);
+            }
+
+            $subscriptionPoints = FeatureManager::getAutoSubscribePoints();
+            $unsubscriptionPoints = FeatureManager::getUnsubscribePoints();
+
+            $brand = $settings->getBrand();
+            if ($brand) {
+                foreach ($subscriptionPoints as $autoSubscribePoint) {
+                    $customer->setSubscribe($brand, $autoSubscribePoint, true);
+                }
+                foreach ($unsubscriptionPoints as $autoSubscribePoint) {
+                    $customer->setSubscribe($brand, $autoSubscribePoint, false);
+                }
             }
 
             $service->edit($customer);
