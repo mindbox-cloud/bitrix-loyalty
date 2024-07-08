@@ -30,7 +30,7 @@ class SettingsEnum
     public const USER_BITRIX_FIELDS = 'user_bitrix_fields';
     public const USER_MINDBOX_FIELDS = 'user_mindbox_fields';
     public const USER_FIELDS_MATCH = 'user_fields_match';
-    public const USER_AUTO_SUBSCRIBE = 'user_auto_subscribe';
+    public const USER_AUTO_SUBSCRIBE_POINTS = 'user_auto_subscribe_points';
     public const USER_LOGIN_IS_EMAIL = 'user_login_is_email';
 
     public const ORDER_BITRIX_FIELDS = 'order_bitrix_fields';

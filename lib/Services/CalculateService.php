@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Services;
 
 use Bitrix\Main\Context;
+use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Type\DateTime;
 use Bitrix\Main\UserTable;
 use Bitrix\Sale\BasketItem;
@@ -100,11 +101,11 @@ class CalculateService
         if (isset($orderData['couponsInfo']) && is_array($orderData['couponsInfo'])) {
             $couponsInfo = current($orderData['couponsInfo']);
             if ($couponsInfo['coupon']['status'] === 'NotFound') {
-                $setCouponError = 'Промокод не найден';
+                $setCouponError = Loc::getMessage('MINDBOX_LOYALTY_COUPON_NOT_FOUND');
             } elseif ($couponsInfo['coupon']['status'] === 'CanNotBeUsedForCurrentOrder') {
-                $setCouponError = 'Нельзя применить данный промокод';
+                $setCouponError = Loc::getMessage('MINDBOX_LOYALTY_COUPON_CAN_NOT_BE_USER');
             } elseif ($couponsInfo['coupon']['status'] === 'Used') {
-                $setCouponError = 'Промокод был использован ранее';
+                $setCouponError = Loc::getMessage('MINDBOX_LOYALTY_COUPON_USED');
             }
 
             if ($setCouponError !== null) {

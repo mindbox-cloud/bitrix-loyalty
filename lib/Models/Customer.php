@@ -105,10 +105,9 @@ class Customer
 
     public function setEmail(string $value): self
     {
-        $clone = clone $this;
-        $clone->data['EMAIL'] = $value;
+        $this->data['EMAIL'] = $value;
 
-        return $clone;
+        return $this;
     }
 
     public function setSubscribe(string $brand, string $pointOfContact, bool $isSubscribed): self
@@ -117,14 +116,13 @@ class Customer
             $this->data['subscriptions'] = [];
         }
 
-        $clone = clone $this;
-        $clone->data['subscriptions'][] = [
+        $this->data['subscriptions'][] = [
             'brand' => $brand,
             'pointOfContact' => $pointOfContact,
             'isSubscribed' => $isSubscribed
         ];
 
-        return $clone;
+        return $this;
     }
 
     public function getGender(): ?string
@@ -164,10 +162,9 @@ class Customer
 
     public function setMobilePhone(string $value): self
     {
-        $clone = clone $this;
-        $clone->data['PERSONAL_PHONE'] = $value;
+        $this->data['PERSONAL_PHONE'] = $value;
 
-        return $clone;
+        return $this;
     }
 
     public function getDto(): \Mindbox\DTO\V3\Requests\CustomerRequestDTO

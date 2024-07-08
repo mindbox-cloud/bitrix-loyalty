@@ -208,58 +208,6 @@ class CustomerService
     }
 
     /**
-     * @param string $email
-     * @return bool
-     * @throws ErrorCallOperationException
-     * @throws ObjectNotFoundException
-     * @throws ValidationErrorCallOperationException
-     */
-    public function subscribeEmail(string $email): bool
-    {
-        return $this->subscribe($email, true);
-    }
-
-    /**
-     * @param string $email
-     * @return bool
-     * @throws ErrorCallOperationException
-     * @throws ObjectNotFoundException
-     * @throws ValidationErrorCallOperationException
-     */
-    public function unsubscribeEmail(string $email): bool
-    {
-        return $this->subscribe($email, false);
-    }
-
-    /**
-     * @param string $email
-     * @param bool $isSubscribed
-     * @return bool
-     * @throws ErrorCallOperationException
-     * @throws ObjectNotFoundException
-     * @throws ValidationErrorCallOperationException
-     */
-    protected function subscribe(string $email, bool $isSubscribed): bool
-    {
-        /** @var SubscribeCustomer $operation */
-        $operation = $this->serviceLocator->get('mindboxLoyalty.subscribeCustomer');
-        $operation->setSettings($this->settings);
-
-        $dto = new CustomerRequestDTO([
-            'email' => $email,
-        ]);
-
-        $dto->setSubscriptions([
-            new SubscriptionRequestDTO([
-                'pointOfContact' => 'Email',
-                'isSubscribed' => $isSubscribed
-            ]),
-        ]);
-
-        return $operation->execute($dto);
-    }
-
-    /**
      * @param Customer $customer
      * @param string|null $balanceSystemName
      * @return int
