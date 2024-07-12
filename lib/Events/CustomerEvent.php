@@ -26,6 +26,8 @@ class CustomerEvent
             return true;
         }
 
+        \Mindbox\Loyalty\Support\FeatureManager::setHitUserRegister();
+
         $userId = (int) $arFields['ID'];
         $settings = SettingsFactory::create();
 
@@ -86,6 +88,8 @@ class CustomerEvent
 
     public static function onAfterUserAuthorize($arUser)
     {
+        \Mindbox\Loyalty\Support\FeatureManager::setHitUserLogin();
+
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::AUTH)) {
             return true;
         }
