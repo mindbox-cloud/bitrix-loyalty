@@ -10,6 +10,8 @@ class FeatureManager
     private static array $enabledAutoSubscribePoints = [];
     private static array $unsubscribePoints = [];
 
+    private static int $userRegisterAndLogin = 3;
+
     public static function disableHandler(string $loyaltyEvent): void
     {
         self::$disabledHandlers[$loyaltyEvent] = true;
@@ -61,5 +63,20 @@ class FeatureManager
     public static function getUnsubscribePoints(): array
     {
         return self::$unsubscribePoints;
+    }
+
+    public static function setHitUserRegister(): void
+    {
+        self::$userRegisterAndLogin = self::$userRegisterAndLogin & ~1;
+    }
+
+    public static function setHitUserLogin(): void
+    {
+        self::$userRegisterAndLogin = self::$userRegisterAndLogin & ~2;
+    }
+
+    public static function isUserRegisterAndLogin(): bool
+    {
+        return self::$userRegisterAndLogin === 0;
     }
 }

@@ -40,7 +40,7 @@ class CalculateService
     public function calculateOrder(Order $order)
     {
         if ($order->isNew()) {
-            if (Helper::isUserUnAuthorized((int) $order->getField('USER_ID'))) {
+            if (Helper::isUserUnAuthorized()) {
                 $response = $this->calculateUnauthorizedOrder($order);
             } else {
                 $response = $this->calculateAuthorizedOrder($order);

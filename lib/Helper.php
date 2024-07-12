@@ -16,7 +16,7 @@ class Helper
         return str_replace([' ', '(', ')', '-', '+'], "", $phone);
     }
 
-    public static function isUserUnAuthorized(?int $userId): bool
+    public static function isUserUnAuthorized(): bool
     {
         global $USER;
 
@@ -24,32 +24,19 @@ class Helper
             return true;
         }
 
-        if ($userId === null || $userId === 0) {
-            $userId = (int) $USER->GetID();
+        if (
+            $USER instanceof \CUser
+            && $USER->IsAuthorized()
+            && \Mindbox\Loyalty\Support\FeatureManager::isUserRegisterAndLogin()
+        ) {
+            return false;
         }
 
-        static $userRegisterDelta = 30;
-
-        $iterUser = \Bitrix\Main\UserTable::query()
-            ->where('ID', $userId)
-            ->setLimit(1)
-            ->setSelect(['DATE_REGISTER'])
-            ->exec();
-
-        if ($findUser = $iterUser->fetch()) {
-            /** @var \Bitrix\Main\Type\Date|\Bitrix\Main\Type\DateTime $dateRegister */
-            $dateRegister = $findUser['DATE_REGISTER'];
-            $diff = time() - $dateRegister->getTimestamp();
-
-            // С момента регистрации пользователя прошло меньше $userRegisterDelta времени
-            // Считаем что пользователь был создан компонентом sale.order.ajax
-            // Такой пользователь должен считаться не авторизованным
-            if ($diff <$userRegisterDelta) {
-                return true;
-            }
+        if ($USER instanceof \CUser && $USER->IsAuthorized()) {
+            return false;
         }
 
-        return false;
+        return true;
     }
     public static function isUserAuthorized(?int $userId): bool
     {
