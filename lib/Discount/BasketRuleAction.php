@@ -103,40 +103,38 @@ class BasketRuleAction extends \CSaleActionCtrlBasketGroup
 
     public static function applyDiscount(&$arOrder)
     {
-        if ($arOrder['USER_ID']) {
-            $arBasketId = [];
-            foreach ($arOrder['BASKET_ITEMS'] as $basketItem) {
-                $arBasketId[] = $basketItem['ID'];
-            }
-            unset($basketItem);
-
-            if ($arBasketId === []) {
-                return;
-            }
-
-            $iterator = BasketDiscountTable::query()
-                ->whereIn('BASKET_ITEM_ID', $arBasketId)
-                ->setSelect(['ID', 'BASKET_ITEM_ID', 'DISCOUNTED_PRICE'])
-                ->exec();
-
-            $discounts = [];
-            while ($el = $iterator->fetch()) {
-                $discounts[$el['BASKET_ITEM_ID']] = $el;
-            }
-
-            //Применяем скидку
-            foreach ($arOrder['BASKET_ITEMS'] as &$basketItem) {
-                $basketId = $basketItem['ID'];
-                if (isset($discounts[$basketId])) {
-                    if ($discounts[$basketId]['DISCOUNTED_PRICE'] >= 0) {
-                        $discountPrice = $basketItem['PRICE'] - $discounts[$basketId]['DISCOUNTED_PRICE'];
-                    }
-
-                    $basketItem['DISCOUNT_PRICE'] = $basketItem['DISCOUNT_PRICE'] + $discountPrice;
-                    $basketItem['PRICE'] = $discounts[$basketId]['DISCOUNTED_PRICE'];
-                }
-            }
-            unset($basketItem);
+        $arBasketId = [];
+        foreach ($arOrder['BASKET_ITEMS'] as $basketItem) {
+            $arBasketId[] = $basketItem['ID'];
         }
+        unset($basketItem);
+
+        if ($arBasketId === []) {
+            return;
+        }
+
+        $iterator = BasketDiscountTable::query()
+            ->whereIn('BASKET_ITEM_ID', $arBasketId)
+            ->setSelect(['ID', 'BASKET_ITEM_ID', 'DISCOUNTED_PRICE'])
+            ->exec();
+
+        $discounts = [];
+        while ($el = $iterator->fetch()) {
+            $discounts[$el['BASKET_ITEM_ID']] = $el;
+        }
+
+        //Применяем скидку
+        foreach ($arOrder['BASKET_ITEMS'] as &$basketItem) {
+            $basketId = $basketItem['ID'];
+            if (isset($discounts[$basketId])) {
+                if ($discounts[$basketId]['DISCOUNTED_PRICE'] >= 0) {
+                    $discountPrice = $basketItem['PRICE'] - $discounts[$basketId]['DISCOUNTED_PRICE'];
+                }
+
+                $basketItem['DISCOUNT_PRICE'] = $basketItem['DISCOUNT_PRICE'] + $discountPrice;
+                $basketItem['PRICE'] = $discounts[$basketId]['DISCOUNTED_PRICE'];
+            }
+        }
+        unset($basketItem);
     }
 }
