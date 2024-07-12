@@ -9,7 +9,7 @@ class EmailChangeChecker
     protected static ?EmailChangeChecker $instance =  null;
 
     private bool $isEmailChange = false;
-    private ?string $email;
+    private ?string $email = null;
     public function __construct()
     {
     }
