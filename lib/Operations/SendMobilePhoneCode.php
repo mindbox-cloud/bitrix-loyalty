@@ -31,7 +31,8 @@ class SendMobilePhoneCode extends AbstractOperation
                 ->sendAuthorizationCode(
                     customer: $dto,
                     operationName: $operation,
-                    addDeviceUUID: false
+                    addDeviceUUID: false,
+                    isSync: false
                 )->sendRequest();
 
             if ($response->getResult()->getStatus() === 'Success') {
