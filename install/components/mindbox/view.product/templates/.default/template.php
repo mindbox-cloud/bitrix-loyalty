@@ -8,7 +8,7 @@
         viewProduct: {
           product: {
             ids: {
-                <?=$arResult['ID_KEY']?>: <?=$arResult['PRODUCT_ID']?>
+                <?=$arResult['ID_KEY']?>: '<?=$arResult['PRODUCT_ID']?>'
             }
           }
         }

@@ -8,7 +8,7 @@
         viewProductCategory: {
           productCategory: {
             ids: {
-                <?=$arResult['ID_KEY']?>: <?=$arResult['CATEGORY_ID']?>
+                <?=$arResult['ID_KEY']?>: '<?=$arResult['CATEGORY_ID']?>'
             }
           }
         }
