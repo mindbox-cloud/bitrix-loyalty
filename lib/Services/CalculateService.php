@@ -181,6 +181,7 @@ class CalculateService
         $customerDTO->setIds($customer->getIds());
 
         $orderData = $mindboxOrder->getData();
+        unset($orderData['totalPrice']);
 
         $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
         $DTO->setOrder($orderData);
@@ -205,6 +206,7 @@ class CalculateService
         $customerDTO->setIds($customer->getIds());
 
         $orderData = $mindboxOrder->getData();
+        unset($orderData['totalPrice']);
 
         $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
         $DTO->setOrder($orderData);
@@ -225,6 +227,7 @@ class CalculateService
         $mindboxOrder->setCoupons($this->sessionStorage->getPromocodeValue());
 
         $orderData = $mindboxOrder->getData();
+        unset($orderData['totalPrice']);
 
         $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
         $DTO->setOrder($orderData);

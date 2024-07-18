@@ -14,7 +14,6 @@ use Mindbox\Loyalty\Support\CallBlocking;
 use Mindbox\Loyalty\Exceptions\EmptyLineException;
 use Mindbox\Loyalty\Exceptions\PriceHasBeenChangedException;
 use Mindbox\Loyalty\Exceptions\ResponseErrorExceprion;
-use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 use Mindbox\Loyalty\Models\Transaction;
 use Mindbox\Loyalty\ORM\OrderOperationTypeTable;
 use Mindbox\Loyalty\PropertyCodeEnum;
@@ -153,7 +152,7 @@ class OrderEvent
                 new \Bitrix\Sale\ResultError($exception->getMessage(), 'PriceHasBeenChanged'),
                 'sale'
             );
-        } catch (ValidationErrorCallOperationException $exception) {
+        } catch (IntegrationLoyaltyException $exception) {
             // Временый идентификатор заказа следует удалить, так как заказ на стороне МБ не был создан
             Transaction::getInstance()->close($order);
 
@@ -181,13 +180,6 @@ class OrderEvent
                 new \Bitrix\Sale\ResultError($exception->getMessage(), 'MindboxUnavailableException'),
                 'sale'
             );
-        } catch (EmptyLineException $exception) {
-            // тут заказ в мб не должен создаться
-            SessionStorage::getInstance()->clear();
-
-            // Временый идентификатор заказа следует удалить, так как заказ на стороне МБ не был создан
-            // Заказ будет создавться через оффлайн
-            Transaction::getInstance()->close($order);
         }
 
         return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
