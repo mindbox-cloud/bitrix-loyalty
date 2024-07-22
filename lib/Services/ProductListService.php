@@ -6,10 +6,12 @@ namespace Mindbox\Loyalty\Services;
 
 
 use Bitrix\Main\ObjectNotFoundException;
+use Mindbox\DTO\DTO;
 use Mindbox\DTO\V3\Requests\CustomerIdentityRequestDTO;
 use Mindbox\DTO\V3\Requests\ProductListItemRequestCollection;
 use Mindbox\DTO\V3\Requests\ProductListItemRequestDTO;
 use Mindbox\DTO\V3\Requests\ProductRequestDTO;
+use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Helper;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Models\Customer;
@@ -92,5 +94,17 @@ class ProductListService
         ];
 
         $operation->execute($payload);
+    }
+
+    public function clearFavourite(Customer $customer): bool
+    {
+        try {
+            $operation = $this->serviceLocator->get('mindboxLoyalty.clearFavourite');
+            $operation->setSettings($this->settings);
+            $operation->execute(new DTO(['customer' => ['ids' => $customer->getIds()]]));
+            return true;
+        } catch (MindboxClientException) {
+            return false;
+        }
     }
 }

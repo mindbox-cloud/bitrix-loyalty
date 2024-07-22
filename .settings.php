@@ -72,6 +72,9 @@ return [
             'mindboxLoyalty.clearCart' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\ClearCart()
             ],
+            'mindboxLoyalty.clearFavourite' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\ClearFavourite()
+            ],
             'mindboxLoyalty.editFavourite' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\EditFavourite()
             ],
