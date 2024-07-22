@@ -22,49 +22,12 @@ class Product
     {
         $this->productId = $productId;
         $this->settings = $settings;
-        $this->externalId = $this->loadExternal();
+        $this->externalId = \Mindbox\Loyalty\Feed\Helper::getElementCode($productId);
     }
 
     public function getExternalId(): string
     {
         return $this->externalId;
-    }
-
-    public function loadExternal()
-    {
-        $fields = [
-            'ID' => $this->productId,
-            'IBLOCK_ID' => null,
-            'VALUE' => $this->productId
-        ];
-
-        $iterator = ElementTable::getList([
-            'filter' => ['=ID' => $this->productId],
-            'select' => ['IBLOCK_ID', 'XML_ID'],
-            'limit' => 1
-        ]);
-
-        if ($el = $iterator->fetch()) {
-            $fields['IBLOCK_ID'] = $el['IBLOCK_ID'];
-            $fields['VALUE'] = !empty($el['XML_ID']) ? $el['XML_ID'] : $this->productId;
-        }
-
-        $event = new Event($this->settings->getModuleId(), 'onGetProductExternal', $fields);
-        $event->send();
-
-        foreach ($event->getResults() as $eventResult) {
-            if ($eventResult->getType() !== EventResult::SUCCESS) {
-                continue;
-            }
-
-            if ($eventResultData = $eventResult->getParameters()) {
-                if (isset($eventResultData['VALUE']) && $eventResultData['VALUE'] != $fields['VALUE']) {
-                    $fields['VALUE'] = $eventResultData['VALUE'];
-                }
-            }
-        }
-
-        return (string)$fields['VALUE'];
     }
 
     public function getPrice(): ?float

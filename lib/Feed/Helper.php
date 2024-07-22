@@ -60,7 +60,7 @@ class Helper
             $fields['VALUE'] = !empty($el['XML_ID']) ? $el['XML_ID'] : $elementId;
         }
 
-        $event = new \Bitrix\Main\Event('mindbox.loyalty', 'onGetElementCode', $fields);
+        $event = new \Bitrix\Main\Event('mindbox.loyalty', 'onGetProductExternal', $fields);
         $event->send();
 
         foreach ($event->getResults() as $eventResult) {
