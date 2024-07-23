@@ -16,7 +16,7 @@ class Product
     /**
      * @var null
      */
-    private string $externalId;
+    private mixed $externalId;
 
     public function __construct(int $productId, Settings $settings)
     {
@@ -25,7 +25,7 @@ class Product
         $this->externalId = \Mindbox\Loyalty\Feed\Helper::getElementCode($productId);
     }
 
-    public function getExternalId(): string
+    public function getExternalId(): mixed
     {
         return $this->externalId;
     }

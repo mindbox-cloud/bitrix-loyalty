@@ -4,16 +4,16 @@ namespace Mindbox\Loyalty\Feed;
 
 class Helper
 {
-    public static function getSectionCode($sectionId)
+    public static function getSectionCode($sectionId): mixed
     {
         $fields = [
-            'ID' => (int)$sectionId,
+            'ID' => (int) $sectionId,
             'IBLOCK_ID' => null,
             'VALUE' => $sectionId
         ];
 
         $iterator = \Bitrix\Iblock\SectionTable::getList([
-            'filter' => ['=ID' => (int)$sectionId],
+            'filter' => ['=ID' => (int) $sectionId],
             'select' => ['IBLOCK_ID', 'XML_ID'],
             'limit' => 1
         ]);
@@ -41,16 +41,16 @@ class Helper
         return $fields['VALUE'];
     }
 
-    public static function getElementCode($elementId)
+    public static function getElementCode($elementId): mixed
     {
         $fields = [
-            'ID' => (int)$elementId,
+            'ID' => (int) $elementId,
             'IBLOCK_ID' => null,
             'VALUE' => $elementId
         ];
 
         $iterator = \Bitrix\Iblock\ElementTable::getList([
-            'filter' => ['=ID' => (int)$elementId],
+            'filter' => ['=ID' => (int) $elementId],
             'select' => ['IBLOCK_ID', 'XML_ID'],
             'limit' => 1
         ]);
