@@ -225,7 +225,7 @@ class RequestedPromotions
                     $discountPrice = 0;
                     $externalId = '';
 
-                    if ($basketCode !== $iterableBasketCode) {
+                    if ($basketCode != $applyDiscount['BASKET_ID']) {
                         continue;
                     }
 

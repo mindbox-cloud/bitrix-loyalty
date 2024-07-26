@@ -204,6 +204,17 @@ foreach ($listSite as $site) {
                 'type' => 'checkbox',
             ]
         ],
+        SettingsEnum::YML_BASE_PRICE_ID => [
+            'id' => SettingsEnum::YML_BASE_PRICE_ID . '__' . $site,
+            'origin' => SettingsEnum::YML_BASE_PRICE_ID,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_BASE_PRICE_ID', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_BASE_PRICE_ID_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'selectbox',
+                'options' => \Mindbox\Loyalty\Options::getPrices(),
+                'size' => 1
+            ]
+        ],
         Loc::getMessage('MINDBOX_LOYALTY_HEADING_PRIMARY_KEY'),
         SettingsEnum::EXTERNAL_PRODUCT => [
             'id' => SettingsEnum::EXTERNAL_PRODUCT . '__' . $site,
@@ -484,17 +495,6 @@ foreach ($listSite as $site) {
             'type' => [
                 'type' => 'selectbox',
                 'options' => \Mindbox\Loyalty\Options::getIblocks(),
-                'size' => 1
-            ]
-        ],
-        SettingsEnum::YML_BASE_PRICE_ID => [
-            'id' => SettingsEnum::YML_BASE_PRICE_ID . '__' . $site,
-            'origin' => SettingsEnum::YML_BASE_PRICE_ID,
-            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_BASE_PRICE_ID', ['#LID#' => $site]),
-            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_BASE_PRICE_ID_HINTS', ['#LID#' => $site]),
-            'type' => [
-                'type' => 'selectbox',
-                'options' => \Mindbox\Loyalty\Options::getPrices(),
                 'size' => 1
             ]
         ],
