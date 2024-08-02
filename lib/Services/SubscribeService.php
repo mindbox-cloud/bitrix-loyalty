@@ -9,7 +9,9 @@ use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\DTO\V3\Requests\SubscriptionRequestDTO;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
+use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Operations\SubscribeCustomer;
+use Mindbox\Loyalty\Support\FeatureManager;
 use Mindbox\Loyalty\Support\Settings;
 
 class SubscribeService
@@ -73,5 +75,23 @@ class SubscribeService
         ]);
 
         return $operation->execute($dto);
+    }
+
+    public static function setSubscriptionsToCustomer(Customer $customer, Settings $settings): Customer
+    {
+        $subscriptionPoints = FeatureManager::getAutoSubscribePoints();
+        $unsubscriptionPoints = FeatureManager::getUnsubscribePoints();
+
+        $brand = $settings->getBrand();
+        if ($brand) {
+            foreach ($subscriptionPoints as $autoSubscribePoint) {
+                $customer->setSubscribe($brand, $autoSubscribePoint, true);
+            }
+            foreach ($unsubscriptionPoints as $autoSubscribePoint) {
+                $customer->setSubscribe($brand, $autoSubscribePoint, false);
+            }
+        }
+
+        return $customer;
     }
 }

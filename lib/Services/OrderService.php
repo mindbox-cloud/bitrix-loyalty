@@ -195,6 +195,7 @@ class OrderService
 
         $mindboxOrder = new OrderMindbox($order, $settings);
         $customer = new Customer((int)$order->getUserId());
+        SubscribeService::setSubscriptionsToCustomer($customer, $settings);
 
         $ids = $mindboxOrder->getIds();
 
@@ -221,6 +222,7 @@ class OrderService
             'firstName' => $customer->getFirstName(),
             'lastName' => $customer->getLastName(),
             'middleName' => $customer->getMiddleName(),
+            'subscriptions' => $customer->getSubscriptions(),
         ]);
 
         $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();

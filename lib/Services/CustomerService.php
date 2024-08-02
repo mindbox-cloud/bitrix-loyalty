@@ -6,7 +6,6 @@ namespace Mindbox\Loyalty\Services;
 
 use Bitrix\Main\ObjectNotFoundException;
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
-use Mindbox\DTO\V3\Requests\SubscriptionRequestDTO;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 use Mindbox\Loyalty\Models\Customer;
@@ -18,9 +17,7 @@ use Mindbox\Loyalty\Operations\ConfirmMobilePhone;
 use Mindbox\Loyalty\Operations\EditCustomer;
 use Mindbox\Loyalty\Operations\GetCustomerPoints;
 use Mindbox\Loyalty\Operations\SendMobilePhoneCodeToEdit;
-use Mindbox\Loyalty\Operations\SubscribeCustomer;
 use Mindbox\Loyalty\Operations\SyncCustomer;
-use Mindbox\Loyalty\Operations\RegisterCustomer;
 use Mindbox\Loyalty\Operations\SendMobilePhoneCode;
 use Mindbox\Loyalty\Support\Settings;
 
