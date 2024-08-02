@@ -25,7 +25,7 @@ class OrderLines
         /** @var \Bitrix\Sale\BasketItem $basketItem */
         $lines = [];
         foreach ($this->basket as $basketItem) {
-            if ($basketItem->canBuy() && !$basketItem->isDelay()) {
+            if ($basketItem->canBuy() && !$basketItem->isDelay() && $basketItem->getQuantity() > 0) {
                 $lines[] = (new OrderLine($basketItem, $this->settings))->getData();
             }
         }

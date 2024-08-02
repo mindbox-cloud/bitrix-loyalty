@@ -48,7 +48,10 @@ class OrderService
     public function saveOrder(Order $order, ?string $tmpOrderId)
     {
         if ($order->isNew()) {
-            if (Helper::isUserUnAuthorized()) {
+            if (Helper::isAdminSection()) {
+                $response = $this->saveAuthorizedOrder($order, $tmpOrderId);
+                $type = OrderOperationTypeTable::OPERATION_TYPE_AUTH;
+            } elseif (Helper::isUserUnAuthorized()) {
                 $response = $this->saveUnauthorizedOrder($order, $tmpOrderId);
                 $type = OrderOperationTypeTable::OPERATION_TYPE_NOT_AUTH;
             } else {

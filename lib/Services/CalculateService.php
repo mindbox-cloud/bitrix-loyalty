@@ -39,7 +39,9 @@ class CalculateService
 
     public function calculateOrder(Order $order)
     {
-        if ($order->isNew()) {
+        if (Helper::isAdminSection()) {
+            $response = $this->calculateOrderAdmin($order);
+        } elseif ($order->isNew()) {
             if (Helper::isUserUnAuthorized()) {
                 $response = $this->calculateUnauthorizedOrder($order);
             } else {
@@ -117,22 +119,42 @@ class CalculateService
 
         /** функционал применения скидки на корзину Mindbox  */
         $mindboxBasket = [];
+        $basket = $order->getBasket();
         foreach ($orderData['lines'] as $line) {
-            $lineId = (int) $line['lineId'];
+            $basketCode = $line['lineId'];
             $discountedPrice = (float) $line['discountedPriceOfLine'];
             $quantity = (float) $line['quantity'];
 
             // todo необходимо реализовать скидку в МБ, которое бы нарушало данное условие
-            if (!isset($mindboxBasket[$lineId]) && $lineId > 0) {
+            if (!isset($mindboxBasket[$basketCode])) {
                 $basketPrice = $discountedPrice / $quantity;
 
-                $mindboxBasket[$lineId] = [
+                /**
+                 * @var \Bitrix\Sale\BasketItem $basketItem - Элемент корзины
+                 * @var \Bitrix\Sale\BasketPropertiesCollectionBase $collection - Коллекция свойств
+                 */
+                $basketItem = $basket->getItemByBasketCode($basketCode);
+                $collection = $basketItem->getPropertyCollection();
+                $propertyValues = $collection->getPropertyValues();
+
+                if (!isset($propertyValues[PropertyCodeEnum::BASKET_PROPERTY_CODE])) {
+                    $propertyItem = $collection->createItem();
+                } else {
+                    $propertyItem = $collection->getPropertyItemByValue($propertyValues[PropertyCodeEnum::BASKET_PROPERTY_CODE]);
+                }
+
+                $propertyItem->setFields([
+                    'NAME' => 'Mindbox',
+                    'CODE' => PropertyCodeEnum::BASKET_PROPERTY_CODE,
+                    'VALUE' => $basketPrice,
+                    'SORT' => 100
+                ]);
+
+                $mindboxBasket[$basketCode] = [
                     'price' => $basketPrice,
                     'quantity' => $quantity,
-                    'lineId' => $lineId,
+                    'lineId' => $basketCode,
                 ];
-
-                BasketDiscountTable::set($lineId, $basketPrice);
             }
         }
 
@@ -170,9 +192,8 @@ class CalculateService
     public function calculateOrderAdmin(Order $order): MindboxResponse
     {
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
-
         $mindboxOrder = new OrderMindbox($order, $settings);
-        $customer = new Customer($order->getUserId());
+        $customer = new Customer((int) $order->getField('USER_ID'));
 
         /** @var CalculateAuthorizedCartAdmin $calculateAuthorizedCartAdmin */
         $calculateAuthorizedCartAdmin = $this->serviceLocator->get('mindboxLoyalty.calculateAuthorizedCartAdmin');

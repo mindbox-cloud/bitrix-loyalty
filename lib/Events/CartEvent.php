@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Events;
 
+use Bitrix\Sale\Order;
 use Mindbox\Loyalty\Support\LoyalityEvents;
 use Mindbox\Loyalty\Support\SettingsFactory;
 
@@ -17,9 +18,14 @@ class CartEvent
 
         global $USER;
 
-        /** @var \Bitrix\Sale\BasketItem $basket */
-        $basket = $event->getParameter('ENTITY');
+        /** @var \Bitrix\Sale\BasketItem $basketItem */
+        $basketItem = $event->getParameter('ENTITY');
         $values = $event->getParameter('VALUES');
+
+        $order = $basketItem->getCollection()->getOrder();
+        if ($order instanceof Order && !$order->isNew()) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
 
         if (!empty($values)) {
             $needProcessedKeys = ['QUANTITY', 'ID', 'PRODUCT_ID'];
@@ -39,8 +45,8 @@ class CartEvent
 
             $settings = SettingsFactory::create();
             $service = new \Mindbox\Loyalty\Services\ProductListService($settings);
-            $customer = (is_object($USER) && $USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int)$USER->getID()) : null;
-            $method = $basket->isDelay() ? 'editFavourite' : 'editCart';
+            $customer = (is_object($USER) && $USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int) $USER->getID()) : null;
+            $method = $basketItem->isDelay() ? 'editFavourite' : 'editCart';
 
             try {
                 if (array_key_exists('PRODUCT_ID', $values)) {
@@ -52,8 +58,8 @@ class CartEvent
                 }
 
                 $service->$method(
-                    new \Mindbox\Loyalty\Models\Product($basket->getProductId(), $settings),
-                    (int)$basket->getQuantity(),
+                    new \Mindbox\Loyalty\Models\Product($basketItem->getProductId(), $settings),
+                    (int) $basketItem->getQuantity(),
                     $customer
                 );
             } catch (\Mindbox\Loyalty\Exceptions\ErrorCallOperationException $e) {
@@ -76,18 +82,24 @@ class CartEvent
 
         global $USER;
 
-        /** @var \Bitrix\Sale\BasketItem $basket */
-        $basket = $event->getParameter('ENTITY');
+        /** @var \Bitrix\Sale\BasketItem $basketItem */
+        $basketItem = $event->getParameter('ENTITY');
+        $order = $basketItem->getCollection()->getOrder();
+
+        if ($order instanceof Order && !$order->isNew()) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
         $settings = SettingsFactory::create();
 
         $service = new \Mindbox\Loyalty\Services\ProductListService($settings);
 
         $customer = (is_object($USER) && $USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int)$USER->getID()) : null;
-        $method = ($basket->isDelay()) ? 'editFavourite' : 'editCart';
+        $method = ($basketItem->isDelay()) ? 'editFavourite' : 'editCart';
 
         try {
             $service->$method(
-                new \Mindbox\Loyalty\Models\Product($basket->getProductId(), $settings),
+                new \Mindbox\Loyalty\Models\Product($basketItem->getProductId(), $settings),
                 0,
                 $customer
             );
