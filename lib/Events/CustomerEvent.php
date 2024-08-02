@@ -12,8 +12,8 @@ use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\ORM\DeliveryDiscountTable;
 use Mindbox\Loyalty\Services\CustomerService;
+use Mindbox\Loyalty\Services\SubscribeService;
 use Mindbox\Loyalty\Support\EmailChangeChecker;
-use Mindbox\Loyalty\Support\FeatureManager;
 use Mindbox\Loyalty\Support\LoyalityEvents;
 use Mindbox\Loyalty\Support\SettingsFactory;
 use Psr\Log\LogLevel;
@@ -41,16 +41,7 @@ class CustomerEvent
             $session = \Bitrix\Main\Application::getInstance()->getSession();
             $customer = new Customer($userId);
 
-            $settingsSubscribePoints = $settings->getAutoSubscribePoints();
-            $featureSubscribePoints = FeatureManager::getAutoSubscribePoints();
-
-            $autoSubscribePoints = array_unique(array_merge($settingsSubscribePoints, $featureSubscribePoints));
-            //подписка пользователя
-            if ($autoSubscribePoints && $brand = $settings->getBrand()) {
-                foreach ($autoSubscribePoints as $autoSubscribePoint) {
-                    $customer->setSubscribe($brand, $autoSubscribePoint, true);
-                }
-            }
+            SubscribeService::setSubscriptionsToCustomer($customer, $settings);
 
             $service = new CustomerService($settings);
 
@@ -163,18 +154,7 @@ class CustomerEvent
                 $service->confirmMobilePhone($customer);
             }
 
-            $subscriptionPoints = FeatureManager::getAutoSubscribePoints();
-            $unsubscriptionPoints = FeatureManager::getUnsubscribePoints();
-
-            $brand = $settings->getBrand();
-            if ($brand) {
-                foreach ($subscriptionPoints as $autoSubscribePoint) {
-                    $customer->setSubscribe($brand, $autoSubscribePoint, true);
-                }
-                foreach ($unsubscriptionPoints as $autoSubscribePoint) {
-                    $customer->setSubscribe($brand, $autoSubscribePoint, false);
-                }
-            }
+            SubscribeService::setSubscriptionsToCustomer($customer, $settings);
 
             $service->edit($customer);
         } catch (ObjectNotFoundException $e) {
