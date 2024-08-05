@@ -77,18 +77,24 @@ class SubscribeService
         return $operation->execute($dto);
     }
 
+    /**
+     * Добавляет подписки
+     * @param Customer $customer
+     * @param Settings $settings
+     * @return Customer
+     */
     public static function setSubscriptionsToCustomer(Customer $customer, Settings $settings): Customer
     {
+        $settingsSubscribePoints = $settings->getAutoSubscribePoints();
         $subscriptionPoints = FeatureManager::getAutoSubscribePoints();
-        $unsubscriptionPoints = FeatureManager::getUnsubscribePoints();
 
         $brand = $settings->getBrand();
         if ($brand) {
             foreach ($subscriptionPoints as $autoSubscribePoint) {
                 $customer->setSubscribe($brand, $autoSubscribePoint, true);
             }
-            foreach ($unsubscriptionPoints as $autoSubscribePoint) {
-                $customer->setSubscribe($brand, $autoSubscribePoint, false);
+            foreach ($settingsSubscribePoints as $autoSubscribePoint) {
+                $customer->setSubscribe($brand, $autoSubscribePoint, true);
             }
         }
 
