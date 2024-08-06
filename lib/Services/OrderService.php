@@ -17,8 +17,9 @@ use Mindbox\Loyalty\Models\OrderMindbox;
 use Mindbox\Loyalty\Models\OrderStatus;
 use Mindbox\Loyalty\Operations\AbstractOperation;
 use Mindbox\Loyalty\Operations\ChangeStatus;
+use Mindbox\Loyalty\Operations\ChangeStatusAdmin;
 use Mindbox\Loyalty\Operations\CreateAuthorizedOrder;
-use Mindbox\Loyalty\Operations\CreateAuthorizedOrderAdmin;
+use Mindbox\Loyalty\Operations\CreateOrderAdmin;
 use Mindbox\Loyalty\Operations\CreateUnauthorizedOrder;
 use Mindbox\Loyalty\Operations\SaveOfflineOrder;
 use Mindbox\Loyalty\ORM\DeliveryDiscountTable;
@@ -49,7 +50,7 @@ class OrderService
     {
         if ($order->isNew()) {
             if (Helper::isAdminSection()) {
-                $response = $this->saveAuthorizedOrder($order, $tmpOrderId);
+                $response = $this->saveOrderAdmin($order, $tmpOrderId);
                 $type = OrderOperationTypeTable::OPERATION_TYPE_AUTH;
             } elseif (Helper::isUserUnAuthorized()) {
                 $response = $this->saveUnauthorizedOrder($order, $tmpOrderId);
@@ -142,11 +143,11 @@ class OrderService
         $DTO->setOrder($orderData);
         $DTO->setCustomer($customerData);
 
-        /** @var CreateAuthorizedOrderAdmin $createAuthorizedOrderAdmin */
-        $createAuthorizedOrderAdmin = $this->serviceLocator->get('mindboxLoyalty.createAuthorizedOrderAdmin');
-        $createAuthorizedOrderAdmin->setSettings($settings);
+        /** @var CreateOrderAdmin $createOrderAdmin */
+        $createOrderAdmin = $this->serviceLocator->get('mindboxLoyalty.createOrderAdmin');
+        $createOrderAdmin->setSettings($settings);
 
-        return $this->execute($createAuthorizedOrderAdmin, $DTO);
+        return $this->execute($createOrderAdmin, $DTO);
     }
 
     public function saveAuthorizedOrder(Order $order, ?string $tmpOrderId)
@@ -292,36 +293,6 @@ class OrderService
         }
     }
 
-    public function confirmDeliveryDiscount(Order $order): void
-    {
-        $deliveryId = 0;
-        /** @var \Bitrix\Sale\Shipment $shipment */
-        foreach ($order->getShipmentCollection() as $shipment) {
-            if ($shipment->isSystem()) {
-                continue;
-            }
-
-            $deliveryId = $shipment->getDeliveryId();
-            break;
-        }
-
-        $fUserId = \Bitrix\Sale\Fuser::getIdByUserId((int) $order->getField('USER_ID'));
-
-        $deliveryFilter = [
-            'FUSER_ID' => $fUserId,
-            'DELIVERY_ID' => $deliveryId,
-            'ORDER_ID' => null
-        ];
-
-        if ($findRow = DeliveryDiscountTable::getRowByFilter($deliveryFilter)) {
-            DeliveryDiscountTable::update((int) $findRow['ID'], [
-                'ORDER_ID' => $order->getId()
-            ]);
-        }
-
-        DeliveryDiscountTable::deleteByFilter($deliveryFilter);
-    }
-
     public function cancelBrokenOrder(string $tmpOrderId, string $siteId): bool
     {
         $settings = SettingsFactory::createBySiteId($siteId);
@@ -425,6 +396,38 @@ class OrderService
             $changeStatus->execute($DTO);
         } catch (MindboxClientException $e) {
             $request = $changeStatus->getRequest();
+            if ($request instanceof MindboxRequest) {
+                \Mindbox\Loyalty\ORM\QueueTable::push($request, $order->getSiteId());
+            }
+        }
+    }
+
+    public function changeStatusAdmin(Order $order)
+    {
+        $settings = SettingsFactory::createBySiteId($order->getSiteId());
+
+        $mindboxOrder = new OrderMindbox($order, $settings);
+        $statusOrder = new OrderStatus($order, $settings);
+
+        $orderData = array_filter([
+            'ids' => $mindboxOrder->getIds(),
+            'email' => $mindboxOrder->getEmail(),
+            'mobilePhone' => $mindboxOrder->getMobilePhone(),
+        ]);
+
+        $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO([
+            'orderLinesStatus' => $statusOrder->getStatus(),
+            'order' => $orderData
+        ]);
+
+        /** @var ChangeStatusAdmin $changeStatusAdmin */
+        $changeStatusAdmin = $this->serviceLocator->get('mindboxLoyalty.changeStatusAdmin');
+        $changeStatusAdmin->setSettings($settings);
+
+        try {
+            $changeStatusAdmin->execute($DTO);
+        } catch (MindboxClientException $e) {
+            $request = $changeStatusAdmin->getRequest();
             if ($request instanceof MindboxRequest) {
                 \Mindbox\Loyalty\ORM\QueueTable::push($request, $order->getSiteId());
             }

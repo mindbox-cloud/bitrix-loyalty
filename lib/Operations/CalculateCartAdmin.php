@@ -5,40 +5,37 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Operations;
 
 use Mindbox\DTO\V3\Requests\PreorderRequestDTO;
+use Mindbox\DTO\V3\Responses\OrderResponseDTO;
 use Mindbox\Exceptions\MindboxClientException;
-use Mindbox\Exceptions\MindboxUnavailableException;
+use Mindbox\Helpers\OrderHelper;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
-use Mindbox\Loyalty\ORM\OrderOperationTypeTable;
 use Mindbox\MindboxRequest;
 use Mindbox\MindboxResponse;
 use Mindbox\Responses\MindboxOrderResponse;
 
-class CreateAuthorizedOrder extends AbstractOperation
+class CalculateCartAdmin extends AbstractOperation
 {
     private ?MindboxRequest $request = null;
     private ?MindboxResponse $response = null;
 
-
-    public function execute(PreorderRequestDTO $DTO, ?string $transactionId): void
+    public function execute(PreorderRequestDTO $DTO): MindboxResponse
     {
-        $operation = $this->getOperation();
-
         try {
+            $operation = $this->getOperation();
             $client = $this->api();
 
             $client->setResponseType(MindboxOrderResponse::class);
 
             $this->request = $client->prepareRequest(
-                'POST',
-                $operation,
-                $DTO,
-                'create',
-                array_filter(['transactionId' => $transactionId])
+                method: 'POST',
+                operationName:$operation,
+                body: $DTO,
+                addDeviceUUID: false
             )->getRequest();
 
             $this->response = $client->sendRequest();
-        } catch (MindboxUnavailableException $e) {
-            throw new MindboxUnavailableException($e->getMessage());
+
+            return $this->response;
         } catch (MindboxClientException $e) {
             // todo log this or log service?
             throw new ErrorCallOperationException(
@@ -49,9 +46,10 @@ class CreateAuthorizedOrder extends AbstractOperation
         }
     }
 
+
     protected function operation(): string
     {
-        return 'CreateAuthorizedOrder';
+        return 'ManualCalculateOrder';
     }
 
     public function getRequest(): ?MindboxRequest

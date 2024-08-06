@@ -147,7 +147,7 @@ class mindbox_loyalty extends CModule
         foreach ($iterSite as $site) {
             (new OrderGroupPropertyInstaller($site['LID']))->down();
             (new OrderPropertyInstaller($site['LID']))->down();
-            (new BasketPropertyRuleDiscountInstaller($site['LID']))->down();
+            (new BasketDiscountRuleInstaller($site['LID']))->down();
             (new BasketDiscountRuleInstaller($site['LID']))->down();
             (new DeliveryDiscountRuleInstaller($site['LID']))->down();
         }
@@ -336,6 +336,15 @@ class mindbox_loyalty extends CModule
             'OnProlog',
             1000
         );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'main',
+            'OnAdminSaleOrderEdit',
+            'mindbox.loyalty',
+            \Mindbox\Loyalty\Events\AdminPageEvent::class,
+            'onAdminSaleOrderEdit',
+            1000
+        );
     }
 
     public function UnInstallEvents()
@@ -499,6 +508,14 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CommonEvent::class,
             'OnProlog'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'main',
+            'OnAdminSaleOrderEdit',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\AdminPageEvent::class,
+            'onAdminSaleOrderEdit'
         );
     }
 

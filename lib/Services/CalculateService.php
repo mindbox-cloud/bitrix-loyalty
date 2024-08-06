@@ -12,7 +12,7 @@ use Bitrix\Sale\BasketItem;
 use Bitrix\Sale\Order;
 use Mindbox\DTO\V3\Responses\OrderResponseDTO;
 use Mindbox\Loyalty\Exceptions\ResponseErrorExceprion;
-use Mindbox\Loyalty\Operations\CalculateAuthorizedCartAdmin;
+use Mindbox\Loyalty\Operations\CalculateCartAdmin;
 use Mindbox\Loyalty\Operations\CalculateUnauthorizedCart;
 use Mindbox\Loyalty\ORM\BasketDiscountTable;
 use Mindbox\Loyalty\Helper;
@@ -143,7 +143,7 @@ class CalculateService
                     $propertyItem = $collection->getPropertyItemByValue($propertyValues[PropertyCodeEnum::BASKET_PROPERTY_CODE]);
                 }
 
-                $propertyItem->setFields([
+                $result = $propertyItem->setFields([
                     'NAME' => 'Mindbox',
                     'CODE' => PropertyCodeEnum::BASKET_PROPERTY_CODE,
                     'VALUE' => $basketPrice,
@@ -195,8 +195,8 @@ class CalculateService
         $mindboxOrder = new OrderMindbox($order, $settings);
         $customer = new Customer((int) $order->getField('USER_ID'));
 
-        /** @var CalculateAuthorizedCartAdmin $calculateAuthorizedCartAdmin */
-        $calculateAuthorizedCartAdmin = $this->serviceLocator->get('mindboxLoyalty.calculateAuthorizedCartAdmin');
+        /** @var CalculateCartAdmin $calculateCartAdmin */
+        $calculateCartAdmin = $this->serviceLocator->get('mindboxLoyalty.calculateCartAdmin');
 
         $customerDTO = new \Mindbox\DTO\V3\Requests\CustomerRequestDTO();
         $customerDTO->setIds($customer->getIds());
@@ -208,7 +208,7 @@ class CalculateService
         $DTO->setOrder($orderData);
         $DTO->setCustomer($customerDTO);
 
-        return $calculateAuthorizedCartAdmin->execute($DTO);
+        return $calculateCartAdmin->execute($DTO);
     }
 
     public function calculateAuthorizedOrder(Order $order): MindboxResponse
@@ -254,6 +254,36 @@ class CalculateService
         $DTO->setOrder($orderData);
 
         return $calculateUnauthorizedCart->execute($DTO);
+    }
+
+    public function confirmDeliveryDiscount(Order $order): void
+    {
+        $deliveryId = 0;
+        /** @var \Bitrix\Sale\Shipment $shipment */
+        foreach ($order->getShipmentCollection() as $shipment) {
+            if ($shipment->isSystem()) {
+                continue;
+            }
+
+            $deliveryId = $shipment->getDeliveryId();
+            break;
+        }
+
+        $fUserId = \Bitrix\Sale\Fuser::getIdByUserId((int) $order->getField('USER_ID'));
+
+        $deliveryFilter = [
+            'FUSER_ID' => $fUserId,
+            'DELIVERY_ID' => $deliveryId,
+            'ORDER_ID' => null
+        ];
+
+        if ($findRow = DeliveryDiscountTable::getRowByFilter($deliveryFilter)) {
+            DeliveryDiscountTable::update((int) $findRow['ID'], [
+                'ORDER_ID' => $order->getId()
+            ]);
+        }
+
+        DeliveryDiscountTable::deleteByFilter($deliveryFilter);
     }
 
     public function resetDiscount(Order $order)

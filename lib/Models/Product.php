@@ -32,20 +32,37 @@ class Product
 
     public function getPrice(): ?float
     {
-        $return = null;
+        static $basePrices = [];
 
-        $getPrice = \Bitrix\Catalog\Model\Price::getList([
-            'filter'=>[
-                'CATALOG_GROUP_ID' => $this->settings->getBasePriceId(),
-                'PRODUCT_ID' => $this->productId
-            ]
-        ]);
+        if (!isset($basePrices[$this->productId])) {
+            $iterPrices = \Bitrix\Catalog\PriceTable::getList([
+                'select' => ['PRICE'],
+                'filter' => [
+                    '=PRODUCT_ID' => $this->productId,
+                    '=CATALOG_GROUP_ID' => $this->settings->getBasePriceId()
+                ],
+                'limit' => 1
+            ]);
 
-        if ($el = $getPrice->fetch()) {
-            $return = (float)$el['PRICE'];
+            if ($price = $iterPrices->fetch()) {
+                $basePrices[$this->productId] = (float) $price['PRICE'];
+            } else {
+                $iterPrices = \Bitrix\Catalog\PriceTable::getList([
+                    'select' => ['PRICE'],
+                    'filter' => [
+                        '=PRODUCT_ID' => $this->productId,
+                        'CATALOG_GROUP.BASE' => 'Y'
+                    ],
+                    'limit' => 1
+                ]);
+
+                $price = $iterPrices->fetch();
+
+                $basePrices[$this->productId] = (float) $price['PRICE'];
+            }
         }
 
-        return $return;
+        return $basePrices[$this->productId];
     }
 
     public function getIds(): array
