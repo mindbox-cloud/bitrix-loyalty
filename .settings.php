@@ -45,8 +45,8 @@ return [
             'mindboxLoyalty.calculateAuthorizedCart' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\CalculateAuthorizedCart()
             ],
-            'mindboxLoyalty.calculateAuthorizedCartAdmin' => [
-                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CalculateAuthorizedCartAdmin()
+            'mindboxLoyalty.calculateCartAdmin' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CalculateCartAdmin()
             ],
             'mindboxLoyalty.calculateUnauthorizedCart' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\CalculateUnauthorizedCart()
@@ -54,14 +54,17 @@ return [
             'mindboxLoyalty.createAuthorizedOrder' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\CreateAuthorizedOrder()
             ],
-            'mindboxLoyalty.createAuthorizedOrderAdmin' => [
-                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CreateAuthorizedOrderAdmin()
+            'mindboxLoyalty.createOrderAdmin' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\CreateOrderAdmin()
             ],
             'mindboxLoyalty.createUnauthorizedOrder' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\CreateUnauthorizedOrder()
             ],
             'mindboxLoyalty.changeStatus' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\ChangeStatus()
+            ],
+            'mindboxLoyalty.changeStatusAdmin' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\ChangeStatusAdmin()
             ],
             'mindboxLoyalty.saveOfflineOrder' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\SaveOfflineOrder()
@@ -84,5 +87,13 @@ return [
 		],
 		'readonly' => true,
 	],
+    'controllers' => [
+        'value' => [
+            'namespaces' => [
+                '\\Mindbox\\Loyalty\\Controllers' => 'calculate',
+            ],
+        ],
+        'readonly' => true,
+    ],
 ];
 

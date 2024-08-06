@@ -8,16 +8,15 @@ use Mindbox\DTO\V3\Requests\PreorderRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
-use Mindbox\Loyalty\ORM\OrderOperationTypeTable;
 use Mindbox\MindboxRequest;
 use Mindbox\MindboxResponse;
 use Mindbox\Responses\MindboxOrderResponse;
 
-class CreateAuthorizedOrder extends AbstractOperation
+class CreateOrderAdmin extends AbstractOperation
 {
+
     private ?MindboxRequest $request = null;
     private ?MindboxResponse $response = null;
-
 
     public function execute(PreorderRequestDTO $DTO, ?string $transactionId): void
     {
@@ -29,11 +28,11 @@ class CreateAuthorizedOrder extends AbstractOperation
             $client->setResponseType(MindboxOrderResponse::class);
 
             $this->request = $client->prepareRequest(
-                'POST',
-                $operation,
-                $DTO,
-                'create',
-                array_filter(['transactionId' => $transactionId])
+                method: 'POST',
+                operationName: $operation,
+                body: $DTO,
+                queryParams: array_filter(['transactionId' => $transactionId]),
+                addDeviceUUID: false
             )->getRequest();
 
             $this->response = $client->sendRequest();
@@ -49,11 +48,6 @@ class CreateAuthorizedOrder extends AbstractOperation
         }
     }
 
-    protected function operation(): string
-    {
-        return 'CreateAuthorizedOrder';
-    }
-
     public function getRequest(): ?MindboxRequest
     {
         return $this->request;
@@ -62,5 +56,10 @@ class CreateAuthorizedOrder extends AbstractOperation
     public function getResponse(): ?MindboxResponse
     {
         return $this->response;
+    }
+
+    protected function operation(): string
+    {
+        return 'ManualCreateOrder';
     }
 }

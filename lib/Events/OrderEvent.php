@@ -30,6 +30,7 @@ class OrderEvent
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CALCULATE_DISCOUNT)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
+
         global $USER;
         /** @var Order $order */
         $order = $event->getParameter('ENTITY');
@@ -215,7 +216,8 @@ class OrderEvent
         if (Transaction::getInstance()->has($order)) {
             $service = new OrderService();
             $service->confirmSaveOrder($order, Transaction::getInstance()->get($order));
-            $service->confirmDeliveryDiscount($order);
+
+            (new CalculateService())->confirmDeliveryDiscount($order);
 
             Transaction::getInstance()->save($order);
             Transaction::getInstance()->close($order);
@@ -275,7 +277,11 @@ class OrderEvent
 
         try {
             $service = new OrderService();
-            $service->changeStatus($order);
+            if (Helper::isAdminSection()) {
+                $service->changeStatusAdmin($order);
+            } else {
+                $service->changeStatus($order);
+            }
         } catch (IntegrationLoyaltyException $exception) {
 
         }

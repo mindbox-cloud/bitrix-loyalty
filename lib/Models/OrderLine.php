@@ -73,7 +73,7 @@ class OrderLine
 
     public function getLineId()
     {
-        return $this->basketItem->getId();
+        return $this->basketItem->getBasketCode();
     }
 
     public function getLineNumber()

@@ -39,7 +39,6 @@ class ChangeStatus extends AbstractOperation
             operationName: $operation,
             body: $DTO,
             additionalUrl: 'create',
-            queryParams: [],
             isSync: false,
             addDeviceUUID: false
         )->getRequest();

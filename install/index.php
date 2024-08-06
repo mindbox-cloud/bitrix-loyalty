@@ -7,6 +7,7 @@ use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ModuleManager;
 use Mindbox\Loyalty\Install\BasketDiscountRuleInstaller;
+use Mindbox\Loyalty\Install\BasketPropertyRuleDiscountInstaller;
 use Mindbox\Loyalty\Install\DeliveryDiscountRuleInstaller;
 use Mindbox\Loyalty\Install\OrderGroupPropertyInstaller;
 use Mindbox\Loyalty\Install\OrderPropertyInstaller;
@@ -147,6 +148,7 @@ class mindbox_loyalty extends CModule
             (new OrderGroupPropertyInstaller($site['LID']))->down();
             (new OrderPropertyInstaller($site['LID']))->down();
             (new BasketDiscountRuleInstaller($site['LID']))->down();
+            (new BasketDiscountRuleInstaller($site['LID']))->down();
             (new DeliveryDiscountRuleInstaller($site['LID']))->down();
         }
     }
@@ -158,6 +160,15 @@ class mindbox_loyalty extends CModule
             'OnCondSaleActionsControlBuildList',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Discount\BasketRuleAction::class,
+            'GetControlDescr',
+            1000
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'sale',
+            'OnCondSaleActionsControlBuildList',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Discount\BasketPropertyRuleDiscount::class,
             'GetControlDescr',
             1000
         );
@@ -325,6 +336,15 @@ class mindbox_loyalty extends CModule
             'OnProlog',
             1000
         );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'main',
+            'OnAdminSaleOrderEdit',
+            'mindbox.loyalty',
+            \Mindbox\Loyalty\Events\AdminPageEvent::class,
+            'onAdminSaleOrderEdit',
+            1000
+        );
     }
 
     public function UnInstallEvents()
@@ -334,6 +354,14 @@ class mindbox_loyalty extends CModule
             'OnCondSaleActionsControlBuildList',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Discount\BasketRuleAction::class,
+            'GetControlDescr'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'sale',
+            'OnCondSaleActionsControlBuildList',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Discount\BasketPropertyRuleDiscount::class,
             'GetControlDescr'
         );
 
@@ -431,8 +459,7 @@ class mindbox_loyalty extends CModule
             'OnBeforeUserUpdate',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CustomerEvent::class,
-            'onBeforeCheckedChangeEmail',
-            1000
+            'onBeforeCheckedChangeEmail'
         );
 
         \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
@@ -440,8 +467,7 @@ class mindbox_loyalty extends CModule
             'OnAfterUserUpdate',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CustomerEvent::class,
-            'onCheckedChangeEmail',
-            1000
+            'onCheckedChangeEmail'
         );
 
         \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
@@ -449,8 +475,7 @@ class mindbox_loyalty extends CModule
             'OnBeforeUserUpdate',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CustomerEvent::class,
-            'setUserLoginByEmail',
-            1000
+            'setUserLoginByEmail'
         );
 
         \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
@@ -458,8 +483,7 @@ class mindbox_loyalty extends CModule
             'OnUserLogout',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CustomerEvent::class,
-            'onUserLogout',
-            1000
+            'onUserLogout'
         );
 
         \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
@@ -467,8 +491,7 @@ class mindbox_loyalty extends CModule
             'OnBeforeSaleBasketItemEntityDeleted',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CartEvent::class,
-            'onBeforeSaleBasketItemEntityDeleted',
-            1000
+            'onBeforeSaleBasketItemEntityDeleted'
         );
 
         \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
@@ -476,8 +499,7 @@ class mindbox_loyalty extends CModule
             'OnSaleBasketItemEntitySaved',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CartEvent::class,
-            'onSaleBasketItemEntitySaved',
-            1000
+            'onSaleBasketItemEntitySaved'
         );
 
         \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
@@ -485,8 +507,15 @@ class mindbox_loyalty extends CModule
             'OnProlog',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CommonEvent::class,
-            'OnProlog',
-            1000
+            'OnProlog'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'main',
+            'OnAdminSaleOrderEdit',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\AdminPageEvent::class,
+            'onAdminSaleOrderEdit'
         );
     }
 
@@ -551,6 +580,7 @@ class mindbox_loyalty extends CModule
     {
         $siteId = $this->getCurrentSiteId();
         (new BasketDiscountRuleInstaller($siteId))->up();
+        (new BasketPropertyRuleDiscountInstaller($siteId))->up();
         (new DeliveryDiscountRuleInstaller($siteId))->up();
     }
 

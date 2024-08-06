@@ -46,9 +46,4 @@ class CalculateUnauthorizedCart extends AbstractOperation
     {
         return 'CalculateUnauthorizedOrder';
     }
-
-    public function getType(): string
-    {
-        return OrderOperationTypeTable::OPERATION_TYPE_NOT_AUTH;
-    }
 }

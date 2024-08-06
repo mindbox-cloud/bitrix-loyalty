@@ -133,4 +133,11 @@ class Helper
 
         return !empty($commonGroups);
     }
+
+    public static function isAdminSection(): bool
+    {
+        $request = \Bitrix\Main\Context::getCurrent()->getRequest();
+
+        return  ($request->isAdminSection() || str_starts_with($request->getRequestedPageDirectory(), '/bitrix/admin/'));
+    }
 }

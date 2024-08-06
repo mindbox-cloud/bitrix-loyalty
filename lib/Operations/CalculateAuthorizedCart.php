@@ -43,9 +43,4 @@ class CalculateAuthorizedCart extends AbstractOperation
     {
         return 'CalculateAuthorizedOrder';
     }
-
-    public function getType(): string
-    {
-        return OrderOperationTypeTable::OPERATION_TYPE_AUTH;
-    }
 }

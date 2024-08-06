@@ -49,7 +49,7 @@ class RequestedPromotions
     {
         $basePrice = $basketItem->getBasePrice();
         $currentPrice = $basePrice;
-        $basketCode = $basketItem->getId();
+        $basketCode = $basketItem->getBasketCode();
         $requestedPromotions = [];
         $result = $this->result;
 
@@ -420,7 +420,7 @@ class RequestedPromotions
                     'DISCOUNT_ID' => $realDiscountId,
                     'RESULT' => [
                         'BASKET' => [
-                            $basketItem->getId() => [
+                            $basketItem->getBasketCode() => [
                                 'APPLY' => 'Y',
                                 'DESCR' => 'Discount by price type',
                                 'DESCR_DATA' => [
@@ -432,7 +432,7 @@ class RequestedPromotions
                                 ],
                                 'MODULE_ID' => 'catalog',
                                 'PRODUCT_ID' => $basketItem->getProductId(),
-                                'BASKET_ID' => $basketItem->getId(),
+                                'BASKET_ID' => $basketItem->getBasketCode(),
                             ]
                         ]
                     ]
