@@ -48,21 +48,22 @@ class OrderService
      */
     public function saveOrder(Order $order, ?string $tmpOrderId)
     {
-        if ($order->isNew()) {
-            if (Helper::isAdminSection()) {
-                $response = $this->saveOrderAdmin($order, $tmpOrderId);
-                $type = OrderOperationTypeTable::OPERATION_TYPE_AUTH;
-            } elseif (Helper::isUserUnAuthorized()) {
+
+        if (Helper::isAdminSection()) {
+            $response = $this->saveOrderAdmin($order, $tmpOrderId);
+            $type = OrderOperationTypeTable::OPERATION_TYPE_AUTH;
+            SessionStorage::getInstance()->setOperationType($type);
+        } elseif ($order->isNew()) {
+            if (Helper::isUserUnAuthorized()) {
                 $response = $this->saveUnauthorizedOrder($order, $tmpOrderId);
                 $type = OrderOperationTypeTable::OPERATION_TYPE_NOT_AUTH;
             } else {
                 $response = $this->saveAuthorizedOrder($order, $tmpOrderId);
                 $type = OrderOperationTypeTable::OPERATION_TYPE_AUTH;
             }
-
             SessionStorage::getInstance()->setOperationType($type);
         } else {
-            $type = \Mindbox\Loyalty\ORM\OrderOperationTypeTable::getOrderType((string) $order->getField('ACCOUNT_NUMBER'));
+            $type = OrderOperationTypeTable::getOrderType((string) $order->getField('ACCOUNT_NUMBER'));
 
             if ($type === OrderOperationTypeTable::OPERATION_TYPE_AUTH) {
                 $response = $this->saveAuthorizedOrder($order, $tmpOrderId);

@@ -80,6 +80,7 @@ class OrderEvent
             // Смена статуса
             'STATUS_ID',
             'DATE_STATUS',
+            'EMP_STATUS_ID',
             // Оплата
             'DATE_PAYED',
             'EMP_PAYED_ID',
@@ -126,11 +127,6 @@ class OrderEvent
                 $mindboxOrder = new OrderMindbox($order, $settings);
                 $mindboxOrder->setBonuses(SessionStorage::getInstance()->getPayBonuses());
                 $mindboxOrder->setCoupons(SessionStorage::getInstance()->getPromocodeValue());
-            }
-
-            if (Context::getCurrent()->getRequest()->isAdminSection()) {
-                // @info сохраним корзину, чтобы получить корректный lineId
-                $order->getBasket()->save();
             }
 
             $mindboxId = $service->saveOrder($order, $transactionId);
