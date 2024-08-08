@@ -14,15 +14,40 @@ use Mindbox\Loyalty\Support\SessionStorage;
 
 class AdminPageEvent
 {
+    const PAGE_TYPE = [
+        'EDIT' => 1,
+        'CREATE' => 2
+    ];
+
     public static function onAdminSaleOrderEdit()
     {
-        $jsString = self::getAdditionalScriptForOrderEditPage();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            return;
+        }
+        $jsString = self::getAdditionalScriptForOrderEditPage(self::PAGE_TYPE['EDIT']);
 
         Asset::getInstance()->addString($jsString, true, AssetLocation::AFTER_JS);
     }
 
-    private static function getAdditionalScriptForOrderEditPage(): string
+    public static function onAdminSaleOrderCreate()
     {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            return;
+        }
+        $jsString = self::getAdditionalScriptForOrderEditPage(self::PAGE_TYPE['CREATE']);
+
+        Asset::getInstance()->addString($jsString, true, AssetLocation::AFTER_JS);
+    }
+
+    private static function getAdditionalScriptForOrderEditPage(int $type): string
+    {
+        if ($type === self::PAGE_TYPE['CREATE']) {
+            $onclick = 'BX.Sale.Admin.OrderAjaxer.refreshOrderData.setFlag(false); BX.Sale.Admin.OrderEditPage.refreshDiscounts(); return false;';
+        } elseif ($type === self::PAGE_TYPE['EDIT']) {
+            $onclick = 'BX.Sale.Admin.OrderEditPage.tailsLoaded = true; BX.Sale.Admin.OrderEditPage.onRefreshOrderDataAndSave(); return false;';
+        }
+
+
         $return = '';
         $orderPropertyIds = self::getAdditionLoyaltyOrderPropsIds();
         $bonusPropertyCode = PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS;
@@ -53,11 +78,11 @@ class AdminPageEvent
 
             $return = <<<HTML
             <script>
+           
                 document.addEventListener('DOMContentLoaded', function() {
                     const mindboxPropsIds = {$encodeOrderPropertyIds};
-                    
-                    let saveButton = "<input style='margin: 0 10px;' type='submit' class='bx-adm-pc-input-submit' value='{$saveButtonText}' onclick='BX.Sale.Admin.OrderEditPage.tailsLoaded = true; BX.Sale.Admin.OrderEditPage.onRefreshOrderDataAndSave(); return false;'>"
-                    let defaultBitrixPromocode = document.querySelector('#sale-admin-order-coupons');
+                    console.log(mindboxPropsIds)
+                    let saveButton = "<input style='margin: 0 10px;' type='button' class='bx-adm-pc-input-submit' value='{$saveButtonText}' onclick='{$onclick}'>";
                                         
                     let propertyPomocodeId = Object.keys(mindboxPropsIds).find(key => mindboxPropsIds[key] === '{$promocodePropertyCode}');
                     const propertyPromocodeInput = document.querySelector('input[name="PROPERTIES[' + propertyPomocodeId + ']"]');
@@ -68,10 +93,6 @@ class AdminPageEvent
                     const propertyBonusesInput = document.querySelector('input[name="PROPERTIES[' + propertyBonusesId + ']"]');
                     propertyBonusesInput.insertAdjacentHTML('afterend', '<br><i class="mindbox_property_bonuses_info" style="margin-top: 6px;display: block;">{$bonusAvailableDescription}{$bonusAvailableValue}</i> ');
                     propertyBonusesInput.insertAdjacentHTML('afterend', saveButton);
-                    
-                    if (defaultBitrixPromocode) {
-                        defaultBitrixPromocode.closest('.adm-s-result-container-promo').remove();
-                    }
                     
                      if(typeof BX !== 'undefined' && BX.addCustomEvent) {
                         BX.addCustomEvent('onAjaxSuccessFinish', BX.delegate(function(data) {
