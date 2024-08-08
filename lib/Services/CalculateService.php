@@ -250,7 +250,9 @@ class CalculateService
         /** @var CalculateUnauthorizedCart $calculateUnauthorizedCart */
         $calculateUnauthorizedCart = $this->serviceLocator->get('mindboxLoyalty.calculateUnauthorizedCart');
 
-        $mindboxOrder->setCoupons($this->sessionStorage->getPromocodeValue());
+        if ($this->sessionStorage->isPromocodeUsed()) {
+            $mindboxOrder->setCoupons($this->sessionStorage->getPromocodeValue());
+        }
 
         $orderData = $mindboxOrder->getData();
         unset($orderData['totalPrice']);
