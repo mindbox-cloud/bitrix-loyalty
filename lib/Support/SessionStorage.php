@@ -225,4 +225,14 @@ class SessionStorage
     {
         $_SESSION[self::GROUPS] = [];
     }
+
+    public function isBonusesUsed(): bool
+    {
+        return isset($_SESSION[self::GROUPS][self::PAY_BONUSES]);
+    }
+
+    public function isPromocodeUsed(): bool
+    {
+        return isset($_SESSION[self::GROUPS][self::PROMOCODE_VALUE]);
+    }
 }

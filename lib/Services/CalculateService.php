@@ -220,8 +220,13 @@ class CalculateService
         /** @var CalculateAuthorizedCart $calculateAuthorizedCart */
         $calculateAuthorizedCart = $this->serviceLocator->get('mindboxLoyalty.calculateAuthorizedCart');
 
-        $mindboxOrder->setBonuses($this->sessionStorage->getPayBonuses());
-        $mindboxOrder->setCoupons($this->sessionStorage->getPromocodeValue());
+        if ($this->sessionStorage->isPromocodeUsed()) {
+            $mindboxOrder->setCoupons($this->sessionStorage->getPromocodeValue());
+        }
+
+        if ($this->sessionStorage->isBonusesUsed()) {
+            $mindboxOrder->setBonuses($this->sessionStorage->getPayBonuses());
+        }
 
         $customerDTO = new \Mindbox\DTO\V3\Requests\CustomerRequestDTO();
         $customerDTO->setIds($customer->getIds());
@@ -245,7 +250,9 @@ class CalculateService
         /** @var CalculateUnauthorizedCart $calculateUnauthorizedCart */
         $calculateUnauthorizedCart = $this->serviceLocator->get('mindboxLoyalty.calculateUnauthorizedCart');
 
-        $mindboxOrder->setCoupons($this->sessionStorage->getPromocodeValue());
+        if ($this->sessionStorage->isPromocodeUsed()) {
+            $mindboxOrder->setCoupons($this->sessionStorage->getPromocodeValue());
+        }
 
         $orderData = $mindboxOrder->getData();
         unset($orderData['totalPrice']);
