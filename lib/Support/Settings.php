@@ -305,6 +305,11 @@ final class Settings
         return $this->settings[SettingsEnum::USER_LOGIN_IS_EMAIL] === 'Y';
     }
 
+    public function getLogLifeTime(): int
+    {
+        return (int)$this->settings[SettingsEnum::LOG_LIFE_TIME];
+    }
+
     protected function __clone()
     {
     }

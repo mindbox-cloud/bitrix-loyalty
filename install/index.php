@@ -555,6 +555,19 @@ class mindbox_loyalty extends CModule
             50
         );
 
+        $tomorrow = DateTime::createFromTimestamp(strtotime('tomorrow'));
+        $tomorrow->setTime(3,0);
+
+        CAgent::AddAgent(
+            "\Mindbox\Loyalty\Support\LogsRotation::agentRotationLogs();",
+            $this->MODULE_ID,
+            "N",
+            86400,
+            $tomorrow,
+            "Y",
+            $tomorrow,
+            30
+        );
     }
 
     public function unInstallAgents(): void
