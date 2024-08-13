@@ -72,7 +72,7 @@ class LogsRotation
             self::createArchiveBzip2($optionPathArchive, $logFiles);
         }
 
-        self::removeLogs($optionPathLogs, (new \DateTime(sprintf('-%s days', $optionLifeDay)))->setTime(0, 0, 0));
+        self::removeLogs($optionPathLogs, (new \DateTime())->setTime(0, 0, 0));
 
         $lifeDays = new \DateTime(sprintf('-%s days', $optionLifeDay));
         self::removeArchive($optionPathArchive, $lifeDays);
