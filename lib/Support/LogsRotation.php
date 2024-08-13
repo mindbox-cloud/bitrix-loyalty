@@ -6,24 +6,27 @@ use Mindbox\Loyalty\Support\SettingsFactory;
 
 class LogsRotation
 {
-    protected static $logFileName = 'mindbox.log';
+    protected static string $logFileName = 'mindbox.log';
 
-    protected static $pathSaveArchive = 'archive';
+    protected static string $pathSaveArchive = 'archive';
 
-    protected static $pathToLogs = 'mindbox';
+    protected const LOG_DIRECTORY = 'mindbox';
 
     protected static function getMindboxLogPath(string $pathLog): string
     {
+        return self::replaceSlashes($pathLog . DIRECTORY_SEPARATOR . self::LOG_DIRECTORY);
+    }
+
+    protected static function replaceSlashes(string $path): string
+    {
         return str_replace(DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR,
             DIRECTORY_SEPARATOR,
-            $pathLog . DIRECTORY_SEPARATOR . self::$pathToLogs);
+            $path);
     }
 
     protected static function getArchivePath(string $pathLog): string
     {
-        $pathArchive = str_replace(DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR,
-            DIRECTORY_SEPARATOR,
-            $pathLog . DIRECTORY_SEPARATOR . self::$pathToLogs . DIRECTORY_SEPARATOR . self::$pathSaveArchive);
+        $pathArchive = self::replaceSlashes($pathLog . DIRECTORY_SEPARATOR . self::LOG_DIRECTORY . DIRECTORY_SEPARATOR . self::$pathSaveArchive);
 
         if (!is_dir($pathArchive)) {
             mkdir($pathArchive, defined('BX_DIR_PERMISSIONS') ? BX_DIR_PERMISSIONS : 0755);
@@ -34,41 +37,54 @@ class LogsRotation
 
     public static function agentRotationLogs(): string
     {
+        self::processRotation();
+        return '\\' . __METHOD__ . '();';
+    }
+
+    public static function processRotation(): void
+    {
         $settings = SettingsFactory::create();
 
         $optionLifeDay = $settings->getLogLifeTime();
 
-        if ($optionLifeDay > 0) {
-            $optionPathLogs = self::getMindboxLogPath($settings->getLogPath());
-            $optionPathArchive = self::getArchivePath($settings->getLogPath());
-
-            $logFiles = self::findLogFiles($optionPathLogs, (new \DateTime())->setTime(0, 0, 0));
-
-            if (extension_loaded('zlib')) {
-                self::createArchiveZlib($optionPathArchive, $logFiles);
-            } elseif (extension_loaded('zip')) {
-                self::createArchiveZip($optionPathArchive, $logFiles);
-            } elseif (extension_loaded('bz2')) {
-                self::createArchiveBzip2($optionPathArchive, $logFiles);
-            }
-
-            self::removeLogs($optionPathLogs, (new \DateTime())->setTime(0, 0, 0));
-
-            $lifeDays = new \DateTime(sprintf('-%s days', $optionLifeDay));
-            self::removeArchive($optionPathArchive, $lifeDays);
+        if ($optionLifeDay <=  0) {
+            return;
         }
 
-        return '\\' . __METHOD__ . '();';
+        if (!$settings->getLogPath()) {
+            return;
+        }
+
+        $optionPathLogs = self::getMindboxLogPath($settings->getLogPath());
+        $optionPathArchive = self::getArchivePath($settings->getLogPath());
+
+        if (!is_dir($optionPathLogs) || !is_dir($optionPathArchive)) {
+            return;
+        }
+
+        $logFiles = self::findLogFiles($optionPathLogs, (new \DateTime())->setTime(0, 0, 0));
+
+        if (extension_loaded('zlib')) {
+            self::createArchiveZlib($optionPathArchive, $logFiles);
+        } elseif (extension_loaded('zip')) {
+            self::createArchiveZip($optionPathArchive, $logFiles);
+        } elseif (extension_loaded('bz2')) {
+            self::createArchiveBzip2($optionPathArchive, $logFiles);
+        }
+
+        self::removeLogs($optionPathLogs, (new \DateTime(sprintf('-%s days', $optionLifeDay)))->setTime(0, 0, 0));
+
+        $lifeDays = new \DateTime(sprintf('-%s days', $optionLifeDay));
+        self::removeArchive($optionPathArchive, $lifeDays);
     }
 
     public static function findLogFiles($path, \DateTime $date): array
     {
         $logFiles = [];
 
-        /** @var $iterator \RecursiveDirectoryIterator */
         /** @var $item \SplFileInfo */
-        foreach ($iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS | \RecursiveDirectoryIterator::FOLLOW_SYMLINKS),
+        foreach (new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS),
             \RecursiveIteratorIterator::SELF_FIRST) as $item) {
 
             if ($item->isFile()
@@ -91,10 +107,9 @@ class LogsRotation
      */
     public static function removeLogs($path, \DateTime $date): void
     {
-        /** @var $iterator \RecursiveDirectoryIterator */
         /** @var $item \SplFileInfo */
-        foreach ($iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS | \RecursiveDirectoryIterator::FOLLOW_SYMLINKS),
+        foreach (new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS),
             \RecursiveIteratorIterator::CHILD_FIRST) as $item
         ) {
             if ($item->isFile() && $date->getTimestamp() >= $item->getMTime()) {
@@ -118,8 +133,8 @@ class LogsRotation
             return;
         }
 
-        foreach ($iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($pathToArchive, \RecursiveDirectoryIterator::SKIP_DOTS | \RecursiveDirectoryIterator::FOLLOW_SYMLINKS),
+        foreach (new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($pathToArchive, \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS),
             \RecursiveIteratorIterator::CHILD_FIRST) as $item
         ) {
             $matches = null;
