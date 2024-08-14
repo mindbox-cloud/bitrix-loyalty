@@ -138,6 +138,6 @@ class Helper
     {
         $request = \Bitrix\Main\Context::getCurrent()->getRequest();
 
-        return  ($request->isAdminSection() || str_starts_with($request->getRequestedPageDirectory(), '/bitrix/admin/'));
+        return ($request->isAdminSection() || str_starts_with($request->getRequestedPageDirectory(), '/bitrix/admin/'));
     }
 }

@@ -7,6 +7,7 @@ namespace Mindbox\Loyalty\Events;
 use Bitrix\Main\Context;
 use Bitrix\Sale\Order;
 use Mindbox\Exceptions\MindboxUnavailableException;
+use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Exceptions\IntegrationLoyaltyException;
 use Mindbox\Loyalty\Helper;
 use Mindbox\Loyalty\Models\OrderMindbox;
@@ -57,9 +58,10 @@ class OrderEvent
             $service->calculateOrder($order);
         } catch (EmptyLineException $e) {
         } catch (ResponseErrorExceprion $e) {
-            $service->resetDiscount($order);
-        } catch (\Exception $e) {
-            $service->resetDiscount($order);
+        } catch (ErrorCallOperationException $e) {
+            if ($order->getField('ID') === null) {
+                $service->resetDiscount($order);
+            }
         }
 
         return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
@@ -111,6 +113,19 @@ class OrderEvent
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
+        if (Helper::isAdminSection()) {
+            $calculateService = new CalculateService();
+            try {
+                $calculateService->calculateOrder($order);
+            } catch (EmptyLineException $e) {
+            } catch (ResponseErrorExceprion $e) {
+            } catch (ErrorCallOperationException $e) {
+                if ($order->getField('ID') === null) {
+                    $calculateService->resetDiscount($order);
+                }
+            }
+        }
+
         try {
             SessionStorage::getInstance()->clearField(SessionStorage::MINDBOX_ORDER_ID);
             SessionStorage::getInstance()->clearField(SessionStorage::OPERATION_TYPE);
@@ -123,7 +138,7 @@ class OrderEvent
                 $transactionId = Transaction::getInstance()->get($order);
             }
 
-            if ($order->isNew() && !Context::getCurrent()->getRequest()->isAdminSection()) {
+            if ($order->isNew() && !Helper::isAdminSection()) {
                 $mindboxOrder = new OrderMindbox($order, $settings);
                 $mindboxOrder->setBonuses(SessionStorage::getInstance()->getPayBonuses());
                 $mindboxOrder->setCoupons(SessionStorage::getInstance()->getPromocodeValue());

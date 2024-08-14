@@ -340,9 +340,18 @@ class mindbox_loyalty extends CModule
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
             'main',
             'OnAdminSaleOrderEdit',
-            'mindbox.loyalty',
+            $this->MODULE_ID,
             \Mindbox\Loyalty\Events\AdminPageEvent::class,
             'onAdminSaleOrderEdit',
+            1000
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'main',
+            'OnAdminSaleOrderCreate',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\AdminPageEvent::class,
+            'onAdminSaleOrderCreate',
             1000
         );
     }
@@ -516,6 +525,14 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\AdminPageEvent::class,
             'onAdminSaleOrderEdit'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'main',
+            'OnAdminSaleOrderCreate',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\AdminPageEvent::class,
+            'onAdminSaleOrderCreate'
         );
     }
 
