@@ -81,7 +81,7 @@ class AdminPageEvent
            
                 document.addEventListener('DOMContentLoaded', function() {
                     const mindboxPropsIds = {$encodeOrderPropertyIds};
-                    console.log(mindboxPropsIds)
+
                     let saveButton = "<input style='margin: 0 10px;' type='button' class='bx-adm-pc-input-submit' value='{$saveButtonText}' onclick='{$onclick}'>";
                                         
                     let propertyPomocodeId = Object.keys(mindboxPropsIds).find(key => mindboxPropsIds[key] === '{$promocodePropertyCode}');
