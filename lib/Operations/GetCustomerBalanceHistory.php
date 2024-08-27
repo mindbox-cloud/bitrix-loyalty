@@ -29,7 +29,7 @@ class GetCustomerBalanceHistory extends AbstractOperation
                 operationName: $operation,
                 body: new DTO(['customer' => $customerRequestDTO, 'page' => $pageRequestDTO]),
                 addDeviceUUID: false
-            )->getRequest();
+            );
 
             $response = $client->sendRequest();
 

@@ -29,7 +29,7 @@ class GetCustomerLoyaltyLevel extends AbstractOperation
                 operationName: $operation,
                 body: new DTO(['customer' => $customerRequestDTO, 'segmentations' => $segmentations]),
                 addDeviceUUID: false
-            )->getRequest();
+            );
 
             $response = $client->sendRequest();
 

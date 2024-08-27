@@ -27,7 +27,7 @@ class GetCustomerInfo extends AbstractOperation
                 operationName: $operation,
                 body: new DTO(['customer' => $dto]),
                 addDeviceUUID: false
-            )->getRequest();
+            );
 
             return $client->sendRequest();
         } catch (MindboxClientException $e) {
