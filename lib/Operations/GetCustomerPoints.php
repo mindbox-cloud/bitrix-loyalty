@@ -30,7 +30,7 @@ class GetCustomerPoints extends AbstractOperation
                 body: new DTO(['customer' => $dto]),
                 isSync: true,
                 addDeviceUUID: false
-            )->getRequest();
+            );
 
             $response = $client->sendRequest();
 

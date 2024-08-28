@@ -6,19 +6,19 @@ namespace Mindbox\Loyalty\Operations;
 
 use Mindbox\DTO\DTO;
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
-use Mindbox\DTO\V3\Requests\PageRequestDTO;
-use Mindbox\DTO\V3\Responses\BalanceChangeKindResponseDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\MindboxResponse;
-use Mindbox\Responses\MindboxBalanceResponse;
 
-class GetCustomerBalanceHistory extends AbstractOperation
+class GetCustomerLoyaltyLevel extends AbstractOperation
 {
     /**
+     * @param CustomerRequestDTO $customerRequestDTO
+     * @param array<string> $segmentations
+     * @return MindboxResponse
      * @throws ErrorCallOperationException
      */
-    public function execute(CustomerRequestDTO $customerRequestDTO, PageRequestDTO $pageRequestDTO): MindboxResponse
+    public function execute(CustomerRequestDTO $customerRequestDTO, array $segmentations): MindboxResponse
     {
         try {
             $operation = $this->getOperation();
@@ -27,7 +27,7 @@ class GetCustomerBalanceHistory extends AbstractOperation
             $client->prepareRequest(
                 method: 'POST',
                 operationName: $operation,
-                body: new DTO(['customer' => $customerRequestDTO, 'page' => $pageRequestDTO]),
+                body: new DTO(['customer' => $customerRequestDTO, 'segmentations' => $segmentations]),
                 addDeviceUUID: false
             );
 
@@ -45,6 +45,6 @@ class GetCustomerBalanceHistory extends AbstractOperation
 
     protected function operation(): string
     {
-        return 'GetCustomerBalanceHistory';
+        return 'GetCustomerLoyaltyLevel';
     }
 }
