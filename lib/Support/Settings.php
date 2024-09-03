@@ -21,6 +21,7 @@ final class Settings
         SettingsEnum::EXTERNAL_USER => null,
         SettingsEnum::TEMP_EXTERNAL_ORDER => null,
         SettingsEnum::EXTERNAL_ORDER => null,
+        SettingsEnum::WEBSITE_ORDER_FIELD => null,
         SettingsEnum::BALANCE_SYSTEM_NAME => null,
         SettingsEnum::API_DOMAIN => null,
         SettingsEnum::HTTP_CLIENT => null,
@@ -52,12 +53,14 @@ final class Settings
         $this->siteId = $siteId;
 
         $this->fillDefaultOperationsSettings();
+        $defaultOptions = \Bitrix\Main\Config\Option::getDefaults($this->getModuleId());
 
         foreach ($this->settings as $settingCode => $value) {
             $this->settings[$settingCode] = \Bitrix\Main\Config\Option::get(
                 moduleId: $this->getModuleId(),
                 name: $settingCode,
-                siteId: $this->siteId
+                siteId: $this->siteId,
+                default: $defaultOptions[$settingCode]
             );
         }
     }
@@ -142,6 +145,11 @@ final class Settings
     public function getExternalOrderId(): ?string
     {
         return $this->settings[SettingsEnum::EXTERNAL_ORDER];
+    }
+
+    public function getWebsiteOrderField(): string
+    {
+        return $this->settings[SettingsEnum::WEBSITE_ORDER_FIELD];
     }
 
     /**

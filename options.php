@@ -256,6 +256,20 @@ foreach ($listSite as $site) {
                 'size' => 60,
             ]
         ],
+        SettingsEnum::WEBSITE_ORDER_FIELD => [
+            'id' => SettingsEnum::WEBSITE_ORDER_FIELD . '__' . $site,
+            'origin' => SettingsEnum::WEBSITE_ORDER_FIELD,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_WEBSITE_ORDER_FIELD', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_WEBSITE_ORDER_FIELD_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'selectbox',
+                'options' => [
+                    'ACCOUNT_NUMBER' => 'ACCOUNT_NUMBER',
+                    'ID'             => 'ID'
+                ],
+                'size' => 1
+            ]
+        ],
         SettingsEnum::BALANCE_SYSTEM_NAME => [
             'id' => SettingsEnum::BALANCE_SYSTEM_NAME . '__' . $site,
             'origin' => SettingsEnum::BALANCE_SYSTEM_NAME,

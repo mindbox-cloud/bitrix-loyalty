@@ -17,6 +17,7 @@ class SettingsEnum
     public const TEMP_EXTERNAL_ORDER = 'temp_external_order';
 
     public const EXTERNAL_ORDER = 'external_order';
+    public const WEBSITE_ORDER_FIELD = 'website_order_field';
 
     public const BALANCE_SYSTEM_NAME = 'balance_system_name';
     public const API_DOMAIN = 'api_domain';
