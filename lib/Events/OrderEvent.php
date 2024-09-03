@@ -246,7 +246,7 @@ class OrderEvent
             $isNew
             && SessionStorage::getInstance()->getOperationType() !== null
         ) {
-            OrderOperationTypeTable::setTypeOrder((string) $order->getField('ACCOUNT_NUMBER'), SessionStorage::getInstance()->getOperationType());
+            OrderOperationTypeTable::setTypeOrder((string) $order->getId(), SessionStorage::getInstance()->getOperationType());
         }
 
         SessionStorage::getInstance()->clear();

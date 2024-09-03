@@ -10,6 +10,7 @@ $mindbox_loyalty_default_option = [
     'external_product' => '',
     'external_user' => '',
     'external_order' => '',
+    'website_order_field' => 'ACCOUNT_NUMBER',
     'api_domain' => 'api.mindbox.ru',
     'http_client' => 'curl',
     'timeout' => 5,

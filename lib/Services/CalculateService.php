@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Services;
 
-use Bitrix\Main\Context;
 use Bitrix\Main\Localization\Loc;
-use Bitrix\Main\Type\DateTime;
-use Bitrix\Main\UserTable;
 use Bitrix\Sale\BasketItem;
 use Bitrix\Sale\Order;
-use Mindbox\DTO\V3\Responses\OrderResponseDTO;
 use Mindbox\Loyalty\Exceptions\ResponseErrorExceprion;
 use Mindbox\Loyalty\Operations\CalculateCartAdmin;
 use Mindbox\Loyalty\Operations\CalculateUnauthorizedCart;
@@ -48,7 +44,7 @@ class CalculateService
                 $response = $this->calculateAuthorizedOrder($order);
             }
         } else {
-            $type = OrderOperationTypeTable::getOrderType((string) $order->getField('ACCOUNT_NUMBER'));
+            $type = OrderOperationTypeTable::getOrderType((string) $order->getId());
 
             if ($type === OrderOperationTypeTable::OPERATION_TYPE_AUTH) {
                 $response = $this->calculateAuthorizedOrder($order);

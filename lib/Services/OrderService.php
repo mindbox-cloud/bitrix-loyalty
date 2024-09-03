@@ -22,7 +22,6 @@ use Mindbox\Loyalty\Operations\CreateAuthorizedOrder;
 use Mindbox\Loyalty\Operations\CreateOrderAdmin;
 use Mindbox\Loyalty\Operations\CreateUnauthorizedOrder;
 use Mindbox\Loyalty\Operations\SaveOfflineOrder;
-use Mindbox\Loyalty\ORM\DeliveryDiscountTable;
 use Mindbox\Loyalty\ORM\OrderOperationTypeTable;
 use Mindbox\Loyalty\Support\SessionStorage;
 use Mindbox\Loyalty\Support\SettingsFactory;
@@ -48,7 +47,6 @@ class OrderService
      */
     public function saveOrder(Order $order, ?string $tmpOrderId)
     {
-
         if (Helper::isAdminSection()) {
             $response = $this->saveOrderAdmin($order, $tmpOrderId);
             $type = OrderOperationTypeTable::OPERATION_TYPE_AUTH;
@@ -63,7 +61,7 @@ class OrderService
             }
             SessionStorage::getInstance()->setOperationType($type);
         } else {
-            $type = OrderOperationTypeTable::getOrderType((string) $order->getField('ACCOUNT_NUMBER'));
+            $type = OrderOperationTypeTable::getOrderType((string) $order->getId());
 
             if ($type === OrderOperationTypeTable::OPERATION_TYPE_AUTH) {
                 $response = $this->saveAuthorizedOrder($order, $tmpOrderId);

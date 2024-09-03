@@ -140,7 +140,6 @@ class OrderMindbox
                     'amount' => $payment->getSum()
                 ]);
             }
-
         }
 
         return $payments;
@@ -157,10 +156,10 @@ class OrderMindbox
 
     public function getExternalOrderId()
     {
-        return $this->order->getField('ACCOUNT_NUMBER')
+        return $this->order->getField($this->settings->getWebsiteOrderField())
             ? $this->settings->isTestMode()
-                ? $this->testPrefix . $this->order->getField('ACCOUNT_NUMBER')
-                : $this->order->getField('ACCOUNT_NUMBER')
+                ? $this->testPrefix . $this->order->getField($this->settings->getWebsiteOrderField())
+                : $this->order->getField($this->settings->getWebsiteOrderField())
             : null;
     }
 
