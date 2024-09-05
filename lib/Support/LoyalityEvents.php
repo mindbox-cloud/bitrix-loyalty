@@ -24,6 +24,7 @@ class LoyalityEvents
     public const INCLUDE_TRACKER = 'include_tracker';
     public const ADD_CART = 'add_to_cart';
     public const REMOVE_FROM_CART = 'remove_form_cart';
+    public const DISCOUNT_FOR_PRICE_TYPE = 'discount_for_price_type';
 
     public static function getAll(): array
     {

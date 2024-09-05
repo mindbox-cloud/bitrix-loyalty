@@ -8,7 +8,6 @@ use Bitrix\Catalog\Product\Price\Calculation;
 use Bitrix\Main\Config\Option;
 use Bitrix\Sale\Discount\Actions;
 use Bitrix\Sale\Discount\Formatter;
-use Bitrix\Sale\Order;
 use Bitrix\Sale\BasketItem;
 use Bitrix\Sale\OrderBase;
 use Bitrix\Sale\PriceMaths;
@@ -53,10 +52,13 @@ class RequestedPromotions
         $requestedPromotions = [];
         $result = $this->result;
 
-        if ($arPriceTypeDiscount = self::getDiscountByPriceType($basketItem)) {
+        $customPromotions = \Mindbox\Loyalty\EventSender::callEventOnCustomPromotionsBasketItem($basketItem, $this->settings);
+
+        foreach ($customPromotions as $arPriceTypeDiscount) {
             $result['ORDER'][] = $arPriceTypeDiscount['BASKET'];
             $result['DISCOUNT_LIST'][$arPriceTypeDiscount['DISCOUNT']['ID']] = $arPriceTypeDiscount['DISCOUNT'];
         }
+        unset($customPromotions);
 
         // Обработка скидок каталога
         if (isset($result['BASKET']) && is_array($result['BASKET']) && isset($result['BASKET'][$basketCode])) {
@@ -263,6 +265,9 @@ class RequestedPromotions
                                         ? $arActionDescrData['RESULT_VALUE']
                                         : -1 * $arActionDescrData['RESULT_VALUE'];
                                     break;
+                                case 'CATALOG_GROUP_CUSTOM':
+                                    // кастомная скидка по типу цен
+                                    $discountPrice = $arActionDescrData['RESULT_VALUE'];
                             }
                         } elseif (isset($arActionDescrData['TYPE'])) {
                             switch ($arActionDescrData['TYPE']) {
@@ -374,116 +379,6 @@ class RequestedPromotions
     public static function isPercentFromBasePrice(): bool
     {
         return Option::get('sale', 'get_discount_percent_from_base_price', 'N') === 'Y';
-    }
-
-    /**
-     * Тип скидок, когда есть два типа цены, OLD_PRICE => DISCOUNT_PRICE и на событиях через них делают скидки
-     *
-     * @param BasketItem $basketItem
-     * @return array
-     * @throws \Bitrix\Main\ArgumentNullException
-     * @throws \Bitrix\Main\LoaderException
-     */
-    protected function getDiscountByPriceType(BasketItem $basketItem): array
-    {
-        if (!\Bitrix\Main\Loader::includeModule('catalog')) {
-            return [];
-        }
-
-        $productPrices = self::getProductPrices($basketItem->getProductId());
-        $basePriceGroupId = $this->getBasePriceId();
-
-        if ($productPrices === []) {
-            return [];
-        }
-        $arDiscount = [];
-
-        $catalogGroupId = (int) $basketItem->getField('PRICE_TYPE_ID');
-        if ($catalogGroupId === 0) {
-            foreach ($productPrices as $productPrice) {
-                if (PriceMaths::roundPrecision($productPrice['PRICE']) === PriceMaths::roundPrecision($basketItem->getBasePrice())) {
-                    $catalogGroupId = (int) $productPrice['CATALOG_GROUP_ID'];
-                }
-            }
-        }
-        unset($productPrice);
-
-        foreach ($productPrices as $productPrice) {
-            if (
-                (int) $productPrice['CATALOG_GROUP_ID'] === $basePriceGroupId
-                && $productPrice['PRICE'] > $basketItem->getBasePrice()
-                && $catalogGroupId > 0
-            ) {
-                $realDiscountId = 'CATALOG-GROUP-' . $catalogGroupId;
-
-                $arDiscount['BASKET'] = [
-                    'DISCOUNT_ID' => $realDiscountId,
-                    'RESULT' => [
-                        'BASKET' => [
-                            $basketItem->getBasketCode() => [
-                                'APPLY' => 'Y',
-                                'DESCR' => 'Discount by price type',
-                                'DESCR_DATA' => [
-                                    [
-                                        'TYPE' => 'CATALOG_GROUP_CUSTOM',
-                                        'VALUE_TYPE' => 'CATALOG_GROUP_CUSTOM',
-                                        'RESULT_VALUE' => $productPrice['PRICE'] - $basketItem->getBasePrice(),
-                                    ]
-                                ],
-                                'MODULE_ID' => 'catalog',
-                                'PRODUCT_ID' => $basketItem->getProductId(),
-                                'BASKET_ID' => $basketItem->getBasketCode(),
-                            ]
-                        ]
-                    ]
-                ];
-
-                $arDiscount['DISCOUNT'] = [
-                    'ID' => $realDiscountId,
-                    'DISCOUNT_ID' => $realDiscountId,
-                    'REAL_DISCOUNT_ID' => $realDiscountId,
-                    'MODULE_ID' => 'catalog',
-                    'NAME' => 'Discount by price type',
-                ];
-            }
-        }
-        unset($productPrices, $productPrice);
-
-        return $arDiscount;
-    }
-
-    protected function getProductPrices(int $productId): array
-    {
-        $iterPrices = \Bitrix\Catalog\PriceTable::getList([
-            'select' => ['*'],
-            'filter' => [
-                '=PRODUCT_ID' => $productId,
-            ],
-            'order'  => ['CATALOG_GROUP_ID' => 'ASC']
-        ]);
-
-        $allProductPrices = [];
-        while ($price = $iterPrices->fetch()) {
-            $allProductPrices[] = $price;
-        }
-
-        return $allProductPrices;
-    }
-
-    protected function getBasePriceId(): int
-    {
-        $basePriceGroupId = (int) $this->settings->getBasePriceId();
-
-        if ($basePriceGroupId !== 0) {
-            return $basePriceGroupId;
-        }
-
-        $basePrice = \Bitrix\Catalog\GroupTable::getList([
-            'filter' => ['BASE' => 'Y'],
-            'select' => ['ID']
-        ])->fetch();
-
-       return (int) $basePrice['ID'];
     }
 
     protected function createSettings(): Settings
