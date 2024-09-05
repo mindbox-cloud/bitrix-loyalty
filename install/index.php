@@ -354,6 +354,15 @@ class mindbox_loyalty extends CModule
             'onAdminSaleOrderCreate',
             1000
         );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            $this->MODULE_ID,
+            'OnCustomPromotionsBasketItem',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\InternalEvent::class,
+            'onCustomPromotionsBasketItem',
+            1000
+        );
     }
 
     public function UnInstallEvents()
@@ -533,6 +542,14 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\AdminPageEvent::class,
             'onAdminSaleOrderCreate'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            $this->MODULE_ID,
+            'OnCustomPromotionsBasketItem',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\InternalEvent::class,
+            'onCustomPromotionsBasketItem',
         );
     }
 

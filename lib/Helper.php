@@ -140,4 +140,32 @@ class Helper
 
         return ($request->isAdminSection() || str_starts_with($request->getRequestedPageDirectory(), '/bitrix/admin/'));
     }
+
+    public static function getProductPrices(int $productId): array
+    {
+        $iterPrices = \Bitrix\Catalog\PriceTable::getList([
+            'select' => ['*'],
+            'filter' => [
+                '=PRODUCT_ID' => $productId,
+            ],
+            'order'  => ['CATALOG_GROUP_ID' => 'ASC']
+        ]);
+
+        $allProductPrices = [];
+        while ($price = $iterPrices->fetch()) {
+            $allProductPrices[] = $price;
+        }
+
+        return $allProductPrices;
+    }
+
+    public static function getBasePriceId(): int
+    {
+        $basePrice = \Bitrix\Catalog\GroupTable::getList([
+            'filter' => ['BASE' => 'Y'],
+            'select' => ['ID']
+        ])->fetch();
+
+        return (int) $basePrice['ID'];
+    }
 }
