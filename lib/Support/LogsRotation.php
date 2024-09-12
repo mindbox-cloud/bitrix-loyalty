@@ -112,7 +112,10 @@ class LogsRotation
             new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS),
             \RecursiveIteratorIterator::CHILD_FIRST) as $item
         ) {
-            if ($item->isFile() && $date->getTimestamp() >= $item->getMTime()) {
+            if ($item->isFile()
+                && $date->getTimestamp() >= $item->getMTime()
+                && $item->getFilename() === self::$logFileName
+            ) {
                 unlink($item->getPathname());
             } elseif ($item->isDir() && !$item->isLink()) {
                 rmdir($item->getPathname());
