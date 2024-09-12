@@ -95,11 +95,11 @@ class OrderEvent
             'REASON_CANCELED',
         ];
 
-        if (!$order->isNew() && array_diff($changeValue, $continueValues) === []) {
+        if (!$order instanceof Order) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
-        if (!$order instanceof Order) {
+        if (!$order->isNew() && array_diff($changeValue, $continueValues) === []) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
