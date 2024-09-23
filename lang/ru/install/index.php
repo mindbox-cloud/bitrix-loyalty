@@ -1,4 +1,6 @@
 <?php
+$MESS["MINDBOX_LOYALTY_MODULE_INSTALL_SUCCESS_MESSAGE"] = 'Модуль удален';
+$MESS["MINDBOX_LOYALTY_MODULE_DELETE_QUESTION"] = 'Удалить модуль?';
 $MESS["MINDBOX_LOYALTY_MODULE_NAME"] = 'Модульная интеграция программы лояльности';
 $MESS["MINDBOX_LOYALTY_MODULE_DESCRIPTION"] = 'Модуль позволяет интегрировать сайт с системой лояльности';
 $MESS["MINDBOX_LOYALTY_PARTNER_NAME"] = 'Mindbox';
