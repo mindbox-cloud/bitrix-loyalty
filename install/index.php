@@ -70,7 +70,7 @@ class mindbox_loyalty extends CModule
         Loader::includeModule($this->MODULE_ID);
 
         if ($request->get('step') < 2) {
-            $APPLICATION->IncludeAdminFile('Удалить модуль?', __DIR__ . '/unstep1.php');
+            $APPLICATION->IncludeAdminFile(Loc::getMessage('MINDBOX_LOYALTY_MODULE_DELETE_QUESTION'), __DIR__ . '/unstep1.php');
         } elseif ($request->get('step') == 2) {
             $this->UnInstallEvents();
 
@@ -81,7 +81,7 @@ class mindbox_loyalty extends CModule
             $this->UnInstallFiles();
             $this->unInstallAgents();
             ModuleManager::unRegisterModule($this->MODULE_ID);
-            $APPLICATION->IncludeAdminFile('Модуль удален', __DIR__ . '/unstep2.php');
+            $APPLICATION->IncludeAdminFile(Loc::getMessage('MINDBOX_LOYALTY_MODULE_INSTALL_SUCCESS_MESSAGE'), __DIR__ . '/unstep2.php');
         }
     }
 

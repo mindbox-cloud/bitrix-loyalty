@@ -328,6 +328,7 @@ class CalculateService
             'DELIVERY_ID' => $order->getField('DELIVERY_ID'),
             'ORDER_ID' => null
         ];
+
         DeliveryDiscountTable::deleteByFilter($deliveryFilter);
     }
 }
