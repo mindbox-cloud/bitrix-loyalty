@@ -204,7 +204,7 @@ class Customer
 
     public function getSubscriptions(): ?array
     {
-        return isset($this->data['subscriptions']) ? $this->data['subscriptions'] : null;
+        return $this->data['subscriptions'] ?? null;
     }
 
     public function getIds(): array

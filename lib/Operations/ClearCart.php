@@ -18,7 +18,7 @@ class ClearCart extends AbstractOperation
                 body: $DTO,
             );
 
-            $response = $request->sendRequest();
+            $request->sendRequest();
     }
 
     protected function operation(): string

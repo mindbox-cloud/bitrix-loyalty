@@ -356,13 +356,13 @@ class RequestedPromotions
 
                     if ($discountPrice != 0 && !empty($externalId)) {
                         $requestedPromotions[] = [
-                            'type'      => 'discount',
+                            'type' => 'discount',
                             'promotion' => [
                                 'ids' => [
                                     'externalId' => $externalId
                                 ],
                             ],
-                            'amount'    => PriceMaths::roundPrecision($discountPrice * $quantity)
+                            'amount' => PriceMaths::roundPrecision($discountPrice * $quantity)
                         ];
                     }
                 }

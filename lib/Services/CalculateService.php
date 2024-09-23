@@ -7,7 +7,7 @@ namespace Mindbox\Loyalty\Services;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Sale\BasketItem;
 use Bitrix\Sale\Order;
-use Mindbox\Loyalty\Exceptions\ResponseErrorExceprion;
+use Mindbox\Loyalty\Exceptions\ResponseErrorException;
 use Mindbox\Loyalty\Operations\CalculateCartAdmin;
 use Mindbox\Loyalty\Operations\CalculateUnauthorizedCart;
 use Mindbox\Loyalty\ORM\BasketDiscountTable;
@@ -54,7 +54,7 @@ class CalculateService
         }
 
         if ($response->isError()) {
-            throw new ResponseErrorExceprion();
+            throw new ResponseErrorException();
         }
 
         $orderResponseDTO = $response->getResult()->getOrder();

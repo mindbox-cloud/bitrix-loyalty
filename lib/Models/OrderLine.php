@@ -76,7 +76,7 @@ class OrderLine
         return $this->basketItem->getBasketCode();
     }
 
-    public function getLineNumber()
+    public function getLineNumber(): ?int
     {
         if ($this->lineNumber === null) {
             self::$lineNumberCount++;
@@ -86,7 +86,7 @@ class OrderLine
         return $this->lineNumber;
     }
 
-    protected function createRequestedPromotions()
+    protected function createRequestedPromotions(): RequestedPromotions
     {
         $order = $this->basketItem->getBasket()->getOrder();
 

@@ -18,6 +18,10 @@ class SendMobilePhoneCodeToEdit extends AbstractOperation
     private ?MindboxRequest $request = null;
     private ?MindboxResponse $response = null;
 
+    /**
+     * @throws ErrorCallOperationException
+     * @throws ValidationErrorCallOperationException
+     */
     public function execute(CustomerRequestDTO $customerDTO)
     {
         try {

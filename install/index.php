@@ -88,6 +88,7 @@ class mindbox_loyalty extends CModule
     public function InstallDB()
     {
         $discountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\BasketDiscountTable::class);
+
         if (!$discountTableInstance->getConnection()->isTableExists($discountTableInstance->getDBTableName())) {
             $discountTableInstance->createDbTable();
         }
@@ -333,7 +334,7 @@ class mindbox_loyalty extends CModule
             'OnProlog',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CommonEvent::class,
-            'OnProlog',
+            'onProlog',
             1000
         );
 
@@ -525,7 +526,7 @@ class mindbox_loyalty extends CModule
             'OnProlog',
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\CommonEvent::class,
-            'OnProlog'
+            'onProlog'
         );
 
         \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(

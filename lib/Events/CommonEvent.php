@@ -9,7 +9,7 @@ use Mindbox\Loyalty\Support\LoyalityEvents;
 
 class CommonEvent
 {
-    public static function OnProlog()
+    public static function onProlog()
     {
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::INCLUDE_TRACKER)) {
             return;

@@ -17,6 +17,9 @@ use Mindbox\MindboxResponse;
 
 class CalculateUnauthorizedCart extends AbstractOperation
 {
+    /**
+     * @throws ErrorCallOperationException
+     */
     public function execute(PreorderRequestDTO $DTO): MindboxResponse
     {
         $operation = $this->getOperation();
@@ -33,7 +36,6 @@ class CalculateUnauthorizedCart extends AbstractOperation
 
             return $response;
         } catch (MindboxClientException $e) {
-            // todo log this or log service?
             throw new ErrorCallOperationException(
                 message: sprintf('The operation %s failed', $this->getOperation()),
                 previous: $e,

@@ -19,6 +19,10 @@ class CreateUnauthorizedOrder extends AbstractOperation
     private ?MindboxRequest $request = null;
     private ?MindboxResponse $response = null;
 
+    /**
+     * @throws ErrorCallOperationException
+     * @throws MindboxUnavailableException
+     */
     public function execute(PreorderRequestDTO $DTO, ?string $transactionId): void
     {
         $operation = $this->getOperation();

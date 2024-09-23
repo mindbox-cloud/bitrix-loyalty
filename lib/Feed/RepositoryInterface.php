@@ -11,5 +11,6 @@ interface RepositoryInterface
     public function getCategories(): array;
 
     public function getBasePriceId(): int;
+
     public function getProductGroups(int $productId): array;
 }
