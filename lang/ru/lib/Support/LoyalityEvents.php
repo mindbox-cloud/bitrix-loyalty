@@ -14,7 +14,7 @@ $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_delete_order'] = 'Процессинг: у�
 $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_include_tracker'] = 'Подключение трекера';
 $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_add_to_cart'] = 'Добавление в корзину';
 $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_remove_form_cart'] = 'Удаление из корзины';
-$MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_add_to_favorite'] = 'Добавление к избранное';
+$MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_add_to_favorite'] = 'Добавление в избранное';
 $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_remove_from_favorite'] = 'Удаление из избранного';
 
 $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_discount_for_price_type'] = 'Расчет скидки как разница типов цен';
