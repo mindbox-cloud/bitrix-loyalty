@@ -8,7 +8,7 @@
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
-use Mindbox\Loyalty\Settings\SettingsEnum;
+use Mindbox\Loyalty\Support\SettingsEnum;
 
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
 defined('MINDBOX_LOYALTY_ADMIN_MODULE_NAME') or define('MINDBOX_LOYALTY_ADMIN_MODULE_NAME', 'mindbox.loyalty');
@@ -29,6 +29,8 @@ if ($request->isPost() && $request->get('save') && check_bitrix_sessid()) {
     $notSaveOption = [
         'USER_BITRIX_FIELDS',
         'USER_MINDBOX_FIELDS',
+        'ORDER_BITRIX_STATUS',
+        'ORDER_MINDBOX_STATUS',
     ];
 
     $queryObject = \Bitrix\Main\SiteTable::getList([
@@ -37,8 +39,10 @@ if ($request->isPost() && $request->get('save') && check_bitrix_sessid()) {
         'order' => ['SORT' => 'ASC'],
     ]);
     $listSite = [];
+
     while ($site = $queryObject->fetch()) {
         $listSite[] = $site['LID'];
+        \Bitrix\Main\Config\Option::delete(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, ['site_id' => $site['LID']]);
     }
 
     foreach ($request->getPostList() as $key => $option) {
@@ -68,8 +72,13 @@ if ($request->isPost() && $request->get('save') && check_bitrix_sessid()) {
             Option::set(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, $key, $option, $site);
         }
     }
-}
 
+    if (!empty($_REQUEST["back_url_settings"]) && empty($_REQUEST["Apply"])) {
+        LocalRedirect($_REQUEST["back_url_settings"]);
+    } else {
+        LocalRedirect("/bitrix/admin/settings.php?lang=" . LANGUAGE_ID . "&mid=" . urlencode($mid) . "&tabControl_active_tab=" . urlencode($_REQUEST["tabControl_active_tab"] ?? '') . "&back_url_settings=" . urlencode($_REQUEST["back_url_settings"] ?? ''));
+    }
+}
 
 $queryObject = \Bitrix\Main\SiteTable::getList([
     'select' => ['LID', 'NAME'],
@@ -164,6 +173,48 @@ foreach ($listSite as $site) {
                 'size' => 3
             ]
         ],
+        SettingsEnum::LOYALTY_ENABLE_EVENTS => [
+            'id' => SettingsEnum::LOYALTY_ENABLE_EVENTS . '__' . $site,
+            'origin' => SettingsEnum::LOYALTY_ENABLE_EVENTS,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_ENABLE_EVENTS', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_ENABLE_EVENTS_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'multiselectbox',
+                'options' => \Mindbox\Loyalty\Support\LoyalityEvents::getAll(),
+                'size' => 5
+            ]
+        ],
+        SettingsEnum::USER_AUTO_SUBSCRIBE_POINTS => [
+            'id' => SettingsEnum::USER_AUTO_SUBSCRIBE_POINTS . '__' . $site,
+            'origin' => SettingsEnum::USER_AUTO_SUBSCRIBE_POINTS,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_POINTS', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_POINTS_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'multiselectbox',
+                'options' => \Mindbox\Loyalty\Options::getSubscribePoints(),
+                'size' => 5
+            ]
+        ],
+        SettingsEnum::USER_LOGIN_IS_EMAIL => [
+            'id' => SettingsEnum::USER_LOGIN_IS_EMAIL . '__' . $site,
+            'origin' => SettingsEnum::USER_LOGIN_IS_EMAIL,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_USER_EMAIL_IS_LOGIN', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_USER_EMAIL_IS_LOGIN_HINTS', ['#LID#'=>$site]),
+            'type' => [
+                'type' => 'checkbox',
+            ]
+        ],
+        SettingsEnum::YML_BASE_PRICE_ID => [
+            'id' => SettingsEnum::YML_BASE_PRICE_ID . '__' . $site,
+            'origin' => SettingsEnum::YML_BASE_PRICE_ID,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_BASE_PRICE_ID', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_BASE_PRICE_ID_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'selectbox',
+                'options' => \Mindbox\Loyalty\Options::getPrices(),
+                'size' => 1
+            ]
+        ],
         Loc::getMessage('MINDBOX_LOYALTY_HEADING_PRIMARY_KEY'),
         SettingsEnum::EXTERNAL_PRODUCT => [
             'id' => SettingsEnum::EXTERNAL_PRODUCT . '__' . $site,
@@ -185,11 +236,45 @@ foreach ($listSite as $site) {
                 'size' => 60,
             ]
         ],
+        SettingsEnum::TEMP_EXTERNAL_ORDER => [
+            'id' => SettingsEnum::TEMP_EXTERNAL_ORDER . '__' . $site,
+            'origin' => SettingsEnum::TEMP_EXTERNAL_ORDER,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_TEMP_EXTERNAL_ORDER', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_TEMP_EXTERNAL_ORDER_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
         SettingsEnum::EXTERNAL_ORDER => [
             'id' => SettingsEnum::EXTERNAL_ORDER . '__' . $site,
             'origin' => SettingsEnum::EXTERNAL_ORDER,
             'label' => Loc::getMessage('MINDBOX_LOYALTY_EXTERNAL_ORDER', ['#LID#' => $site]),
             'hints' => Loc::getMessage('MINDBOX_LOYALTY_EXTERNAL_ORDER_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
+        SettingsEnum::WEBSITE_ORDER_FIELD => [
+            'id' => SettingsEnum::WEBSITE_ORDER_FIELD . '__' . $site,
+            'origin' => SettingsEnum::WEBSITE_ORDER_FIELD,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_WEBSITE_ORDER_FIELD', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_WEBSITE_ORDER_FIELD_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'selectbox',
+                'options' => [
+                    'ACCOUNT_NUMBER' => 'ACCOUNT_NUMBER',
+                    'ID'             => 'ID'
+                ],
+                'size' => 1
+            ]
+        ],
+        SettingsEnum::BALANCE_SYSTEM_NAME => [
+            'id' => SettingsEnum::BALANCE_SYSTEM_NAME . '__' . $site,
+            'origin' => SettingsEnum::BALANCE_SYSTEM_NAME,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_BALANCE_SYSTEM_NAME', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_BALANCE_SYSTEM_NAME_HINTS', ['#LID#' => $site]),
             'type' => [
                 'type' => 'text',
                 'size' => 60,
@@ -309,6 +394,7 @@ foreach ($listSite as $site) {
                 'size' => 60,
             ]
         ],
+
         Loc::getMessage('MINDBOX_LOYALTY_HEADING_ORDER_FIELDS'),
 
         SettingsEnum::ORDER_BITRIX_FIELDS => [
@@ -426,17 +512,6 @@ foreach ($listSite as $site) {
                 'size' => 1
             ]
         ],
-        SettingsEnum::YML_BASE_PRICE_ID => [
-            'id' => SettingsEnum::YML_BASE_PRICE_ID . '__' . $site,
-            'origin' => SettingsEnum::YML_BASE_PRICE_ID,
-            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_BASE_PRICE_ID', ['#LID#' => $site]),
-            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_BASE_PRICE_ID_HINTS', ['#LID#' => $site]),
-            'type' => [
-                'type' => 'selectbox',
-                'options' => \Mindbox\Loyalty\Options::getPrices(),
-                'size' => 1
-            ]
-        ],
         SettingsEnum::YML_PROTOCOL => [
             'id' => SettingsEnum::YML_PROTOCOL . '__' . $site,
             'origin' => SettingsEnum::YML_PROTOCOL,
@@ -461,6 +536,16 @@ foreach ($listSite as $site) {
             'origin' => SettingsEnum::YML_CHUNK_SIZE,
             'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_CHUNK_SIZE', ['#LID#' => $site]),
             'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_CHUNK_SIZE_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
+        SettingsEnum::YML_SERVER_NAME => [
+            'id' => SettingsEnum::YML_SERVER_NAME . '__' . $site,
+            'origin' => SettingsEnum::YML_SERVER_NAME,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_SERVER_NAME', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_SERVER_NAME_HINTS', ['#LID#' => $site]),
             'type' => [
                 'type' => 'text',
                 'size' => 60,
@@ -524,10 +609,27 @@ foreach ($listSite as $site) {
         }
     }
 
+    $arOptions[] = Loc::getMessage('MINDBOX_LOYALTY_HEADING_CUSTOM_OPERATIONS');
+
+    $defaultOperationNames = \Mindbox\Loyalty\Support\DefaultOperations::getMap();
+
+    foreach ($defaultOperationNames as $defaultOperationName) {
+        $arOptions[$defaultOperationName] = [];
+        $arOptions[$defaultOperationName] = [
+            'id' => $defaultOperationName . '__' . $site,
+            'origin' => $defaultOperationName,
+            'current' => Option::get(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, $defaultOperationName, $defaultOptions[$defaultOperationName], $site),
+            'label' => $defaultOperationName,
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_OPERATIONS_HINTS', ['#OPERATION#' => $defaultOperationName]),
+            'type' => [
+                'type' => 'text',
+                'size' => 20,
+            ]
+        ];
+    }
+
     $arAllOptions[$site] = $arOptions;
 }
-
-
 ?>
 <form method="post"
       action="<?= $APPLICATION->GetCurPage() ?>?mid=<?= htmlspecialcharsbx($mid) ?>&lang=<?= LANG ?>">
@@ -612,6 +714,9 @@ foreach ($listSite as $site) {
                             <?php
                             break;
                         case 'multiselectbox':
+                            if (is_string($currentValue) && str_contains($currentValue, ',')) {
+                                $currentValue = explode(',', $currentValue);
+                            }
                             ?>
                             <select id="<?= $controlId; ?>" name="<?= $controlName; ?>[]" multiple
                                     size="<?= $type['size'] ?>">
@@ -731,7 +836,6 @@ foreach ($listSite as $site) {
         let mindboxKey = document.querySelector('[name="'+mindboxName+'"]').value;
         let bitrixKey = document.querySelector('[name="'+bitrixName+'"]').value;
 
-
         if (mindboxKey && bitrixKey) {
             setProps(bitrixKey, mindboxKey, propName);
             reInitTable(tableClass, propName);
@@ -803,7 +907,7 @@ foreach ($listSite as $site) {
     function setProps(key, value, propName) {
         let currentProps = getProps(propName);
 
-        if (Object.values(currentProps).indexOf(value) === -1) {
+        if (Object.keys(currentProps).indexOf(value) === -1) {
             currentProps[key] = value;
         }
 

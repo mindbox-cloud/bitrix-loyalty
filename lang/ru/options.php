@@ -9,6 +9,7 @@ $MESS['MINDBOX_LOYALTY_SAVE'] = 'Сохранить';
 $MESS['MINDBOX_LOYALTY_ENABLED_LOYALTY'] = 'Включить интеграцию для сайта #LID#';
 $MESS['MINDBOX_LOYALTY_ENABLED_LOYALTY_HINTS'] = 'Включает работу лояльности на сайте #LID# для указанной точки интеграции';
 
+
 $MESS['MINDBOX_LOYALTY_ENDPOINT'] = 'Точка интеграции';
 $MESS['MINDBOX_LOYALTY_ENDPOINT_HINTS'] = 'Точка интеграции';
 
@@ -51,8 +52,17 @@ $MESS['MINDBOX_LOYALTY_EXTERNAL_PRODUCT_HINTS'] = 'Укажите названи
 $MESS['MINDBOX_LOYALTY_EXTERNAL_USER'] = 'Идентификатор пользователя';
 $MESS['MINDBOX_LOYALTY_EXTERNAL_USER_HINTS'] = 'Укажите название идентификатора пользователя в системе mindbox';
 
+$MESS['MINDBOX_LOYALTY_TEMP_EXTERNAL_ORDER'] = 'Временный идентификатор заказа';
+$MESS['MINDBOX_LOYALTY_TEMP_EXTERNAL_ORDER_HINTS'] = 'Укажите название временного идентификатора заказа в системе mindbox';
+
 $MESS['MINDBOX_LOYALTY_EXTERNAL_ORDER'] = 'Идентификатор заказа';
 $MESS['MINDBOX_LOYALTY_EXTERNAL_ORDER_HINTS'] = 'Укажите название идентификатора заказа в системе mindbox';
+
+$MESS['MINDBOX_LOYALTY_WEBSITE_ORDER_FIELD'] = 'Идентификатор заказа на сайте';
+$MESS['MINDBOX_LOYALTY_WEBSITE_ORDER_FIELD_HINTS'] = 'Укажите, какое поле будет использоваться в качестве идентификатора заказа сайта.';
+
+$MESS['MINDBOX_LOYALTY_BALANCE_SYSTEM_NAME'] = 'Системное название бонусного счета';
+$MESS['MINDBOX_LOYALTY_BALANCE_SYSTEM_NAME_HINTS'] = 'Укажите название системного бонусного счета а в системе mindbox, если количество счетов больше 1';
 
 $MESS['MINDBOX_LOYALTY_YML_FEED_ENABLED'] = 'Включить генерацию фида';
 $MESS['MINDBOX_LOYALTY_YML_FEED_ENABLED_HINTS'] = 'При активной галке, агент  будет создавать фид с указанными параметрами в настройках';
@@ -72,6 +82,9 @@ $MESS['MINDBOX_LOYALTY_YML_PATH_HINTS'] = 'Укажите путь относи�
 $MESS['MINDBOX_LOYALTY_YML_CHUNK_SIZE'] = 'Количество элементов выгружаемых за один шаг';
 $MESS['MINDBOX_LOYALTY_YML_CHUNK_SIZE_HINTS'] = 'Если при формировании фида на сайте повышается нагрузка, то следует уменьшить данный параметр.';
 
+$MESS['MINDBOX_LOYALTY_YML_SERVER_NAME'] = 'URL сервера (без http://):';
+$MESS['MINDBOX_LOYALTY_YML_SERVER_NAME_HINTS'] = 'Для формирования ссылок, если не указать - берется из настроек сайта';
+
 $MESS['MINDBOX_LOYALTY_YML_CATALOG_PROPERTIES'] = 'Выгружаемые свойства каталога';
 $MESS['MINDBOX_LOYALTY_YML_CATALOG_PROPERTIES_HINTS'] = '';
 
@@ -82,6 +95,17 @@ $MESS['MINDBOX_LOYALTY_HEADING_MAIN'] = 'Основные настройки';
 $MESS['MINDBOX_LOYALTY_HEADING_PRIMARY_KEY'] = 'Идентификаторы сущностей';
 $MESS['MINDBOX_LOYALTY_HEADING_HTTP_CLIENT'] = 'Настройки http клиента';
 $MESS['MINDBOX_LOYALTY_HEADING_USER_FIELDS'] = 'Настройки "customFields" сущности клиент';
+$MESS['MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE'] = 'Автоматическая подписка';
+$MESS['MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_HINTS'] = 'После успешной регистрации пользователя будет вызвана операция SubscribeCustomer';
+$MESS['MINDBOX_LOYALTY_USER_EMAIL_IS_LOGIN'] = 'Устанавливать логин равным email';
+$MESS['MINDBOX_LOYALTY_USER_EMAIL_IS_LOGIN_HINTS'] = 'Добавляет обработчик, который дублирует почту пользователя в логин';
 $MESS['MINDBOX_LOYALTY_HEADING_ORDER_FIELDS'] = 'Настройки "customFields" сущности заказ';
 $MESS['MINDBOX_LOYALTY_HEADING_ORDER_STATUS'] = 'Сопоставление статусов заказа';
 $MESS['MINDBOX_LOYALTY_HEADING_YML_FEED'] = 'Настройка YML фида mindbox';
+$MESS['MINDBOX_LOYALTY_ENABLE_EVENTS'] = 'Включить обработку событий';
+$MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_HINTS'] = 'Используйте эту настройку, чтобы включить обработку событий';
+$MESS['MINDBOX_LOYALTY_HEADING_CUSTOM_OPERATIONS'] = 'Замена стандартных операций';
+$MESS['MINDBOX_LOYALTY_OPERATIONS_HINTS'] = 'Указывать полное название операции с учетом префикса';
+
+$MESS['MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_POINTS'] = 'Автоматическая подписка при регистрации';
+$MESS['MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_POINTS_HINTS'] = 'Автоматическая подписка при регистрации';

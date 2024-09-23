@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mindbox\Loyalty\Settings;
+namespace Mindbox\Loyalty\Support;
 
 class SettingsEnum
 {
@@ -14,7 +14,12 @@ class SettingsEnum
     public const BRAND = 'brand';
     public const EXTERNAL_PRODUCT = 'external_product';
     public const EXTERNAL_USER = 'external_user';
+    public const TEMP_EXTERNAL_ORDER = 'temp_external_order';
+
     public const EXTERNAL_ORDER = 'external_order';
+    public const WEBSITE_ORDER_FIELD = 'website_order_field';
+
+    public const BALANCE_SYSTEM_NAME = 'balance_system_name';
     public const API_DOMAIN = 'api_domain';
     public const HTTP_CLIENT = 'http_client';
     public const TIMEOUT = 'timeout';
@@ -22,10 +27,12 @@ class SettingsEnum
     public const LOG_PATH = 'log_path';
     public const LOG_LIFE_TIME = 'log_life_time';
     public const DISABLE_PROCESSING_USER_GROUPS = 'disable_processing_user_groups';
+
     public const USER_BITRIX_FIELDS = 'user_bitrix_fields';
     public const USER_MINDBOX_FIELDS = 'user_mindbox_fields';
     public const USER_FIELDS_MATCH = 'user_fields_match';
-
+    public const USER_AUTO_SUBSCRIBE_POINTS = 'user_auto_subscribe_points';
+    public const USER_LOGIN_IS_EMAIL = 'user_login_is_email';
     public const ORDER_BITRIX_FIELDS = 'order_bitrix_fields';
     public const ORDER_MINDBOX_FIELDS = 'order_mindbox_fields';
     public const ORDER_FIELDS_MATCH = 'order_fields_match';
@@ -41,5 +48,6 @@ class SettingsEnum
     public const YML_PROTOCOL = 'yml_protocol';
     public const YML_PATH = 'yml_path';
     public const YML_CHUNK_SIZE = 'yml_chunk_size';
-
+    public const YML_SERVER_NAME = 'yml_server_name';
+    public const LOYALTY_ENABLE_EVENTS = 'enable_events';
 }

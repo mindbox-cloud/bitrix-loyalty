@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty;
 
 use Bitrix\Catalog\GroupTable;
-use Bitrix\Catalog\PriceTable;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
+use Mindbox\Loyalty\Support\PointOfSubscribeEnum;
 
 final class Options
 {
@@ -129,9 +129,8 @@ final class Options
     public static function getOrderStatuses(): array
     {
         $statusList = [
-            'CANCEL' => Loc::getMessage('CANCEL_ORDER_LABEL'),
-            'DELETE' => Loc::getMessage('DELETE_ORDER_LABEL'),
-            'PAY' => Loc::getMessage('PAY_ORDER_LABEL'),
+            'TECH_CREATE_ORDER' => Loc::getMessage('TECH_CREATE_ORDER_LABEL'),
+            'CANCEL' => Loc::getMessage('CANCEL_ORDER_LABEL')
         ];
 
         if (Loader::includeModule('sale')) {
@@ -155,6 +154,17 @@ final class Options
         }
 
         return $arGroup;
+    }
+
+    public static function getSubscribePoints(): array
+    {
+        return [
+            PointOfSubscribeEnum::EMAIL => Loc::getMessage('SUBSCRIBE_POINTS_EMAIL'),
+            PointOfSubscribeEnum::SMS => Loc::getMessage('SUBSCRIBE_POINTS_SMS'),
+            PointOfSubscribeEnum::VIBER => Loc::getMessage('SUBSCRIBE_POINTS_VIBER'),
+            PointOfSubscribeEnum::WEBPUSH => Loc::getMessage('SUBSCRIBE_POINTS_WEBPUSH'),
+            PointOfSubscribeEnum::MOBILEPUSH => Loc::getMessage('SUBSCRIBE_POINTS_MOBILEPUSH'),
+        ];
     }
 
     public static function getAddOrderMatchButton(string $buttonClass = ''): string
