@@ -23,7 +23,7 @@ class OrderMindbox
         $this->settings = $settings;
     }
 
-    public function getOrder()
+    public function getOrder(): Order
     {
         return $this->order;
     }
@@ -145,7 +145,7 @@ class OrderMindbox
         return $payments;
     }
 
-    public function getLines()
+    public function getLines(): OrderLines
     {
         if (!isset($this->lines)) {
             $this->lines = new OrderLines($this->order->getBasket(), $this->settings);

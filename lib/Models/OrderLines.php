@@ -19,11 +19,15 @@ class OrderLines
         $this->settings = $settings;
     }
 
-    public function getData()
+    /**
+     * @throws EmptyLineException
+     */
+    public function getData(): array
     {
         OrderLine::resetNumber();
         /** @var \Bitrix\Sale\BasketItem $basketItem */
         $lines = [];
+
         foreach ($this->basket as $basketItem) {
             if ($basketItem->canBuy() && !$basketItem->isDelay() && $basketItem->getQuantity() > 0) {
                 $lines[] = (new OrderLine($basketItem, $this->settings))->getData();

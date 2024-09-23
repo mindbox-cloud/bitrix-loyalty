@@ -12,6 +12,9 @@ use Mindbox\Loyalty\Models\Customer;
 
 class CheckLoyaltyProgramParticipants extends AbstractOperation
 {
+    /**
+     * @throws ErrorCallOperationException
+     */
     public function execute(CustomerRequestDTO $dto)
     {
         $operation = $this->getOperation();

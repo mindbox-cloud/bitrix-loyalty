@@ -14,7 +14,7 @@ use Mindbox\Loyalty\Models\OrderMindbox;
 use Mindbox\Loyalty\Support\CallBlocking;
 use Mindbox\Loyalty\Exceptions\EmptyLineException;
 use Mindbox\Loyalty\Exceptions\PriceHasBeenChangedException;
-use Mindbox\Loyalty\Exceptions\ResponseErrorExceprion;
+use Mindbox\Loyalty\Exceptions\ResponseErrorException;
 use Mindbox\Loyalty\Models\Transaction;
 use Mindbox\Loyalty\ORM\OrderOperationTypeTable;
 use Mindbox\Loyalty\PropertyCodeEnum;
@@ -57,7 +57,7 @@ class OrderEvent
         try {
             $service->calculateOrder($order);
         } catch (EmptyLineException $e) {
-        } catch (ResponseErrorExceprion $e) {
+        } catch (ResponseErrorException $e) {
         } catch (ErrorCallOperationException $e) {
             if ($order->getField('ID') === null) {
                 $service->resetDiscount($order);
@@ -118,7 +118,7 @@ class OrderEvent
             try {
                 $calculateService->calculateOrder($order);
             } catch (EmptyLineException $e) {
-            } catch (ResponseErrorExceprion $e) {
+            } catch (ResponseErrorException $e) {
             } catch (ErrorCallOperationException $e) {
                 if ($order->getField('ID') === null) {
                     $calculateService->resetDiscount($order);

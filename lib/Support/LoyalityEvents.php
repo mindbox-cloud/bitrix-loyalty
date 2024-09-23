@@ -24,14 +24,18 @@ class LoyalityEvents
     public const INCLUDE_TRACKER = 'include_tracker';
     public const ADD_CART = 'add_to_cart';
     public const REMOVE_FROM_CART = 'remove_form_cart';
+    public const ADD_FAVORITE = 'add_to_favorite';
+    public const REMOVE_FROM_FAVORITE = 'remove_from_favorite';
     public const DISCOUNT_FOR_PRICE_TYPE = 'discount_for_price_type';
 
     public static function getAll(): array
     {
         $result = [];
+
         foreach ((new \ReflectionClass(self::class))->getConstants() as $constant) {
             $result[$constant] = Loc::getMessage('MINDBOX_LOYALTY_ENABLE_EVENTS_' . $constant) ?: $constant;
         }
+
         return $result;
     }
 

@@ -29,14 +29,8 @@ class CustomerEvent
 
         \Mindbox\Loyalty\Support\FeatureManager::setHitUserRegister();
 
-        $userId = (int) $arFields['ID'];
+        $userId = (int)$arFields['ID'];
         $settings = SettingsFactory::create();
-
-        $logger = new \Mindbox\Loggers\MindboxFileLogger(
-            $settings->getLogPath(),
-            LogLevel::INFO
-        );
-        $logger->info('onAfterUserAdd', $arFields);
 
         try {
             $session = \Bitrix\Main\Application::getInstance()->getSession();
@@ -48,7 +42,7 @@ class CustomerEvent
 
             // Регистрация пользователя
             if (LoyalityEvents::checkEnableEvent(LoyalityEvents::REGISTRATION)) {
-                $customerData = $service->sync($customer);
+                $service->sync($customer);
 
                 // Пользователь создается на сайте через СМС авторизацию, считаем телефон подтвержденным
                 // Проставляем телефон в МБ статус Подтвержден
@@ -64,17 +58,16 @@ class CustomerEvent
                 && LoyalityEvents::checkEnableEvent(LoyalityEvents::CHECK_CHANGE_USER_EMAIL)
                 && $service->confirmEmail($customer)
             ) {
-                // @todo Перенести все коды в отдельный enum класс
+                // todo Перенести все коды в отдельный enum класс
                 $session->set('mindbox_send_confirm_email', 'Y');
             }
-        } catch (ObjectNotFoundException $e) {
-            $logger->error('ObjectNotFoundException', ['exception' => $e]);
-        } catch (ErrorCallOperationException $e) {
-            $logger->error('ErrorCallOperationException', ['exception' => $e]);
-        } catch (ValidationErrorCallOperationException $e) {
-            $logger->error('ValidationErrorCallOperationException', ['exception' => $e]);
         } catch (\Throwable $throwable) {
-            $logger->error('Throwable', ['exception' => $throwable]);
+            $logger = new \Mindbox\Loggers\MindboxFileLogger(
+                $settings->getLogPath(),
+                LogLevel::INFO
+            );
+
+            $logger->error('onAfterUserAdd exception', ['exception' => $throwable, 'fields' => $arFields]);
         }
     }
 
@@ -93,9 +86,6 @@ class CustomerEvent
             LogLevel::INFO
         );
 
-        $logger->info('onAfterUserAuthorize', $arUser);
-        $logger->info('id', [$arUser['user_fields']['ID']]);
-
         try {
             $customer = new Customer((int)$arUser['user_fields']['ID']);
 
@@ -110,21 +100,13 @@ class CustomerEvent
                 $session->has('mindbox_need_confirm_phone')
                 && !$customerData->getIsMobilePhoneConfirmed()
             ) {
-                $logger->info('onAfterUserAuthorize confirm phone');
+
                 $session->remove('mindbox_need_confirm_phone');
 
                 $service->confirmMobilePhone($customer);
             }
-
-            $logger->info('success');
-        } catch (ObjectNotFoundException $e) {
-            $logger->error('ObjectNotFoundException', ['exception' => $e]);
-        } catch (ErrorCallOperationException $e) {
-            $logger->error('ErrorCallOperationException', ['exception' => $e]);
-        } catch (ValidationErrorCallOperationException $e) {
-            $logger->error('ValidationErrorCallOperationException', ['exception' => $e]);
         } catch (\Throwable $throwable) {
-            $logger->error('Throwable', ['exception' => $throwable]);
+            $logger->error('Throwable', ['exception' => $throwable, 'fields' => $arUser]);
         }
     }
 
@@ -140,9 +122,6 @@ class CustomerEvent
             $settings->getLogPath(),
             LogLevel::INFO
         );
-
-        $logger->info('onAfterUserUpdate', $arUser);
-        $logger->info('id', [$arUser['user_fields']['ID']]);
 
         try {
             $customer = new Customer((int) $arUser['ID']);
@@ -169,14 +148,8 @@ class CustomerEvent
             }
 
             $service->edit($customer);
-        } catch (ObjectNotFoundException $e) {
-            $logger->error('ObjectNotFoundException', ['exception' => $e]);
-        } catch (ErrorCallOperationException $e) {
-            $logger->error('ErrorCallOperationException', ['exception' => $e]);
-        } catch (ValidationErrorCallOperationException $e) {
-            $logger->error('ValidationErrorCallOperationException', ['exception' => $e]);
         } catch (\Throwable $throwable) {
-            $logger->error('Throwable', ['exception' => $throwable]);
+            $logger->error('Throwable', ['exception' => $throwable, 'fields' => $arUser]);
         }
     }
 
@@ -234,17 +207,25 @@ class CustomerEvent
             return;
         }
 
+        $settings = SettingsFactory::create();
+
+        $logger = new \Mindbox\Loggers\MindboxFileLogger(
+            $settings->getLogPath(),
+            LogLevel::INFO
+        );
+
         $isSend = false;
+
         try {
             $userId = (int) $arFields['ID'];
 
             $customer = new Customer($userId);
-            $settings = SettingsFactory::create();
+
             $service = new CustomerService($settings);
 
             $isSend = $service->confirmEmail($customer);
         } catch (IntegrationLoyaltyException $e) {
-            // @info Добавить логирование?
+            $logger->error('Throwable', ['exception' => $e, 'fields' => $arFields]);
         }
 
         if ($isSend) {

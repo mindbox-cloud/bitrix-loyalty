@@ -12,10 +12,6 @@ class CartEvent
 {
     public static function onSaleBasketItemEntitySaved(\Bitrix\Main\Event $event)
     {
-        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::ADD_CART)) {
-            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
-        }
-
         global $USER;
 
         /** @var \Bitrix\Sale\BasketItem $basketItem */
@@ -23,7 +19,16 @@ class CartEvent
         $values = $event->getParameter('VALUES');
 
         $order = $basketItem->getCollection()->getOrder();
+
         if ($order instanceof Order && !$order->isNew()) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        if ($basketItem->isDelay() && !LoyalityEvents::checkEnableEvent(LoyalityEvents::ADD_FAVORITE)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        if (!$basketItem->isDelay() && !LoyalityEvents::checkEnableEvent(LoyalityEvents::ADD_CART)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
@@ -70,10 +75,6 @@ class CartEvent
 
     public static function onBeforeSaleBasketItemEntityDeleted(\Bitrix\Main\Event $event)
     {
-        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::REMOVE_FROM_CART)) {
-            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
-        }
-
         $values = $event->getParameter('VALUES');
 
         if (!empty($values)) {
@@ -87,6 +88,14 @@ class CartEvent
         $order = $basketItem->getCollection()->getOrder();
 
         if ($order instanceof Order && !$order->isNew()) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        if ($basketItem->isDelay() && !LoyalityEvents::checkEnableEvent(LoyalityEvents::REMOVE_FROM_FAVORITE)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        if (!$basketItem->isDelay() && !LoyalityEvents::checkEnableEvent(LoyalityEvents::REMOVE_FROM_CART)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 

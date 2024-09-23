@@ -78,6 +78,7 @@ class CallBlocking
     {
         /** @var Session $session */
         $session = Application::getInstance()->getSession();
+
         if (!$session->isAccessible()) {
             return null;
         }

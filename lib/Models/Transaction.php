@@ -21,7 +21,8 @@ class Transaction
     protected function __clone() {}
     protected function __wakeup() {}
 
-    public static function getInstance() {
+    public static function getInstance(): static
+    {
         return self::$instance === null ? self::$instance = new static() : self::$instance;
     }
 

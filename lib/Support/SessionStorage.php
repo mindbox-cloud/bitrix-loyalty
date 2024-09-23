@@ -55,7 +55,7 @@ class SessionStorage
      * @param float $value
      * @return void
      */
-    public function setPayBonuses(float $value)
+    public function setPayBonuses(float $value): void
     {
         $_SESSION[self::GROUPS][self::PAY_BONUSES] = $value;
     }
@@ -65,7 +65,7 @@ class SessionStorage
      *
      * @return float
      */
-    public function getPayBonuses()
+    public function getPayBonuses(): float
     {
         return (float) $_SESSION[self::GROUPS][self::PAY_BONUSES];
     }
@@ -74,12 +74,12 @@ class SessionStorage
      * @param float $value
      * @return void
      */
-    public function setTotalPrice(float $value)
+    public function setTotalPrice(float $value): void
     {
         $_SESSION[self::GROUPS][self::TOTAL_PRICE] = $value;
     }
 
-    public function getTotalPrice()
+    public function getTotalPrice(): float
     {
         return (float) $_SESSION[self::GROUPS][self::TOTAL_PRICE];
     }
@@ -89,7 +89,7 @@ class SessionStorage
      * @param float $value
      * @return void
      */
-    public function setOrderAvailableBonuses(float $value)
+    public function setOrderAvailableBonuses(float $value): void
     {
         $_SESSION[self::GROUPS][self::ORDER_AVAILABLE_BONUSES] = $value;
     }
@@ -99,12 +99,12 @@ class SessionStorage
      *
      * @return float
      */
-    public function getOrderAvailableBonuses()
+    public function getOrderAvailableBonuses(): float
     {
         return (float) $_SESSION[self::GROUPS][self::ORDER_AVAILABLE_BONUSES];
     }
 
-    public function setBonusesBalanceAvailable(float $value)
+    public function setBonusesBalanceAvailable(float $value): void
     {
         $_SESSION[self::GROUPS][self::BONUSES_BALANCE_AVAILABLE] = $value;
     }
@@ -114,7 +114,7 @@ class SessionStorage
      *
      * @return int|mixed
      */
-    public function getBonusesBalanceAvailable()
+    public function getBonusesBalanceAvailable(): mixed
     {
         return (float) $_SESSION[self::GROUPS][self::BONUSES_BALANCE_AVAILABLE];
     }
@@ -123,7 +123,7 @@ class SessionStorage
      * @param float $value
      * @return void
      */
-    public function setOrderEarnedBonuses(float $value)
+    public function setOrderEarnedBonuses(float $value): void
     {
         $_SESSION[self::GROUPS][self::ORDER_EARNED_BONUSES] = $value;
     }
@@ -131,9 +131,9 @@ class SessionStorage
     /**
      * Количество бонусов начисляемые за заказ
      *
-     * @return float
+     * @return float|int
      */
-    public function getOrderEarnedBonuses()
+    public function getOrderEarnedBonuses(): float|int
     {
         return (float) $_SESSION[self::GROUPS][self::ORDER_EARNED_BONUSES] ?? 0;
     }
@@ -142,7 +142,7 @@ class SessionStorage
      * @param string $value
      * @return void
      */
-    public function setPromocodeValue(string $value)
+    public function setPromocodeValue(string $value): void
     {
         $_SESSION[self::GROUPS][self::PROMOCODE_VALUE] = $value;
     }
@@ -152,7 +152,7 @@ class SessionStorage
      *
      * @return string
      */
-    public function getPromocodeValue()
+    public function getPromocodeValue(): string
     {
         return $_SESSION[self::GROUPS][self::PROMOCODE_VALUE] ?? '';
     }
@@ -161,7 +161,7 @@ class SessionStorage
      * @param string $value
      * @return void
      */
-    public function setPromocodeError(string $value)
+    public function setPromocodeError(string $value): void
     {
         $_SESSION[self::GROUPS][self::PROMOCODE_ERROR] = $value;
     }
@@ -171,7 +171,7 @@ class SessionStorage
      *
      * @return string
      */
-    public function getPromocodeError()
+    public function getPromocodeError(): string
     {
         return $_SESSION[self::GROUPS][self::PROMOCODE_ERROR] ?? '';
     }
@@ -180,7 +180,7 @@ class SessionStorage
      * @param string $value
      * @return void
      */
-    public function setMindboxOrderId(string $value)
+    public function setMindboxOrderId(string $value): void
     {
         $_SESSION[self::GROUPS][self::MINDBOX_ORDER_ID] = $value;
     }
@@ -190,7 +190,7 @@ class SessionStorage
      *
      * @return string|null
      */
-    public function getMindboxOrderId()
+    public function getMindboxOrderId(): ?string
     {
         return $_SESSION[self::GROUPS][self::MINDBOX_ORDER_ID];
     }
@@ -199,7 +199,7 @@ class SessionStorage
      * @param string $value
      * @return void
      */
-    public function setOperationType(string $value)
+    public function setOperationType(string $value): void
     {
         $_SESSION[self::GROUPS][self::OPERATION_TYPE] = $value;
     }
@@ -209,7 +209,7 @@ class SessionStorage
      *
      * @return string|null
      */
-    public function getOperationType()
+    public function getOperationType(): ?string
     {
         return $_SESSION[self::GROUPS][self::OPERATION_TYPE];
     }
@@ -221,7 +221,7 @@ class SessionStorage
         }
     }
 
-    public function clear()
+    public function clear(): void
     {
         $_SESSION[self::GROUPS] = [];
     }

@@ -52,6 +52,9 @@ class OrderStatus
         ];
     }
 
+    /**
+     * @throws NotMatchedOrderStatuses
+     */
     public static function getCancelStatus(Settings $settings): string
     {
         $orderStatus = 'CANCEL';

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Exceptions;
 
-class ResponseErrorExceprion extends IntegrationLoyaltyException
+class ResponseErrorException extends IntegrationLoyaltyException
 {
 
 }

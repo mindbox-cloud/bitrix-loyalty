@@ -36,7 +36,7 @@ class EditProductList extends AbstractOperation
                 addDeviceUUID: true
             );
 
-            $response = $request->sendRequest();
+            $request->sendRequest();
 
         } catch (MindboxClientException $e) {
             throw new ErrorCallOperationException(

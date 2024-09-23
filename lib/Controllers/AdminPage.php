@@ -29,7 +29,6 @@ class AdminPage extends \Bitrix\Main\Engine\Controller
             'available' => SessionStorage::getInstance()->getOrderAvailableBonuses(),
             'total' => SessionStorage::getInstance()->getBonusesBalanceAvailable(),
             'earned' => SessionStorage::getInstance()->getOrderEarnedBonuses(),
-
             'promocode_error' => SessionStorage::getInstance()->getPromocodeError(),
         ];
     }

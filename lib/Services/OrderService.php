@@ -101,9 +101,7 @@ class OrderService
             );
         }
 
-        $mindboxId = (string) $orderData['ids']['mindboxId'];
-
-        return $mindboxId;
+        return (string) $orderData['ids']['mindboxId'];
     }
 
     public function saveOrderAdmin(Order $order, ?string $tmpOrderId)
@@ -239,6 +237,9 @@ class OrderService
         return $this->execute($createUnauthorizedOrder, $DTO);
     }
 
+    /**
+     * @throws MindboxUnavailableException
+     */
     protected function execute(AbstractOperation $operation, PreorderRequestDTO $DTO): MindboxResponse
     {
         $transactionId = md5(\spl_object_hash($DTO) . time());
