@@ -6,11 +6,10 @@ namespace Mindbox\Loyalty\Install;
 
 use Bitrix\Main\Loader;
 use Mindbox\Loyalty\Discount\BasketPropertyRuleDiscount;
+use Bitrix\Main\Localization\Loc;
 
 class BasketPropertyRuleDiscountInstaller implements InstallerInterface
 {
-    protected static $discountName = 'Mindbox: Скидка на корзину товаров';
-
     protected static $discountXmlId = 'MINDBOX_BASKET_PROPERTY';
     private string $siteId;
 
@@ -30,7 +29,7 @@ class BasketPropertyRuleDiscountInstaller implements InstallerInterface
 
         $discountFields = [
             'LID' => $this->siteId,
-            'NAME' => self::$discountName,
+            'NAME' => self::getDiscountName(),
             'ACTIVE_FROM' => '',
             'ACTIVE_TO' => '',
             'ACTIVE' => 'Y',
@@ -89,5 +88,10 @@ class BasketPropertyRuleDiscountInstaller implements InstallerInterface
         }
 
         return 0;
+    }
+
+    private static function getDiscountName(): string
+    {
+        return Loc::getMessage('MINDBOX_LOYALTY_BASKET_PROPERTY_DISCOUNT_NAME');
     }
 }

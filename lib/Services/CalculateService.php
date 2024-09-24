@@ -292,9 +292,17 @@ class CalculateService
     public function resetDiscount(Order $order)
     {
         $basket = $order->getBasket();
-
         /** @var BasketItem $basketItem */
         foreach ($basket as $basketItem) {
+            /** @var \Bitrix\Sale\BasketPropertiesCollectionBase $collection - Коллекция свойств */
+            $collection = $basketItem->getPropertyCollection();
+            $propertyValues = $collection->getPropertyValues();
+
+            if (isset($propertyValues[PropertyCodeEnum::BASKET_PROPERTY_CODE])) {
+                $propertyItem = $collection->getPropertyItemByValue($propertyValues[PropertyCodeEnum::BASKET_PROPERTY_CODE]);
+                $propertyItem->delete();
+            }
+
             $lineIds[] = $basketItem->getId();
         }
 

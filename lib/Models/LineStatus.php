@@ -14,7 +14,6 @@ class LineStatus
     protected Settings $settings;
     protected ?string $status;
 
-
     public function __construct(BasketItem $basketItem, Settings $settings)
     {
         $this->basketItem = $basketItem;

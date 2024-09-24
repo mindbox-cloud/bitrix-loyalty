@@ -10,14 +10,14 @@ class ViewProduct extends CBitrixComponent
     public function __construct(CBitrixComponent $component = null)
     {
         parent::__construct($component);
-
-        if (!$this->loadModule()) {
-            return;
-        }
     }
 
     public function executeComponent()
     {
+        if (!$this->loadModule()) {
+            return;
+        }
+
         $settings = \Mindbox\Loyalty\Support\SettingsFactory::create();
 
         $this->arResult['PRODUCT_ID'] = $this->arParams['PRODUCT_ID'];

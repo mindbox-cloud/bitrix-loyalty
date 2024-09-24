@@ -34,8 +34,8 @@ class AdminPageEvent
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
-        $jsString = self::getAdditionalScriptForOrderEditPage(self::PAGE_TYPE['CREATE']);
 
+        $jsString = self::getAdditionalScriptForOrderEditPage(self::PAGE_TYPE['CREATE']);
         Asset::getInstance()->addString($jsString, true, AssetLocation::AFTER_JS);
     }
 
@@ -47,7 +47,6 @@ class AdminPageEvent
             $onclick = 'BX.Sale.Admin.OrderEditPage.tailsLoaded = true; BX.Sale.Admin.OrderEditPage.onRefreshOrderDataAndSave(); return false;';
         }
 
-
         $return = '';
         $orderPropertyIds = self::getAdditionLoyaltyOrderPropsIds();
         $bonusPropertyCode = PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS;
@@ -57,7 +56,6 @@ class AdminPageEvent
         $saveButtonText = 'Применить';
         $bonusAvailableDescription = 'Доступно бонусов для списания: ';
 
-        $backgroundSuccess = '#009940';
         $backgroundError = '#e63535';
 
         if (!empty($orderId)) {
