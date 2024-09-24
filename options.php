@@ -13,7 +13,6 @@ use Mindbox\Loyalty\Support\SettingsEnum;
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
 defined('MINDBOX_LOYALTY_ADMIN_MODULE_NAME') or define('MINDBOX_LOYALTY_ADMIN_MODULE_NAME', 'mindbox.loyalty');
 
-Loader::includeModule('mindbox.loyalty');
 Loader::includeModule(MINDBOX_LOYALTY_ADMIN_MODULE_NAME);
 Loader::includeModule('sale');
 Loc::loadLanguageFile(__FILE__);
@@ -23,7 +22,6 @@ if (!$USER->isAdmin()) {
 }
 
 $request = \Bitrix\Main\Context::getCurrent()->getRequest();
-
 
 if ($request->isPost() && $request->get('save') && check_bitrix_sessid()) {
     $notSaveOption = [

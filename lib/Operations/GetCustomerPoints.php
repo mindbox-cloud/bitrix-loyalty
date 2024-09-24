@@ -32,7 +32,7 @@ class GetCustomerPoints extends AbstractOperation
                 addDeviceUUID: false
             );
 
-            return  $client->sendRequest();
+            return $client->sendRequest();
         } catch (MindboxClientException $e) {
             throw new ErrorCallOperationException(
                 message: sprintf('The operation %s failed', $this->getOperation()),

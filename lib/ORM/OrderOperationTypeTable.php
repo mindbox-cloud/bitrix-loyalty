@@ -41,8 +41,7 @@ class OrderOperationTypeTable  extends DataManager
                 'OPERATION_TYPE',
                 [
                     'required' => true,
-                    'values' => [self::OPERATION_TYPE_AUTH, self::OPERATION_TYPE_NOT_AUTH],
-                    'title' => 'Тип сохраненного заказа',
+                    'values' => [self::OPERATION_TYPE_AUTH, self::OPERATION_TYPE_NOT_AUTH]
                 ]
             )
         ];

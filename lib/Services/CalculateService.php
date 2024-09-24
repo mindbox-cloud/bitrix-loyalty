@@ -10,7 +10,6 @@ use Bitrix\Sale\Order;
 use Mindbox\Loyalty\Exceptions\ResponseErrorException;
 use Mindbox\Loyalty\Operations\CalculateCartAdmin;
 use Mindbox\Loyalty\Operations\CalculateUnauthorizedCart;
-use Mindbox\Loyalty\ORM\BasketDiscountTable;
 use Mindbox\Loyalty\Helper;
 use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Models\OrderMindbox;
@@ -292,19 +291,16 @@ class CalculateService
     public function resetDiscount(Order $order)
     {
         $basket = $order->getBasket();
-
         /** @var BasketItem $basketItem */
         foreach ($basket as $basketItem) {
-            $lineIds[] = $basketItem->getId();
-        }
+            /** @var \Bitrix\Sale\BasketPropertiesCollectionBase $collection - Коллекция свойств */
+            $collection = $basketItem->getPropertyCollection();
+            $propertyValues = $collection->getPropertyValues();
 
-        $iterator = BasketDiscountTable::getList([
-            'filter' => ['BASKET_ITEM_ID' => $lineIds],
-            'select' => ['ID']
-        ]);
-
-        while ($line = $iterator->fetch()) {
-            BasketDiscountTable::delete($line['ID']);
+            if (isset($propertyValues[PropertyCodeEnum::BASKET_PROPERTY_CODE])) {
+                $propertyItem = $collection->getPropertyItemByValue($propertyValues[PropertyCodeEnum::BASKET_PROPERTY_CODE]);
+                $propertyItem->delete();
+            }
         }
 
         $propertyBonus = $order->getPropertyCollection()->getItemByOrderPropertyCode(PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS);

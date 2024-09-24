@@ -33,7 +33,7 @@ class CartEvent
         }
 
         if (!empty($values)) {
-            $needProcessedKeys = ['QUANTITY', 'ID', 'PRODUCT_ID'];
+            $needProcessedKeys = ['QUANTITY', 'ID', 'PRODUCT_ID', 'DELAY'];
 
             $needProcessed = false;
 
@@ -70,7 +70,6 @@ class CartEvent
             } catch (\Mindbox\Loyalty\Exceptions\ErrorCallOperationException $e) {
             }
         }
-
     }
 
     public static function onBeforeSaleBasketItemEntityDeleted(\Bitrix\Main\Event $event)

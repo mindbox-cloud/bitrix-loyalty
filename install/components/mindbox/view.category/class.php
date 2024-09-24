@@ -10,14 +10,14 @@ class ViewCategory extends CBitrixComponent
     public function __construct(CBitrixComponent $component = null)
     {
         parent::__construct($component);
-
-        if (!$this->loadModule()) {
-            return;
-        }
     }
 
     public function executeComponent()
     {
+        if (!$this->loadModule()) {
+            return;
+        }
+
         $settings = \Mindbox\Loyalty\Support\SettingsFactory::create();
 
         $this->arResult['CATEGORY_ID'] = $this->arParams['CATEGORY_ID'];
@@ -34,7 +34,6 @@ class ViewCategory extends CBitrixComponent
 
     private function loadModule()
     {
-
         try {
             return Loader::includeModule('mindbox.loyalty');
         } catch (LoaderException $e) {
