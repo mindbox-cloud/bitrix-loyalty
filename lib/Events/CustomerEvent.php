@@ -61,13 +61,7 @@ class CustomerEvent
                 // todo Перенести все коды в отдельный enum класс
                 $session->set('mindbox_send_confirm_email', 'Y');
             }
-        } catch (\Throwable $throwable) {
-            $logger = new \Mindbox\Loggers\MindboxFileLogger(
-                $settings->getLogPath(),
-                LogLevel::INFO
-            );
-
-            $logger->error('onAfterUserAdd exception', ['exception' => $throwable, 'fields' => $arFields]);
+        } catch (IntegrationLoyaltyException $exception) {
         }
     }
 
@@ -80,11 +74,6 @@ class CustomerEvent
         }
 
         $settings = SettingsFactory::create();
-
-        $logger = new \Mindbox\Loggers\MindboxFileLogger(
-            $settings->getLogPath(),
-            LogLevel::INFO
-        );
 
         try {
             $customer = new Customer((int)$arUser['user_fields']['ID']);
@@ -105,8 +94,8 @@ class CustomerEvent
 
                 $service->confirmMobilePhone($customer);
             }
-        } catch (\Throwable $throwable) {
-            $logger->error('Throwable', ['exception' => $throwable, 'fields' => $arUser]);
+        } catch (IntegrationLoyaltyException $exception) {
+
         }
     }
 
@@ -117,12 +106,6 @@ class CustomerEvent
         }
 
         $settings = SettingsFactory::create();
-
-        $logger = new \Mindbox\Loggers\MindboxFileLogger(
-            $settings->getLogPath(),
-            LogLevel::INFO
-        );
-
         try {
             $customer = new Customer((int) $arUser['ID']);
             $service = new CustomerService($settings);
@@ -148,8 +131,7 @@ class CustomerEvent
             }
 
             $service->edit($customer);
-        } catch (\Throwable $throwable) {
-            $logger->error('Throwable', ['exception' => $throwable, 'fields' => $arUser]);
+        } catch (IntegrationLoyaltyException $exception) {
         }
     }
 
@@ -209,11 +191,6 @@ class CustomerEvent
 
         $settings = SettingsFactory::create();
 
-        $logger = new \Mindbox\Loggers\MindboxFileLogger(
-            $settings->getLogPath(),
-            LogLevel::INFO
-        );
-
         $isSend = false;
 
         try {
@@ -224,8 +201,8 @@ class CustomerEvent
             $service = new CustomerService($settings);
 
             $isSend = $service->confirmEmail($customer);
-        } catch (IntegrationLoyaltyException $e) {
-            $logger->error('Throwable', ['exception' => $e, 'fields' => $arFields]);
+        } catch (IntegrationLoyaltyException $exception) {
+
         }
 
         if ($isSend) {
