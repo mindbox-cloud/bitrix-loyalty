@@ -6,7 +6,6 @@ use Bitrix\Main\Context;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ModuleManager;
-use Mindbox\Loyalty\Install\BasketDiscountRuleInstaller;
 use Mindbox\Loyalty\Install\BasketPropertyRuleDiscountInstaller;
 use Mindbox\Loyalty\Install\DeliveryDiscountRuleInstaller;
 use Mindbox\Loyalty\Install\OrderGroupPropertyInstaller;
@@ -87,12 +86,6 @@ class mindbox_loyalty extends CModule
 
     public function InstallDB()
     {
-        $discountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\BasketDiscountTable::class);
-
-        if (!$discountTableInstance->getConnection()->isTableExists($discountTableInstance->getDBTableName())) {
-            $discountTableInstance->createDbTable();
-        }
-
         $deliveryDiscountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\DeliveryDiscountTable::class);
         if (!$deliveryDiscountTableInstance->getConnection()->isTableExists($deliveryDiscountTableInstance->getDBTableName())) {
             $deliveryDiscountTableInstance->createDbTable();
@@ -120,10 +113,6 @@ class mindbox_loyalty extends CModule
 
     public function UnInstallDB()
     {
-        $discountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\BasketDiscountTable::class);
-        $discountTableInstance->getConnection()
-            ->queryExecute("drop table if exists " . $discountTableInstance->getDBTableName());
-
         $deliveryDiscountTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\DeliveryDiscountTable::class);
         $deliveryDiscountTableInstance->getConnection()
             ->queryExecute("drop table if exists " . $deliveryDiscountTableInstance->getDBTableName());
@@ -148,23 +137,13 @@ class mindbox_loyalty extends CModule
         foreach ($iterSite as $site) {
             (new OrderGroupPropertyInstaller($site['LID']))->down();
             (new OrderPropertyInstaller($site['LID']))->down();
-            (new BasketDiscountRuleInstaller($site['LID']))->down();
-            (new BasketDiscountRuleInstaller($site['LID']))->down();
+            (new BasketPropertyRuleDiscountInstaller($site['LID']))->down();
             (new DeliveryDiscountRuleInstaller($site['LID']))->down();
         }
     }
 
     public function InstallEvents()
     {
-        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
-            'sale',
-            'OnCondSaleActionsControlBuildList',
-            $this->MODULE_ID,
-            \Mindbox\Loyalty\Discount\BasketRuleAction::class,
-            'GetControlDescr',
-            1000
-        );
-
         \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
             'sale',
             'OnCondSaleActionsControlBuildList',
@@ -368,14 +347,6 @@ class mindbox_loyalty extends CModule
 
     public function UnInstallEvents()
     {
-        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
-            'sale',
-            'OnCondSaleActionsControlBuildList',
-            $this->MODULE_ID,
-            \Mindbox\Loyalty\Discount\BasketRuleAction::class,
-            'GetControlDescr'
-        );
-
         \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
             'sale',
             'OnCondSaleActionsControlBuildList',
@@ -627,7 +598,6 @@ class mindbox_loyalty extends CModule
     public function installDiscountRule(): void
     {
         $siteId = $this->getCurrentSiteId();
-        (new BasketDiscountRuleInstaller($siteId))->up();
         (new BasketPropertyRuleDiscountInstaller($siteId))->up();
         (new DeliveryDiscountRuleInstaller($siteId))->up();
     }
