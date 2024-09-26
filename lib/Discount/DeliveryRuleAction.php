@@ -40,11 +40,11 @@ class DeliveryRuleAction extends \CSaleActionCtrlDelivery
         $arResult = [
             'controlId' => static::GetControlID(),
             'group' => false,
-            'label' => 'Скидка на доставку',
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_DELIVERY_DISCOUNT_RULE_LABEL'),
             'defaultText' => '',
             'showIn' => static::GetShowIn($arParams['SHOW_IN_GROUPS']),
             'control' => [
-                'Скидка на доставку',
+                Loc::getMessage('MINDBOX_LOYALTY_DELIVERY_DISCOUNT_RULE_CONTROL'),
                 $arAtoms[self::INPUT_NAME]
             ]
         ];
@@ -63,9 +63,9 @@ class DeliveryRuleAction extends \CSaleActionCtrlDelivery
                     'name' => self::INPUT_NAME,
                     'type' => 'select',
                     "values" => [
-                        self::INPUT_NAME => 'Скидка на доставку'
+                        self::INPUT_NAME => Loc::getMessage('MINDBOX_LOYALTY_DELIVERY_DISCOUNT_RULE_VALUES')
                     ],
-                    'defaultText' => 'Скидка на доставку',
+                    'defaultText' => Loc::getMessage('MINDBOX_LOYALTY_DELIVERY_DISCOUNT_RULE_DEFAULT'),
                     'defaultValue' => self::INPUT_NAME,
 
                 ],

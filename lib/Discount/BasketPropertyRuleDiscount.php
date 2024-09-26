@@ -43,11 +43,11 @@ class BasketPropertyRuleDiscount extends \CSaleActionCtrlBasketGroup
         $arResult = [
             'controlId' => static::GetControlID(),
             'group' => false,
-            'label' => 'Mindbox: Скидка из свойства элемента корзины',
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_BASKET_PROPERTY_DISCOUNT_RULE_LABEL'),
             'defaultText' => '',
             'showIn' => static::GetShowIn($arParams['SHOW_IN_GROUPS']),
             'control' => [
-                'Скидка',
+                Loc::getMessage('MINDBOX_LOYALTY_BASKET_PROPERTY_DISCOUNT_RULE_CONTROL'),
                 $arAtoms[self::INPUT_NAME]
             ]
         ];
@@ -72,9 +72,9 @@ class BasketPropertyRuleDiscount extends \CSaleActionCtrlBasketGroup
                     'name' => self::INPUT_NAME,
                     'type' => 'select',
                     "values" => [
-                        self::INPUT_NAME => 'Mindbox: Скидка из свойства элемента корзины'
+                        self::INPUT_NAME => Loc::getMessage('MINDBOX_LOYALTY_BASKET_PROPERTY_DISCOUNT_RULE_VALUES')
                     ],
-                    'defaultText' => 'Скидка из свойства элемента корзины',
+                    'defaultText' => Loc::getMessage('MINDBOX_LOYALTY_BASKET_PROPERTY_DISCOUNT_RULE_DEFAULT'),
                     'defaultValue' => self::INPUT_NAME,
 
                 ],

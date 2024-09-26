@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Install;
 
 use Bitrix\Main\Loader;
+use Bitrix\Main\Localization\Loc;
 use Mindbox\Loyalty\PropertyCodeEnum;
 
 class OrderPropertyInstaller implements InstallerInterface
@@ -129,23 +130,23 @@ class OrderPropertyInstaller implements InstallerInterface
 
     private function getInstallProperiesConfig($propertyCode)
     {
-        static $config = [
+        $config = [
             PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE => [
-                'NAME' => 'Промокод Mindbox',
+                'NAME' => Loc::getMessage('MINDBOX_LOYALTY_PROPERTY_PROMO_CODE_NAME'),
                 'TYPE' => 'TEXT',
                 'CODE' => PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE,
                 'REQUIED' => 'N',
                 'UTIL' => 'Y'
             ],
             PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS => [
-                'NAME' => 'Бонусы Mindbox',
+                'NAME' => Loc::getMessage('MINDBOX_LOYALTY_PROPERTY_MINDBOX_BONUS_NAME'),
                 'TYPE' => 'TEXT',
                 'CODE' => PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS,
                 'REQUIED' => 'N',
                 'UTIL' => 'Y'
             ],
             PropertyCodeEnum::PROPERTIES_MINDBOX_ORDER_ID => [
-                'NAME' => 'mindboxID',
+                'NAME' => Loc::getMessage('MINDBOX_LOYALTY_MINDBOX_ORDER_ID_NAME'),
                 'TYPE' => 'TEXT',
                 'CODE' => PropertyCodeEnum::PROPERTIES_MINDBOX_ORDER_ID,
                 'REQUIED' => 'N',
