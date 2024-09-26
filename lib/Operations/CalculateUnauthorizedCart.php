@@ -13,28 +13,36 @@ use Mindbox\Helpers\OrderHelper;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Exceptions\ValidationErrorCallOperationException;
 use Mindbox\Loyalty\ORM\OrderOperationTypeTable;
+use Mindbox\MindboxRequest;
 use Mindbox\MindboxResponse;
+use Mindbox\Responses\MindboxOrderResponse;
 
 class CalculateUnauthorizedCart extends AbstractOperation
 {
+    private ?MindboxRequest $request = null;
+    private ?MindboxResponse $response = null;
+
     /**
      * @throws ErrorCallOperationException
      */
     public function execute(PreorderRequestDTO $DTO): MindboxResponse
     {
-        $operation = $this->getOperation();
-
         try {
+            $operation = $this->getOperation();
             $client = $this->api();
 
-            $response = (new OrderHelper($client))
-                ->calculateUnauthorizedCart(
-                    $DTO,
-                    $operation
-                )
-                ->sendRequest();
+            $client->setResponseType(MindboxOrderResponse::class);
 
-            return $response;
+            $this->request = $client->prepareRequest(
+                method: 'POST',
+                operationName:$operation,
+                body: $DTO,
+                addDeviceUUID: true
+            )->getRequest();
+
+            $this->response = $client->sendRequest();
+
+            return $this->response;
         } catch (MindboxClientException $e) {
             throw new ErrorCallOperationException(
                 message: sprintf('The operation %s failed', $this->getOperation()),

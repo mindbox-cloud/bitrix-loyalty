@@ -29,7 +29,7 @@ class Helper
             && $USER->IsAuthorized()
             && \Mindbox\Loyalty\Support\FeatureManager::isUserRegisterAndLogin()
         ) {
-            return false;
+            return true;
         }
 
         if ($USER instanceof \CUser && $USER->IsAuthorized()) {
