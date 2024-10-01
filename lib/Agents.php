@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty;
 
+use Bitrix\Main\Loader;
 use Mindbox\Loyalty\ORM\TransactionTable;
 use Mindbox\Loyalty\Services\OrderService;
 
@@ -18,8 +19,8 @@ class Agents
 
     public static function cancelBrokenOrder()
     {
-        $iterator = TransactionTable::getList([
-            'filter' => ['ORDER_ID' => null],
+        $iterator = Mindbox\Loyalty\ORM\TransactionTable::getList([
+            'filter' => ['ORDER_ID' => null, '<DATE_INSERT' => \Bitrix\Main\Type\DateTime::createFromTimestamp(strtotime('-5 minutes'))],
             'select' => ['*'],
             'order' => ['ID' => 'ASC']
         ]);
