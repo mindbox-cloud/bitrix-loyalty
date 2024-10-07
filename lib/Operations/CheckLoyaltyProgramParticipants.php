@@ -25,13 +25,12 @@ class CheckLoyaltyProgramParticipants extends AbstractOperation
             $request = $client->prepareRequest(
                 method: 'POST',
                 operationName: $operation,
-                body: $dto
+                body: $dto,
+                isSync: true,
+                addDeviceUUID: false
             );
 
             $response = $request->sendRequest();
-
-            //todo тут пока операция неверно работает, ждем пока будет возвращать правильное значение
-            echo '<pre>'; print_r($response); echo '</pre>';
 
             if ($response->getResult()->getStatus() === 'Success') {
                 return true;
