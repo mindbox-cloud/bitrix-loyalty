@@ -35,6 +35,7 @@ class CreateOrderAdmin extends AbstractOperation
                 method: 'POST',
                 operationName: $operation,
                 body: $DTO,
+                additionalUrl: 'create',
                 queryParams: array_filter(['transactionId' => $transactionId]),
                 addDeviceUUID: false
             )->getRequest();
