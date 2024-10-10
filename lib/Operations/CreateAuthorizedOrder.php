@@ -33,11 +33,13 @@ class CreateAuthorizedOrder extends AbstractOperation
             $client->setResponseType(MindboxOrderResponse::class);
 
             $this->request = $client->prepareRequest(
-                'POST',
-                $operation,
-                $DTO,
-                'create',
-                array_filter(['transactionId' => $transactionId])
+                method: 'POST',
+                operationName: $operation,
+                body: $DTO,
+                additionalUrl: 'create',
+                queryParams: array_filter(['transactionId' => $transactionId]),
+                addDeviceUUID: false
+
             )->getRequest();
 
             $this->response = $client->sendRequest();

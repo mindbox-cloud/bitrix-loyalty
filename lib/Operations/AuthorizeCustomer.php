@@ -25,7 +25,7 @@ class AuthorizeCustomer extends AbstractOperation
                 ->authorize(
                     customer: $dto,
                     operationName: $this->getOperation(),
-                    addDeviceUUID: false,
+                    addDeviceUUID: true,
                     isSync: true
                 )
                 ->sendRequest();

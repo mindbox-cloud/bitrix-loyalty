@@ -44,6 +44,10 @@ class Api
             domainZone: $domainZone,
             domain: $domain
         );
+
+        $this->client->addHeaders([
+            'Mindbox-Integration' => 'PhpSDK-loyalty'
+        ]);
     }
 
     public static function getInstance(string $siteId): static

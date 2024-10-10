@@ -17,7 +17,7 @@ class ClearFavourite extends AbstractOperation
             operationName: $this->getOperation(),
             body: $DTO,
             isSync: false,
-            addDeviceUUID: false
+            addDeviceUUID: true
         );
 
         $request->sendRequest();

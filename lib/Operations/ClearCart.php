@@ -16,6 +16,7 @@ class ClearCart extends AbstractOperation
                 method: 'POST',
                 operationName: $this->getOperation(),
                 body: $DTO,
+                isSync: false
             );
 
             $request->sendRequest();
