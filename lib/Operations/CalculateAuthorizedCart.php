@@ -30,8 +30,7 @@ class CalculateAuthorizedCart extends AbstractOperation
             $this->request = $client->prepareRequest(
                 method: 'POST',
                 operationName:$operation,
-                body: $DTO,
-                addDeviceUUID: true
+                body: $DTO
             )->getRequest();
 
             $this->response = $client->sendRequest();
