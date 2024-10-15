@@ -109,3 +109,7 @@ $MESS['MINDBOX_LOYALTY_OPERATIONS_HINTS'] = 'Указывать полное н�
 
 $MESS['MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_POINTS'] = 'Автоматическая подписка при регистрации';
 $MESS['MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_POINTS_HINTS'] = 'Автоматическая подписка при регистрации';
+
+$MESS['MINDBOX_LOYALTY_HEADING_USER_GROUP_DISABLED_EVENTS'] = 'Отключение событий для групп пользователя';
+$MESS['BITRIX_USER_GROUP'] = 'Группа пользователя';
+$MESS['MODULE_EVENT_NAME'] = 'Событие модуля';

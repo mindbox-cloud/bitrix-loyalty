@@ -21,6 +21,9 @@ class LoyalityEvents
     public const CANCEL_ORDER = 'cancel_order';
     public const DELETE_ORDER = 'delete_order';
 
+    public const EDIT_ORDER_TO_ADMIN_PAGE = 'edit_order_to_admin_page';
+    public const CREATE_ORDER_TO_ADMIN_PAGE = 'create_order_to_admin_page';
+
     public const INCLUDE_TRACKER = 'include_tracker';
     public const ADD_CART = 'add_to_cart';
     public const REMOVE_FROM_CART = 'remove_form_cart';
@@ -55,5 +58,35 @@ class LoyalityEvents
         }
 
         return in_array($eventName, $settings->getEnableEvents());
+    }
+
+    public static function checkEnableEventsForUserGroup(string $eventName, array $userGroup = [2], Settings $settings = null): bool
+    {
+        if ($settings === null) {
+            $settings = SettingsFactory::create();
+        }
+
+        if (!$settings->enabledLoyalty()) {
+            return false;
+        }
+
+        static $storage = null;
+
+        if ($storage === null) {
+            $storage = [];
+            $disabledEvents = $settings->getDisabledEvents();
+
+            foreach ($disabledEvents as $event) {
+                $storage[$event['value']][] = $event['key'];
+            }
+        }
+
+        if (!isset($storage[$eventName])) {
+            return true;
+        }
+
+        $commonGroups = array_intersect($storage[$eventName], $userGroup);
+
+        return empty($commonGroups);
     }
 }

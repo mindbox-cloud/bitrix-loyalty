@@ -46,6 +46,7 @@ final class Settings
         SettingsEnum::YML_PATH => null,
         SettingsEnum::YML_CHUNK_SIZE => null,
         SettingsEnum::YML_SERVER_NAME => null,
+        SettingsEnum::USER_GROUP_DISABLED_EVENTS_MATCH => null,
     ];
 
     protected function __construct(string $siteId)
@@ -281,6 +282,23 @@ final class Settings
         }
 
         return explode(',', $currentOption);
+    }
+
+    public function getDisabledEvents(): array
+    {
+        $result = [];
+
+        $fields = $this->settings[SettingsEnum::USER_GROUP_DISABLED_EVENTS_MATCH];
+
+        if (!empty($fields)) {
+            $decode = \json_decode($fields, true);
+
+            if (\json_last_error() === \JSON_ERROR_NONE) {
+                $result = $decode;
+            }
+        }
+
+        return $result;
     }
 
     public function getFeedServerName(): ?string

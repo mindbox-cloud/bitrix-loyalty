@@ -24,11 +24,23 @@ class CartEvent
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
-        if ($basketItem->isDelay() && !LoyalityEvents::checkEnableEvent(LoyalityEvents::ADD_FAVORITE)) {
+        if (
+            $basketItem->isDelay()
+            && (
+                !LoyalityEvents::checkEnableEvent(LoyalityEvents::ADD_FAVORITE)
+                || !LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::ADD_FAVORITE, $USER->GetUserGroupArray())
+            )
+        ) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
-        if (!$basketItem->isDelay() && !LoyalityEvents::checkEnableEvent(LoyalityEvents::ADD_CART)) {
+        if (
+            !$basketItem->isDelay()
+            && (
+                !LoyalityEvents::checkEnableEvent(LoyalityEvents::ADD_CART)
+                || !LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::ADD_CART, $USER->GetUserGroupArray())
+            )
+        ) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
@@ -90,11 +102,23 @@ class CartEvent
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
-        if ($basketItem->isDelay() && !LoyalityEvents::checkEnableEvent(LoyalityEvents::REMOVE_FROM_FAVORITE)) {
+        if (
+            $basketItem->isDelay()
+            && (
+                !LoyalityEvents::checkEnableEvent(LoyalityEvents::REMOVE_FROM_FAVORITE)
+                || !LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::REMOVE_FROM_FAVORITE, $USER->GetUserGroupArray())
+            )
+        ) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
-        if (!$basketItem->isDelay() && !LoyalityEvents::checkEnableEvent(LoyalityEvents::REMOVE_FROM_CART)) {
+        if (
+            !$basketItem->isDelay()
+            && (
+                !LoyalityEvents::checkEnableEvent(LoyalityEvents::REMOVE_FROM_CART)
+                || !LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::REMOVE_FROM_CART, $USER->GetUserGroupArray())
+            )
+        ) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 

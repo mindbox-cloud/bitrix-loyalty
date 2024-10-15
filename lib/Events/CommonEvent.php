@@ -15,6 +15,11 @@ class CommonEvent
             return;
         }
 
+        global $USER;
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::INCLUDE_TRACKER, $USER->GetUserGroupArray())) {
+            return;
+        }
+
         $jsString = '<script data-skip-moving="true"> mindbox = window.mindbox || function() { mindbox.queue.push(arguments); }; mindbox.queue = mindbox.queue || []; mindbox("create"); </script>';
         $jsString .= '<script data-skip-moving="true" src="https://api.mindbox.ru/scripts/v1/tracker.js" async></script>';
         Asset::getInstance()->addString($jsString, true);

@@ -50,4 +50,9 @@ class SettingsEnum
     public const YML_CHUNK_SIZE = 'yml_chunk_size';
     public const YML_SERVER_NAME = 'yml_server_name';
     public const LOYALTY_ENABLE_EVENTS = 'enable_events';
+
+    public const USER_GROUP_DISABLED_EVENTS = 'user_group_disabled_events';
+    public const USER_GROUP_DISABLED_EVENTS_GROUP_ID = 'user_group_disabled_events_group_id';
+    public const USER_GROUP_DISABLED_EVENTS_EVENT_NAME = 'user_group_disabled_events_event_name';
+    public const USER_GROUP_DISABLED_EVENTS_MATCH = 'user_group_disabled_events_match';
 }

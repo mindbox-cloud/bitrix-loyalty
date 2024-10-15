@@ -10,6 +10,7 @@ use Bitrix\Sale\Internals\OrderPropsTable;
 use Bitrix\Sale\Order;
 use Mindbox\Loyalty\PropertyCodeEnum;
 use Mindbox\Loyalty\Services\CalculateService;
+use Mindbox\Loyalty\Support\LoyalityEvents;
 use Mindbox\Loyalty\Support\SessionStorage;
 
 class AdminPageEvent
@@ -24,6 +25,11 @@ class AdminPageEvent
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
+
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::EDIT_ORDER_TO_ADMIN_PAGE)) {
+            return;
+        }
+
         $jsString = self::getAdditionalScriptForOrderEditPage(self::PAGE_TYPE['EDIT']);
 
         Asset::getInstance()->addString($jsString, true, AssetLocation::AFTER_JS);
@@ -32,6 +38,10 @@ class AdminPageEvent
     public static function onAdminSaleOrderCreate()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            return;
+        }
+
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CREATE_ORDER_TO_ADMIN_PAGE)) {
             return;
         }
 

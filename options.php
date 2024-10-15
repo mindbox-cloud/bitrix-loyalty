@@ -489,6 +489,54 @@ foreach ($listSite as $site) {
             ]
         ],
 
+        Loc::getMessage('MINDBOX_LOYALTY_HEADING_USER_GROUP_DISABLED_EVENTS'),
+        SettingsEnum::USER_GROUP_DISABLED_EVENTS_GROUP_ID => [
+            'id' => SettingsEnum::USER_GROUP_DISABLED_EVENTS_GROUP_ID . '__' . $site,
+            'origin' => SettingsEnum::USER_GROUP_DISABLED_EVENTS_GROUP_ID,
+            'label' => Loc::getMessage('BITRIX_USER_GROUP', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('BITRIX_USER_GROUP', ['#LID#' => $site]),
+            'current' => [],
+            'type' => [
+                'type' => 'selectbox',
+                'options' => \Mindbox\Loyalty\Options::getUserGroups(),
+                'size' => 1
+            ]
+        ],
+        SettingsEnum::USER_GROUP_DISABLED_EVENTS_EVENT_NAME => [
+            'id' => SettingsEnum::USER_GROUP_DISABLED_EVENTS_EVENT_NAME . '__' . $site,
+            'origin' => SettingsEnum::USER_GROUP_DISABLED_EVENTS_EVENT_NAME,
+            'label' => Loc::getMessage('MODULE_EVENT_NAME', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MODULE_EVENT_NAME', ['#LID#' => $site]),
+            'current' => [],
+            'type' => [
+                'type' => 'selectbox',
+                'options' => \Mindbox\Loyalty\Support\LoyalityEvents::getAll(),
+                'size' => 1
+            ]
+        ],
+        [
+            'id' => 'disabled_events_module_button_add' . $site,
+            'current' => \Mindbox\Loyalty\Options::getAddOrderMatchButton('disabled_events_module_button_add' . $site),
+            'type' => [
+                'type' => 'statichtml'
+            ]
+        ],
+        [
+            'id' => '',
+            'current' => \Mindbox\Loyalty\Options::getMatchesTable('disabled-events-table' . '_' . $site, Loc::getMessage('BITRIX_USER_GROUP'), Loc::getMessage('MODULE_EVENT_NAME')),
+            'type' => [
+                'type' => 'statichtml'
+            ]
+        ],
+        SettingsEnum::USER_GROUP_DISABLED_EVENTS_MATCH => [
+            'id' => SettingsEnum::USER_GROUP_DISABLED_EVENTS_MATCH . '__' . $site,
+            'origin' => SettingsEnum::USER_GROUP_DISABLED_EVENTS_MATCH,
+            'type' => [
+                'type' => 'text',
+                'size' => 60,
+            ]
+        ],
+
         Loc::getMessage('MINDBOX_LOYALTY_HEADING_YML_FEED'),
         SettingsEnum::YML_FEED_ENABLED => [
             'id' => SettingsEnum::YML_FEED_ENABLED . '__' . $site,
@@ -652,7 +700,6 @@ foreach ($listSite as $site) {
             $controlName = 'MINDBOX_LOYALTY_' . htmlspecialcharsbx($arOption['id']);
             $originName = $arOption['origin'] ?? '';
 
-
             ?>
             <tr data-type="<?= $type['type'] ?>">
                 <td style="width: 40%; white-space: nowrap;" <?php if ($type['type'] === 'statichtml') echo ' class="adm-detail-valign-top"'?>>
@@ -735,14 +782,13 @@ foreach ($listSite as $site) {
                                     </option>
                                 <?php } ?>
                             </select>
-                            <?php
-                            break;
+                        <?php
+                        break;
                     }
                     ?>
                 </td>
             </tr>
             <?php
-
         }
 
         $tabControl->EndTab();
@@ -830,32 +876,32 @@ foreach ($listSite as $site) {
 <script>
     const sites = <?= CUtil::PhpToJsObject($listSite);?>;
 
-    function addButtonHandler(mindboxName, bitrixName, tableClass, propName) {
+    function addButtonHandler(mindboxName, bitrixName, tableClass, propName, useEx = false) {
         let mindboxKey = document.querySelector('[name="'+mindboxName+'"]').value;
         let bitrixKey = document.querySelector('[name="'+bitrixName+'"]').value;
 
         if (mindboxKey && bitrixKey) {
-            setProps(bitrixKey, mindboxKey, propName);
-            reInitTable(tableClass, propName);
+            useEx
+                ? setPropsExt(bitrixKey, mindboxKey, propName)
+                : setProps(bitrixKey, mindboxKey, propName)
+
+            reInitTable(tableClass, propName, useEx);
         }
     }
 
-    function removeButtonHandler(bitrixId, tableClass, propName) {
-        removeProps(bitrixId, propName);
-        reInitTable(tableClass, propName);
+    function removeButtonHandler(key, tableClass, propName, useEx= false) {
+        removeProps(key, propName);
+        reInitTable(tableClass, propName, useEx);
     }
 
     function hideInput(selector) {
         document.querySelector(selector).style.display = 'none';
     }
 
-    function showInput(selector) {
-        document.querySelector(selector).style.display = 'block';
-    }
-
-    function addRow(bitrixKey, mindboxKey, tableClass, propName) {
+    function addRow(bitrixKey, mindboxKey, tableClass, propName, useEx = false) {
         if (mindboxKey && bitrixKey) {
             let row = document.querySelector('table.table.'+tableClass+' tbody').insertRow();
+
             row.insertCell().appendChild(document.createTextNode(bitrixKey));
             row.insertCell().appendChild(document.createTextNode(mindboxKey));
 
@@ -864,25 +910,19 @@ foreach ($listSite as $site) {
             link.innerHTML = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96 96" enable-background="new 0 0 96 96" xml:space="preserve"><polygon fill="#AAAAAB" points="96,14 82,0 48,34 14,0 0,14 34,48 0,82 14,96 48,62 82,96 96,82 62,48 "></polygon></svg>';
             link.href = 'javascript:void(0)';
             link.onclick = () => {
-                removeButtonHandler(bitrixKey, tableClass, propName)
+                let rowKey = useEx ? `${bitrixKey}-${mindboxKey}` : bitrixKey;
+                removeButtonHandler(rowKey, tableClass, propName, useEx)
             };
 
             row.insertCell().appendChild(link);
         }
     }
 
-    function reInitTable(tableClass, propName) {
+    function reInitTable(tableClass, propName, useEx = false) {
         removeTable(tableClass);
-        createTable(tableClass, propName);
-    }
-
-    function createTableExt(tableClass, propName) {
-        let props = getProps(propName);
-
-        Object.keys(props).map((objectKey, index) => {
-            let value = props[objectKey];
-            addRow(value['bitrix'], value['mindbox'], tableClass, propName);
-        });
+        useEx
+            ? createTableExt(tableClass, propName)
+            : createTable(tableClass, propName)
     }
 
     function createTable(tableClass, propName) {
@@ -893,6 +933,17 @@ foreach ($listSite as $site) {
             addRow(objectKey, value, tableClass, propName);
         });
     }
+
+    function createTableExt(tableClass, propName) {
+        let props = getProps(propName);
+
+        Object.keys(props).map((objectKey, index) => {
+            let value = props[objectKey];
+
+            addRow(value['key'], value['value'], tableClass, propName, true);
+        });
+    }
+
 
     function removeProps(key, propName) {
         let currentProps = getProps(propName);
@@ -914,17 +965,18 @@ foreach ($listSite as $site) {
 
     function setPropsExt(key, value, propName) {
         let currentProps = getProps(propName);
-        let rowKey = key;
+        let rowKey = `${key}-${value}`;
 
         if (Object.keys(currentProps).indexOf(rowKey) === -1) {
             currentProps[rowKey] = {
-                bitrix: key,
-                mindbox: value
+                key: key,
+                value: value
             };
         }
 
         document.querySelector('[name="'+propName+'"]').value = JSON.stringify(currentProps);
     }
+
 
     function getProps(propName) {
         let string = document.querySelector('[name="'+propName+'"]').value;
@@ -944,15 +996,9 @@ foreach ($listSite as $site) {
 
     document.addEventListener('DOMContentLoaded', function() {
         sites.forEach((element) => {
+
             createTable('user-table' + "_" + element, 'MINDBOX_LOYALTY_<?= SettingsEnum::USER_FIELDS_MATCH?>'+ "__" + element);
             hideInput('[name="MINDBOX_LOYALTY_<?= SettingsEnum::USER_FIELDS_MATCH?>' + '__' + element +'"]');
-
-            createTable('order-props-table' + "_" + element, 'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_FIELDS_MATCH?>'+ "__" + element);
-            hideInput('[name="MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_FIELDS_MATCH?>' + '__' + element +'"]');
-
-            createTable('order-status-table' + "_" + element, 'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_STATUS_MATCH?>'+ "__" + element);
-            hideInput('[name="MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_STATUS_MATCH?>' + '__' + element +'"]');
-
             document.querySelector('.module_button_add.user_module_button_add_' + element).onclick = () => {
                 addButtonHandler(
                     'MINDBOX_LOYALTY_<?= SettingsEnum::USER_MINDBOX_FIELDS?>'  + '__' + element,
@@ -962,6 +1008,8 @@ foreach ($listSite as $site) {
                 );
             };
 
+            createTable('order-props-table' + "_" + element, 'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_FIELDS_MATCH?>'+ "__" + element);
+            hideInput('[name="MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_FIELDS_MATCH?>' + '__' + element +'"]');
             document.querySelector('.module_button_add.order_fields_module_button_add' + element).onclick = () => {
                 addButtonHandler(
                     'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_MINDBOX_FIELDS?>'  + '__' + element,
@@ -971,12 +1019,26 @@ foreach ($listSite as $site) {
                 );
             };
 
+            createTable('order-status-table' + "_" + element, 'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_STATUS_MATCH?>'+ "__" + element);
+            hideInput('[name="MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_STATUS_MATCH?>' + '__' + element +'"]');
             document.querySelector('.module_button_add.status_order_module_button_add' + element).onclick = () => {
                 addButtonHandler(
                     'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_MINDBOX_STATUS?>'  + '__' + element,
                     'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_BITRIX_STATUS?>' + '__' + element,
                     'order-status-table' + "_" + element,
                     'MINDBOX_LOYALTY_<?= SettingsEnum::ORDER_STATUS_MATCH?>' + '__' + element
+                );
+            };
+
+            createTableExt('disabled-events-table' + "_" + element, 'MINDBOX_LOYALTY_<?= SettingsEnum::USER_GROUP_DISABLED_EVENTS_MATCH?>'+ "__" + element);
+            hideInput('[name="MINDBOX_LOYALTY_<?= SettingsEnum::USER_GROUP_DISABLED_EVENTS_MATCH?>' + '__' + element +'"]');
+            document.querySelector('.module_button_add.disabled_events_module_button_add' + element).onclick = () => {
+                addButtonHandler(
+                    'MINDBOX_LOYALTY_<?= SettingsEnum::USER_GROUP_DISABLED_EVENTS_EVENT_NAME?>' + '__' + element,
+                    'MINDBOX_LOYALTY_<?= SettingsEnum::USER_GROUP_DISABLED_EVENTS_GROUP_ID?>'  + '__' + element,
+                    'disabled-events-table' + "_" + element,
+                    'MINDBOX_LOYALTY_<?= SettingsEnum::USER_GROUP_DISABLED_EVENTS_MATCH?>' + '__' + element,
+                    true
                 );
             };
         });
