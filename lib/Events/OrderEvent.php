@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Events;
 
-use Bitrix\Main\Context;
 use Bitrix\Sale\Order;
 use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
@@ -50,6 +49,11 @@ class OrderEvent
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
         if (Helper::isDisableProccessingForUser((int) $order->getUserId(), $settings)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds((int) $order->getField('USER_ID'));
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::CALCULATE_DISCOUNT, $userGroupArray, $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
@@ -110,6 +114,11 @@ class OrderEvent
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
         if (Helper::isDisableProccessingForUser((int) $order->getUserId(), $settings)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds((int) $order->getField('USER_ID'));
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::CREATE_ORDER, $userGroupArray, $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
@@ -223,6 +232,11 @@ class OrderEvent
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
+        $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds((int) $order->getField('USER_ID'));
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::CONFIRM_ORDER, $userGroupArray, $settings)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
         // На прошлом этапе произошла ошибка
         if (Transaction::getInstance()->has($order)) {
             $service = new OrderService();
@@ -286,6 +300,11 @@ class OrderEvent
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
+        $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds((int) $order->getField('USER_ID'));
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::CHANGE_STATUS_ORDER, $userGroupArray, $settings)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
         try {
             $service = new OrderService();
             if (Helper::isAdminSection()) {
@@ -315,6 +334,11 @@ class OrderEvent
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
         if (Helper::isDisableProccessingForUser((int) $order->getUserId(), $settings)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds((int) $order->getField('USER_ID'));
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::CANCEL_ORDER, $userGroupArray, $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
@@ -348,6 +372,11 @@ class OrderEvent
         $settings = SettingsFactory::createBySiteId($order->getSiteId());
 
         if (Helper::isDisableProccessingForUser((int) $order->getUserId(), $settings)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds((int) $order->getField('USER_ID'));
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::DELETE_ORDER, $userGroupArray, $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 

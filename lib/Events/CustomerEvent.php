@@ -30,6 +30,8 @@ class CustomerEvent
         \Mindbox\Loyalty\Support\FeatureManager::setHitUserRegister();
 
         $userId = (int)$arFields['ID'];
+        $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds($userId);
+
         $settings = SettingsFactory::create();
 
         try {
@@ -41,7 +43,10 @@ class CustomerEvent
             $service = new CustomerService($settings);
 
             // Регистрация пользователя
-            if (LoyalityEvents::checkEnableEvent(LoyalityEvents::REGISTRATION)) {
+            if (
+                LoyalityEvents::checkEnableEvent(LoyalityEvents::REGISTRATION)
+                && LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::REGISTRATION, $userGroupArray, $settings)
+            ) {
                 $service->sync($customer);
 
                 // Пользователь создается на сайте через СМС авторизацию, считаем телефон подтвержденным
@@ -56,6 +61,7 @@ class CustomerEvent
             if (
                 $customer->getEmail()
                 && LoyalityEvents::checkEnableEvent(LoyalityEvents::CHECK_CHANGE_USER_EMAIL)
+                && LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::CHECK_CHANGE_USER_EMAIL, $userGroupArray, $settings)
                 && $service->confirmEmail($customer)
             ) {
                 // todo Перенести все коды в отдельный enum класс
@@ -72,8 +78,12 @@ class CustomerEvent
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::AUTH)) {
             return true;
         }
-
         $settings = SettingsFactory::create();
+
+        $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds((int)$arUser['user_fields']['ID']);
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::AUTH, $userGroupArray, $settings)) {
+            return true;
+        }
 
         try {
             $customer = new Customer((int)$arUser['user_fields']['ID']);
@@ -106,6 +116,12 @@ class CustomerEvent
         }
 
         $settings = SettingsFactory::create();
+
+        $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds((int) $arUser['ID']);
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::EDIT_USER, $userGroupArray, $settings)) {
+            return true;
+        }
+
         try {
             $customer = new Customer((int) $arUser['ID']);
             $service = new CustomerService($settings);
@@ -160,6 +176,10 @@ class CustomerEvent
         }
 
         $userId = (int) $arFields['ID'];
+        $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds($userId);
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::CHECK_CHANGE_USER_EMAIL, $userGroupArray)) {
+            return true;
+        }
 
         $userData = UserTable::getRow([
             'filter' => ['=ID' => $userId],
@@ -185,11 +205,17 @@ class CustomerEvent
             return;
         }
 
+        $settings = SettingsFactory::create();
+
+        $userId = (int) $arFields['ID'];
+        $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds($userId);
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::CHECK_CHANGE_USER_EMAIL, $userGroupArray, $settings)) {
+            return true;
+        }
+
         if (!EmailChangeChecker::getInstance()->check($arFields['EMAIL'])) {
             return;
         }
-
-        $settings = SettingsFactory::create();
 
         $isSend = false;
 
@@ -197,7 +223,6 @@ class CustomerEvent
             $userId = (int) $arFields['ID'];
 
             $customer = new Customer($userId);
-
             $service = new CustomerService($settings);
 
             $isSend = $service->confirmEmail($customer);

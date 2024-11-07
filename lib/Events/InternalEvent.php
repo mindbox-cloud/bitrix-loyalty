@@ -17,14 +17,19 @@ class InternalEvent
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
-        if (!\Bitrix\Main\Loader::includeModule('catalog')) {
-            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
-        }
-
         /** @var BasketItem $basketItem */
         /** @var Settings $settings */
         $basketItem = $event->getParameter('ENTYTY');
         $settings = $event->getParameter('SETTINGS');
+
+        global $USER;
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::DISCOUNT_FOR_PRICE_TYPE, $USER->GetUserGroupArray(), $settings)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        if (!\Bitrix\Main\Loader::includeModule('catalog')) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
 
         $productPrices = \Mindbox\Loyalty\Helper::getProductPrices($basketItem->getProductId());
         if ($productPrices === []) {

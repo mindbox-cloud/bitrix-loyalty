@@ -172,10 +172,12 @@ final class Options
         return '<a class="module_button module_button_add '.$buttonClass.'" href="javascript:void(0)">'.Loc::getMessage("BUTTON_ADD").'</a>';
     }
 
-    public static function getMatchesTable(string $className): string
+    public static function getMatchesTable(string $className, string $titleRowsOne = null, string $titleRowsTwo = null): string
     {
+        $titleRowsOne = $titleRowsOne ?? Loc::getMessage("BITRIX_FIELDS");
+        $titleRowsTwo = $titleRowsTwo ?? Loc::getMessage("MINDBOX_FIELDS");
         $escapeTable = '</td></tr><tr><td colspan="2"><table class="table ' . $className . '">';
-        $tableHead = '<tr class="tr title"><th class="th">'.Loc::getMessage("BITRIX_FIELDS").'</th><th class="th">'.Loc::getMessage("MINDBOX_FIELDS").'</th><th class="th-empty"></th></tr>';
+        $tableHead = '<tr class="tr title"><th class="th">'.$titleRowsOne.'</th><th class="th">'.$titleRowsTwo.'</th><th class="th-empty"></th></tr>';
 
         $result = $escapeTable . $tableHead;
 
