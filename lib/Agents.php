@@ -19,7 +19,7 @@ class Agents
 
     public static function cancelBrokenOrder()
     {
-        $iterator = Mindbox\Loyalty\ORM\TransactionTable::getList([
+        $iterator = TransactionTable::getList([
             'filter' => ['ORDER_ID' => null, '<DATE_INSERT' => \Bitrix\Main\Type\DateTime::createFromTimestamp(strtotime('-5 minutes'))],
             'select' => ['*'],
             'order' => ['ID' => 'ASC']
