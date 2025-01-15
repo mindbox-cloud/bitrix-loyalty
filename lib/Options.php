@@ -186,4 +186,9 @@ final class Options
 
         return $result;
     }
+
+    public static function getFeedUpdateButton(string $buttonClass = ''): string
+    {
+        return '<a class="module_button module_button_update '.$buttonClass.'" href="javascript:void(0)">'.Loc::getMessage("BUTTON_GENERATE_FEED").'</a>';
+    }
 }

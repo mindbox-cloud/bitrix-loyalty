@@ -113,3 +113,4 @@ $MESS['MINDBOX_LOYALTY_USER_AUTO_SUBSCRIBE_POINTS_HINTS'] = 'Автоматич�
 $MESS['MINDBOX_LOYALTY_HEADING_USER_GROUP_DISABLED_EVENTS'] = 'Отключение событий для групп пользователя';
 $MESS['BITRIX_USER_GROUP'] = 'Группа пользователя';
 $MESS['MODULE_EVENT_NAME'] = 'Событие модуля';
+$MESS['BUTTON_GENERATE_FEED'] = 'Обновить фид';
