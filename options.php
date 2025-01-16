@@ -654,6 +654,18 @@ foreach ($listSite as $site) {
             ];
         }
     }
+    $arOptions[] = [
+        'current' => \Mindbox\Loyalty\Options::getFeedUpdateButton('feed_module_button_update' . $site),
+        'type' => [
+            'type' => 'statichtml'
+        ]
+    ];
+    $arOptions[] = [
+        'current' => '<p class="feed_module_message_update feed_module_message_update_'.$site.'" style="display: none;"></p>',
+        'type' => [
+            'type' => 'statichtml'
+        ]
+    ];
 
     $arOptions[] = Loc::getMessage('MINDBOX_LOYALTY_HEADING_CUSTOM_OPERATIONS');
 
@@ -871,6 +883,10 @@ foreach ($listSite as $site) {
         vertical-align: top;
     }
 
+    .feed_module_message_update {
+        margin: 0;
+    }
+
 </style>
 
 <script>
@@ -1040,6 +1056,23 @@ foreach ($listSite as $site) {
                     'MINDBOX_LOYALTY_<?= SettingsEnum::USER_GROUP_DISABLED_EVENTS_MATCH?>' + '__' + element,
                     true
                 );
+            };
+
+            document.querySelector('.module_button_update.feed_module_button_update' + element).onclick = () => {
+                BX.ajax.runAction('mindbox:loyalty.calculate.FeedController.update', {
+                    data: {
+                        siteId: element
+                    }
+                }).then(function (response) {
+                    const messageContainer = document.querySelector('.feed_module_message_update_' + element);
+                    messageContainer.style.display = 'none';
+                    if (messageContainer) {
+                        if (response.data.message) {
+                            messageContainer.innerHTML = response.data.message;
+                        }
+                    }
+                    messageContainer.style.display = 'block';
+                });
             };
         });
     });
