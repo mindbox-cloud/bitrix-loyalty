@@ -79,4 +79,17 @@ class FeatureManager
     {
         return self::$userRegisterAndLogin === 0;
     }
+
+    public static function isOrderRetrySave(int $orderId): bool|\Bitrix\Main\EventResult
+    {
+        if (!\Bitrix\Main\Loader::includeModule('mindbox.loyalty')) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        if (OrderStorage::exists($orderId)) {
+            self::disableHandler(LoyalityEvents::CREATE_ORDER);
+            self::disableHandler(LoyalityEvents::CONFIRM_ORDER);
+        }
+        return true;
+    }
 }
