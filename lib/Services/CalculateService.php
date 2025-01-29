@@ -225,6 +225,7 @@ class CalculateService
 
         $customerDTO = new \Mindbox\DTO\V3\Requests\CustomerRequestDTO();
         $customerDTO->setIds($customer->getIds());
+        $customerDTO->setMobilePhone($customerDTO->getMobilePhone());
 
         $orderData = $mindboxOrder->getData();
         unset($orderData['totalPrice']);
