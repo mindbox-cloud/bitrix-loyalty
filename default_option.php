@@ -26,4 +26,6 @@ $mindbox_loyalty_default_option = [
     'yml_protocol' => 'Y',
     'yml_path' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'mindbox.yml',
     'yml_chunk_size' => 1000,
+    'favorite_field_name' => '',
+    'favorite_type' => 'basket'
 ];

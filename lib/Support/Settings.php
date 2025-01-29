@@ -46,7 +46,8 @@ final class Settings
         SettingsEnum::YML_PATH => null,
         SettingsEnum::YML_CHUNK_SIZE => null,
         SettingsEnum::YML_SERVER_NAME => null,
-        SettingsEnum::USER_GROUP_DISABLED_EVENTS_MATCH => null,
+        SettingsEnum::FAVORITE_TYPE => null,
+        SettingsEnum::FAVORITE_FIELD_NAME => null,
     ];
 
     protected function __construct(string $siteId)
@@ -334,6 +335,16 @@ final class Settings
     public function getLogLifeTime(): int
     {
         return (int)$this->settings[SettingsEnum::LOG_LIFE_TIME];
+    }
+
+    public function getFavoriteType(): string
+    {
+        return (string)$this->settings[SettingsEnum::FAVORITE_TYPE];
+    }
+
+    public function getFavoriteFieldName(): string
+    {
+        return (string)$this->settings[SettingsEnum::FAVORITE_FIELD_NAME];
     }
 
     protected function __clone()

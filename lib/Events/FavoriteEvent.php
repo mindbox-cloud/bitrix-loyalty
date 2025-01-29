@@ -1,0 +1,105 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Mindbox\Loyalty\Events;
+
+use Bitrix\Main\Loader;
+use Bitrix\Main\LoaderException;
+use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
+use Mindbox\Loyalty\Operations\EditFavourite;
+use Mindbox\Loyalty\Support\LoyalityEvents;
+use Mindbox\Loyalty\Support\SettingsFactory;
+
+class FavoriteEvent
+{
+    public static function onAfterUserUpdate($arUser)
+    {
+        if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::EDIT_USER)) {
+            return true;
+        }
+
+        $settings = SettingsFactory::create();
+
+        $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds((int) $arUser['ID']);
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::EDIT_USER, $userGroupArray, $settings)) {
+            return true;
+        }
+
+        global $USER;
+
+        if (array_key_exists($settings->getFavoriteFieldName(), $arUser)) {
+            if (method_exists(self::class, $settings->getFavoriteType() . 'Prepare')) {
+
+                $favorites = self::{$settings->getFavoriteType() . 'Prepare'}($arUser[$settings->getFavoriteFieldName()]);
+                if ($USER->IsAuthorized()) {
+                    if ($favorites) {
+                        self::setWishList($favorites);
+                    } else {
+                        self::clearWishList();
+                    }
+                }
+            }
+        }
+    }
+
+    private static function commaPrepare(string $value): array
+    {
+        if (preg_match('/^\d+$|^((\d+)(,?))+\d+$/', $value)) {
+            return explode(',', $value);
+        }
+        return [];
+    }
+
+    private static function pipePrepare(string $value): array
+    {
+        if (preg_match('/^\d+$|^((\d+)(\|?))+\d+$/', $value)) {
+            return explode('|', $value);
+        }
+        return [];
+    }
+
+    private static function semicolonPrepare(string $value): array
+    {
+        if (preg_match('/^\d+$|^((\d+)(;?))+\d+$/', $value)) {
+            return explode(';', $value);
+        }
+        return [];
+    }
+    private static function serialize_arrayPrepare(string $value): array
+    {
+        if (is_array(unserialize($value, ['allowed_classes' => false]))) {
+            return unserialize($value, ['allowed_classes' => false]);
+        }
+        return [];
+    }
+
+    private static function setWishList(array $favorites): void
+    {
+        global $USER;
+
+        try {
+            Loader::includeModule('sale');
+            $settings = SettingsFactory::create();
+            $service = new \Mindbox\Loyalty\Services\ProductListService($settings);
+            $customer = (is_object($USER) && $USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int)$USER->getID()) : null;
+            foreach ($favorites as $favorite) {
+                $service->editFavourite(
+                    new \Mindbox\Loyalty\Models\Product((int)$favorite, $settings),
+                    1,
+                    $customer
+                );
+            }
+
+        } catch (\Bitrix\Main\ObjectNotFoundException|\Mindbox\Loyalty\Exceptions\ErrorCallOperationException|LoaderException $e) {
+        }
+    }
+
+    private static function clearWishList(): void
+    {
+        try {
+            EditFavourite::make()->execute([]);
+        } catch (ErrorCallOperationException $e) {
+        }
+    }
+}

@@ -7,7 +7,9 @@ namespace Mindbox\Loyalty;
 use Bitrix\Catalog\GroupTable;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
+use Mindbox\Loyalty\Support\FavoriteTypesEnum;
 use Mindbox\Loyalty\Support\PointOfSubscribeEnum;
+use Mindbox\Loyalty\Support\SettingsEnum;
 
 final class Options
 {
