@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Events;
 
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Sale\Order;
 use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
@@ -76,6 +77,7 @@ class OrderEvent
     public static function onSaleOrderBeforeSaved(\Bitrix\Main\Event $event)
     {
         FeatureManager::isOrderRetrySave($event->getParameter('ENTITY')->getId());
+        Debug::writeToFile($event->getParameter('ENTITY')->getId(), 'id', '/local/mb.log');
 
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CREATE_ORDER)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);

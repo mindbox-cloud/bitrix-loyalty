@@ -6,7 +6,7 @@ namespace Mindbox\Loyalty\Support;
 
 class OrderStorage
 {
-    private static int $ordersId = 0;
+    private static int $ordersId = -1;
 
     /**
      * @var OrderStorage|null
