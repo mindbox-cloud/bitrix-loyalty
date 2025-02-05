@@ -90,7 +90,7 @@ class FavoriteEvent
 
     private static function iblock_elemetnsPrepare($value): array
     {
-        if (is_array($value)) {
+        if (is_array($value) && !empty(current($value))) {
             return $value;
         }
         return [];
