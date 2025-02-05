@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Events;
 
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
@@ -32,6 +33,7 @@ class FavoriteEvent
             if (method_exists(self::class, $settings->getFavoriteType() . 'Prepare')) {
 
                 $favorites = self::{$settings->getFavoriteType() . 'Prepare'}($arUser[$settings->getFavoriteFieldName()]);
+                Debug::writeToFile($favorites, 'fav', '/local/debug.log');
                 if ($USER->IsAuthorized()) {
                     if ($favorites) {
                         self::setWishList($favorites);
@@ -43,33 +45,53 @@ class FavoriteEvent
         }
     }
 
-    private static function commaPrepare(string $value): array
+    private static function commaPrepare($value): array
     {
+        if (!is_string($value)) {
+            return [];
+        }
         if (preg_match('/^\d+$|^((\d+)(,?))+\d+$/', $value)) {
             return explode(',', $value);
         }
         return [];
     }
 
-    private static function pipePrepare(string $value): array
+    private static function pipePrepare($value): array
     {
+        if (!is_string($value)) {
+            return [];
+        }
         if (preg_match('/^\d+$|^((\d+)(\|?))+\d+$/', $value)) {
             return explode('|', $value);
         }
         return [];
     }
 
-    private static function semicolonPrepare(string $value): array
+    private static function semicolonPrepare($value): array
     {
+        if (!is_string($value)) {
+            return [];
+        }
         if (preg_match('/^\d+$|^((\d+)(;?))+\d+$/', $value)) {
             return explode(';', $value);
         }
         return [];
     }
-    private static function serialize_arrayPrepare(string $value): array
+    private static function serialize_arrayPrepare($value): array
     {
+        if (!is_string($value)) {
+            return [];
+        }
         if (is_array(unserialize($value, ['allowed_classes' => false]))) {
             return unserialize($value, ['allowed_classes' => false]);
+        }
+        return [];
+    }
+
+    private static function iblock_elemetnsPrepare($value): array
+    {
+        if (is_array($value)) {
+            return $value;
         }
         return [];
     }
