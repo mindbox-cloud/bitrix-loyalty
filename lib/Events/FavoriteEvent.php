@@ -119,9 +119,16 @@ class FavoriteEvent
 
     private static function clearWishList(): void
     {
+        global $USER;
+
         try {
-            EditFavourite::make()->execute([]);
-        } catch (ErrorCallOperationException $e) {
+            Loader::includeModule('sale');
+        } catch (LoaderException $e) {
         }
+        $settings = SettingsFactory::create();
+        $service = new \Mindbox\Loyalty\Services\ProductListService($settings);
+        $customer = (is_object($USER) && $USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int)$USER->getID()) : null;
+        $service->clearFavourite($customer);
+
     }
 }
