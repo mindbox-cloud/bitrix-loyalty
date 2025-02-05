@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Events;
 
 use Bitrix\Sale\Order;
+use Mindbox\Loyalty\Support\FavoriteTypesEnum;
 use Mindbox\Loyalty\Support\LoyalityEvents;
 use Mindbox\Loyalty\Support\SettingsFactory;
 
@@ -63,7 +64,7 @@ class CartEvent
             $settings = SettingsFactory::create();
             $service = new \Mindbox\Loyalty\Services\ProductListService($settings);
             $customer = (is_object($USER) && $USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int) $USER->getID()) : null;
-            $method = $basketItem->isDelay() ? 'editFavourite' : 'editCart';
+            $method = ($basketItem->isDelay() && $settings->getFavoriteType() === FavoriteTypesEnum::FAVORITE_TYPE_BASKET) ? 'editFavourite' : 'editCart';
 
             try {
                 if (array_key_exists('PRODUCT_ID', $values)) {
@@ -127,7 +128,7 @@ class CartEvent
         $service = new \Mindbox\Loyalty\Services\ProductListService($settings);
 
         $customer = (is_object($USER) && $USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int)$USER->getID()) : null;
-        $method = ($basketItem->isDelay()) ? 'editFavourite' : 'editCart';
+        $method = ($basketItem->isDelay() && $settings->getFavoriteType() === FavoriteTypesEnum::FAVORITE_TYPE_BASKET) ? 'editFavourite' : 'editCart';
 
         try {
             $service->$method(

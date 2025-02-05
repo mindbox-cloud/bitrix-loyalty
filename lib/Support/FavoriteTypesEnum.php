@@ -14,4 +14,6 @@ class FavoriteTypesEnum
         'serialize_array' => 'Сериализованный массим в пользовательском поле',
         'iblock_elemetns' => 'Привязка к элементам инфоблока',
     ];
+
+    public const FAVORITE_TYPE_BASKET = 'basket';
 }
