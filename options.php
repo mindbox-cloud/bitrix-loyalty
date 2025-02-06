@@ -676,7 +676,7 @@ foreach ($listSite as $site) {
         'current' => Option::get(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, SettingsEnum::FAVORITE_TYPE, $defaultOptions[SettingsEnum::FAVORITE_TYPE], $site),
         'type' => [
             'type' => 'selectbox',
-            'options' => \Mindbox\Loyalty\Support\FavoriteTypesEnum::FAVORITE_TYPE_LIST,
+            'options' => \Mindbox\Loyalty\Support\FavoriteTypesEnum::getTypes(),
             'size' => 1
         ]
     ];

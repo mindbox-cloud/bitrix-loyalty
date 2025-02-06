@@ -103,7 +103,7 @@ class FavoriteEvent
         return [];
     }
 
-    private static function iblock_elemetns($value): array
+    private static function iblock_elements($value): array
     {
         if (is_array($value) && !empty(current($value))) {
             return $value;
