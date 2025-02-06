@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Events;
 
 use Bitrix\Sale\Order;
+use Mindbox\Loyalty\Support\FavoriteTypesEnum;
 use Mindbox\Loyalty\Support\LoyalityEvents;
 use Mindbox\Loyalty\Support\SettingsFactory;
 
@@ -63,23 +64,30 @@ class CartEvent
             $settings = SettingsFactory::create();
             $service = new \Mindbox\Loyalty\Services\ProductListService($settings);
             $customer = (is_object($USER) && $USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int) $USER->getID()) : null;
-            $method = $basketItem->isDelay() ? 'editFavourite' : 'editCart';
 
-            try {
-                if (array_key_exists('PRODUCT_ID', $values)) {
+            if ($basketItem->isDelay() && $settings->getFavoriteType() === FavoriteTypesEnum::FAVORITE_TYPE_BASKET) {
+                $method = 'editFavourite';
+            } elseif (!$basketItem->isDelay()) {
+                $method = 'editCart';
+            }
+
+            if (isset($method)) {
+                try {
+                    if (array_key_exists('PRODUCT_ID', $values)) {
+                        $service->$method(
+                            new \Mindbox\Loyalty\Models\Product((int)$values['PRODUCT_ID'], $settings),
+                            0,
+                            $customer
+                        );
+                    }
+
                     $service->$method(
-                        new \Mindbox\Loyalty\Models\Product((int)$values['PRODUCT_ID'], $settings),
-                        0,
+                        new \Mindbox\Loyalty\Models\Product($basketItem->getProductId(), $settings),
+                        (int) $basketItem->getQuantity(),
                         $customer
                     );
+                } catch (\Mindbox\Loyalty\Exceptions\ErrorCallOperationException $e) {
                 }
-
-                $service->$method(
-                    new \Mindbox\Loyalty\Models\Product($basketItem->getProductId(), $settings),
-                    (int) $basketItem->getQuantity(),
-                    $customer
-                );
-            } catch (\Mindbox\Loyalty\Exceptions\ErrorCallOperationException $e) {
             }
         }
     }
@@ -127,15 +135,22 @@ class CartEvent
         $service = new \Mindbox\Loyalty\Services\ProductListService($settings);
 
         $customer = (is_object($USER) && $USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int)$USER->getID()) : null;
-        $method = ($basketItem->isDelay()) ? 'editFavourite' : 'editCart';
 
-        try {
-            $service->$method(
-                new \Mindbox\Loyalty\Models\Product($basketItem->getProductId(), $settings),
-                0,
-                $customer
-            );
-        } catch (\Mindbox\Loyalty\Exceptions\ErrorCallOperationException $e) {
+        if ($basketItem->isDelay() && $settings->getFavoriteType() === FavoriteTypesEnum::FAVORITE_TYPE_BASKET) {
+            $method = 'editFavourite';
+        } elseif (!$basketItem->isDelay()) {
+            $method = 'editCart';
+        }
+
+        if (isset($method)) {
+            try {
+                $service->$method(
+                    new \Mindbox\Loyalty\Models\Product($basketItem->getProductId(), $settings),
+                    0,
+                    $customer
+                );
+            } catch (\Mindbox\Loyalty\Exceptions\ErrorCallOperationException $e) {
+            }
         }
     }
 }
