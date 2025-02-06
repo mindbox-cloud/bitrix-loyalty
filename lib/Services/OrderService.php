@@ -49,8 +49,12 @@ class OrderService
     {
         if (Helper::isAdminSection()) {
             $response = $this->saveOrderAdmin($order, $tmpOrderId);
-            $type = OrderOperationTypeTable::OPERATION_TYPE_AUTH;
-            SessionStorage::getInstance()->setOperationType($type);
+            if ($order->getField('ID') == null) {
+                $type = OrderOperationTypeTable::OPERATION_TYPE_AUTH;
+                SessionStorage::getInstance()->setOperationType($type);
+            } else {
+                OrderOperationTypeTable::setTypeOrder($order->getField('ID'), OrderOperationTypeTable::OPERATION_TYPE_AUTH);
+            }
         } elseif ($order->isNew()) {
             if (Helper::isUserUnAuthorized()) {
                 $response = $this->saveUnauthorizedOrder($order, $tmpOrderId);

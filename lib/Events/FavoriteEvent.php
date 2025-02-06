@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Events;
 
 use Bitrix\Main\LoaderException;
+use Mindbox\Exceptions\MindboxClientException;
+use Mindbox\Loyalty\Exceptions\IntegrationLoyaltyException;
 use Mindbox\Loyalty\Support\LoyalityEvents;
 use Mindbox\Loyalty\Support\SettingsFactory;
 
@@ -12,33 +14,49 @@ class FavoriteEvent
 {
     public static function onAfterUserUpdate($arUser)
     {
-        global $USER;
-        $settings = SettingsFactory::create();
-        $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds((int)$arUser['ID']);
+        if (!$arUser['RESULT']) {
+            return;
+        }
 
-        if (array_key_exists($settings->getFavoriteFieldName(), $arUser)) {
-            if (method_exists(self::class, $settings->getFavoriteType())) {
-                $favorites = self::{$settings->getFavoriteType()}($arUser[$settings->getFavoriteFieldName()]);
-                if ($USER->IsAuthorized()) {
-                    if ($favorites) {
-                        if (
-                            LoyalityEvents::checkEnableEvent(LoyalityEvents::ADD_FAVORITE)
-                            && LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::ADD_FAVORITE, $userGroupArray, $settings)
-                        ) {
-                            self::setWishList($favorites);
-                        }
-                    } else {
-                        if (
-                            LoyalityEvents::checkEnableEvent(LoyalityEvents::REMOVE_FROM_FAVORITE)
-                            && LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::REMOVE_FROM_FAVORITE, $userGroupArray, $settings)
-                        ) {
-                            self::clearWishList();
-                        }
-                    }
-                }
+        $settings = SettingsFactory::create();
+        $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds((int) $arUser['ID']);
+
+        $fieldName = $settings->getFavoriteFieldName();
+        $type = $settings->getFavoriteType();
+
+        if (empty($fieldName)) {
+            return;
+        }
+
+        if (empty($type)) {
+            return;
+        }
+
+        if (!array_key_exists($fieldName, $arUser)) {
+            return;
+        }
+
+        if (!method_exists(self::class, $type)) {
+            return;
+        }
+
+        $favorites = self::{$type}($arUser[$fieldName]);
+
+        if ($favorites) {
+            if (
+                LoyalityEvents::checkEnableEvent(LoyalityEvents::ADD_FAVORITE)
+                && LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::ADD_FAVORITE, $userGroupArray, $settings)
+            ) {
+                self::setWishList($favorites);
+            }
+        } else {
+            if (
+                LoyalityEvents::checkEnableEvent(LoyalityEvents::REMOVE_FROM_FAVORITE)
+                && LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::REMOVE_FROM_FAVORITE, $userGroupArray, $settings)
+            ) {
+                self::clearWishList();
             }
         }
-        return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
     }
 
     private static function comma($value): array
@@ -101,6 +119,7 @@ class FavoriteEvent
             $settings = SettingsFactory::create();
             $service = new \Mindbox\Loyalty\Services\ProductListService($settings);
             $customer = (is_object($USER) && $USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int)$USER->getID()) : null;
+
             foreach ($favorites as $favorite) {
                 $service->editFavourite(
                     new \Mindbox\Loyalty\Models\Product((int)$favorite, $settings),
@@ -109,19 +128,42 @@ class FavoriteEvent
                 );
             }
 
-        } catch (\Bitrix\Main\ObjectNotFoundException|\Mindbox\Loyalty\Exceptions\ErrorCallOperationException|LoaderException $e) {
+        } catch (MindboxClientException|\Mindbox\Loyalty\Exceptions\ErrorCallOperationException $e) {
         }
     }
 
     private static function clearWishList(): void
     {
-        global $USER;
+        try {
+            $settings = SettingsFactory::create();
 
-        $settings = SettingsFactory::create();
-        $service = new \Mindbox\Loyalty\Services\ProductListService($settings);
-        $customer = (is_object($USER) && $USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int)$USER->getID()) : null;
-        if ($customer) {
-            $service->clearFavourite($customer);
+            global $USER;
+
+            if (is_object($USER) && $USER->isAuthorized()) {
+                $customer = new \Mindbox\Loyalty\Models\Customer((int) $USER->getID());
+                $dto = new \Mindbox\DTO\DTO([
+                    'customer' =>  array_filter([
+                        'ids' => $customer->getIds(),
+                        'email' => $customer->getEmail(),
+                        'mobilePhone' => $customer->getMobilePhone(),
+                    ])
+                ]);
+            } else {
+                $dto = new \Mindbox\DTO\DTO([
+                    'customer' => [
+                        'ids' => [
+                            $settings->getExternalUserId() => null
+                        ]
+                    ]
+                ]);
+            }
+
+            $serviceLocator = \Bitrix\Main\DI\ServiceLocator::getInstance();
+            /** @var \Mindbox\Loyalty\Operations\ClearFavourite $clearFavourite */
+            $clearFavourite = $serviceLocator->get('mindboxLoyalty.clearFavourite');
+            $clearFavourite->setSettings($settings);
+            $clearFavourite->execute($dto);
+        } catch (MindboxClientException|IntegrationLoyaltyException $e) {
         }
     }
 }

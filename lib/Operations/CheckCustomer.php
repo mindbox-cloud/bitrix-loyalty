@@ -19,6 +19,7 @@ class CheckCustomer extends AbstractOperation
     public function execute(CustomerRequestDTO $dto): bool
     {
         try {
+            return false;
             $client = $this->api();
 
             $response = (new CustomerHelper($client))

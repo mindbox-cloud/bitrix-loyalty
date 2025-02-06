@@ -195,6 +195,8 @@ class CalculateService
 
         $customerDTO = new \Mindbox\DTO\V3\Requests\CustomerRequestDTO();
         $customerDTO->setIds($customer->getIds());
+        $customerDTO->setMobilePhone($customer->getMobilePhone());
+        $customerDTO->setEmail($customer->getEmail());
 
         $orderData = $mindboxOrder->getData();
         unset($orderData['totalPrice']);
@@ -226,6 +228,7 @@ class CalculateService
         $customerDTO = new \Mindbox\DTO\V3\Requests\CustomerRequestDTO();
         $customerDTO->setIds($customer->getIds());
         $customerDTO->setMobilePhone($customer->getMobilePhone());
+        $customerDTO->setEmail($customer->getEmail());
 
         $orderData = $mindboxOrder->getData();
         unset($orderData['totalPrice']);
