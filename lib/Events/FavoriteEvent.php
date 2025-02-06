@@ -12,38 +12,33 @@ class FavoriteEvent
 {
     public static function onAfterUserUpdate($arUser)
     {
-        if (
-            !LoyalityEvents::checkEnableEvent(LoyalityEvents::ADD_FAVORITE)
-            || !LoyalityEvents::checkEnableEvent(LoyalityEvents::REMOVE_FROM_FAVORITE)
-        ) {
-            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
-        }
-
+        global $USER;
         $settings = SettingsFactory::create();
         $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds((int)$arUser['ID']);
-        
-        if (
-            !LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::ADD_FAVORITE, $userGroupArray, $settings)
-            || !LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::REMOVE_FROM_FAVORITE, $userGroupArray, $settings)
-        ) {
-            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
-        }
-
-        global $USER;
 
         if (array_key_exists($settings->getFavoriteFieldName(), $arUser)) {
             if (method_exists(self::class, $settings->getFavoriteType())) {
-
                 $favorites = self::{$settings->getFavoriteType()}($arUser[$settings->getFavoriteFieldName()]);
                 if ($USER->IsAuthorized()) {
                     if ($favorites) {
-                        self::setWishList($favorites);
+                        if (
+                            LoyalityEvents::checkEnableEvent(LoyalityEvents::ADD_FAVORITE)
+                            && LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::ADD_FAVORITE, $userGroupArray, $settings)
+                        ) {
+                            self::setWishList($favorites);
+                        }
                     } else {
-                        self::clearWishList();
+                        if (
+                            LoyalityEvents::checkEnableEvent(LoyalityEvents::REMOVE_FROM_FAVORITE)
+                            && LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::REMOVE_FROM_FAVORITE, $userGroupArray, $settings)
+                        ) {
+                            self::clearWishList();
+                        }
                     }
                 }
             }
         }
+        return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
     }
 
     private static function comma($value): array
