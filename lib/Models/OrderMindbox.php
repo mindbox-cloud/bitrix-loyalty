@@ -110,14 +110,19 @@ class OrderMindbox
         if (!$propertyCoupon instanceof \Bitrix\Sale\PropertyValue || empty($propertyCoupon->getValue())) {
             return [];
         }
+        $coupons = explode(',', $propertyCoupon->getValue());
+        $result = [];
+        foreach ($coupons as $coupon) {
+            if (trim($coupon)) {
+                $result[] = [
+                    'ids' => [
+                        'code' => trim($coupon)
+                    ]
+                ];
+            }
+        }
 
-        return [
-            [
-                'ids' => [
-                    'code' => $propertyCoupon->getValue()
-                ]
-            ]
-        ];
+        return $result;
     }
 
     public function setCoupons(string $value): void
