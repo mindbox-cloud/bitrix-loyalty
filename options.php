@@ -667,6 +667,32 @@ foreach ($listSite as $site) {
         ]
     ];
 
+    $arOptions[] = Loc::getMessage('MINDBOX_LOYALTY_FAVORITE');
+    $arOptions[SettingsEnum::FAVORITE_TYPE] = [
+        'id' => SettingsEnum::FAVORITE_TYPE . '__' . $site,
+        'origin' => SettingsEnum::FAVORITE_TYPE,
+        'label' => Loc::getMessage('MINDBOX_LOYALTY_FAVORITE_TYPE', ['#LID#' => $site]),
+        'hints' => Loc::getMessage('MINDBOX_LOYALTY_FAVORITE_TYPE_HINTS', ['#LID#' => $site]),
+        'current' => Option::get(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, SettingsEnum::FAVORITE_TYPE, $defaultOptions[SettingsEnum::FAVORITE_TYPE], $site),
+        'type' => [
+            'type' => 'selectbox',
+            'options' => \Mindbox\Loyalty\Support\FavoriteTypesEnum::getTypes(),
+            'size' => 1
+        ]
+    ];
+    $arOptions[SettingsEnum::FAVORITE_FIELD_NAME] = [
+        'id' => SettingsEnum::FAVORITE_FIELD_NAME . '__' . $site,
+        'origin' => SettingsEnum::FAVORITE_FIELD_NAME,
+        'current' => Option::get(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, SettingsEnum::FAVORITE_FIELD_NAME, $defaultOptions[SettingsEnum::FAVORITE_FIELD_NAME], $site),
+        'label' => Loc::getMessage('MINDBOX_LOYALTY_FAVORITE_FIELD_NAME', ['#LID#' => $site]),
+        'hints' => Loc::getMessage('MINDBOX_LOYALTY_FAVORITE_FIELD_NAME_HINTS', ['#LID#' => $site]),
+        'type' => [
+            'type' => 'selectbox',
+            'options' => \Mindbox\Loyalty\Options::getUserFields(),
+            'size' => 1
+        ]
+    ];
+
     $arOptions[] = Loc::getMessage('MINDBOX_LOYALTY_HEADING_CUSTOM_OPERATIONS');
 
     $defaultOperationNames = \Mindbox\Loyalty\Support\DefaultOperations::getMap();

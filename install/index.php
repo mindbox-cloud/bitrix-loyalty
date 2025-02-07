@@ -343,6 +343,15 @@ class mindbox_loyalty extends CModule
             'onCustomPromotionsBasketItem',
             1000
         );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'main',
+            'onAfterUserUpdate',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\FavoriteEvent::class,
+            'onAfterUserUpdate',
+            1000
+        );
     }
 
     public function UnInstallEvents()
@@ -522,6 +531,14 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\InternalEvent::class,
             'onCustomPromotionsBasketItem',
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'main',
+            'onAfterUserUpdate',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\FavoriteEvent::class,
+            'onAfterUserUpdate'
         );
     }
 

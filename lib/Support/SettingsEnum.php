@@ -55,4 +55,7 @@ class SettingsEnum
     public const USER_GROUP_DISABLED_EVENTS_GROUP_ID = 'user_group_disabled_events_group_id';
     public const USER_GROUP_DISABLED_EVENTS_EVENT_NAME = 'user_group_disabled_events_event_name';
     public const USER_GROUP_DISABLED_EVENTS_MATCH = 'user_group_disabled_events_match';
+
+    public const FAVORITE_TYPE = 'favorite_type';
+    public const FAVORITE_FIELD_NAME = 'favorite_field_name';
 }

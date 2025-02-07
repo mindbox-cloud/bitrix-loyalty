@@ -114,3 +114,9 @@ $MESS['MINDBOX_LOYALTY_HEADING_USER_GROUP_DISABLED_EVENTS'] = 'Отключен�
 $MESS['BITRIX_USER_GROUP'] = 'Группа пользователя';
 $MESS['MODULE_EVENT_NAME'] = 'Событие модуля';
 $MESS['BUTTON_GENERATE_FEED'] = 'Обновить фид';
+
+$MESS['MINDBOX_LOYALTY_FAVORITE'] = 'Настройка избранного';
+$MESS['MINDBOX_LOYALTY_FAVORITE_TYPE'] = 'Тип хранения';
+$MESS['MINDBOX_LOYALTY_FAVORITE_TYPE_HINTS'] = 'Укажите тип хранения списка избранного';
+$MESS['MINDBOX_LOYALTY_FAVORITE_FIELD_NAME'] = 'Поле в Bitrix';
+$MESS['MINDBOX_LOYALTY_FAVORITE_FIELD_NAME_HINTS'] = 'Укажите пользовательское поля, если оно используется';

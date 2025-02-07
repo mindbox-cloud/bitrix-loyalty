@@ -103,7 +103,7 @@ class ProductListService
             $operation->setSettings($this->settings);
             $operation->execute(new DTO(['customer' => ['ids' => $customer->getIds()]]));
             return true;
-        } catch (MindboxClientException) {
+        } catch (MindboxClientException $e) {
             return false;
         }
     }

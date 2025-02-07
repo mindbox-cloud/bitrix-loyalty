@@ -32,8 +32,6 @@ final class DefaultOperations
             'ChangeStatus',
             'ManualChangeStatus',
             'SaveOfflineOrder',
-            'UpdateOrderStatus',
-            'UpdateOrderStatus',
             'EditCart',
             'ClearCart',
             'EditFavourite',
