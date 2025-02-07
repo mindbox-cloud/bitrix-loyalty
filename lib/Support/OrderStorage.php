@@ -6,7 +6,7 @@ namespace Mindbox\Loyalty\Support;
 
 class OrderStorage
 {
-    private static int $ordersId = -1;
+    private static string $ordersId = '';
 
     /**
      * @var OrderStorage|null
@@ -33,28 +33,28 @@ class OrderStorage
         return self::$instance === null ? self::$instance = new static() : self::$instance;
     }
 
-    public static function add(int $id): void
+    public static function add(string $id): void
     {
         self::$ordersId = $id;
     }
 
     public static function remove(): void
     {
-        self::$ordersId = 0;
+        self::$ordersId = '';
     }
 
-    public static function isNew(int $id): bool
+    public static function isNew(): bool
     {
-        return self::$ordersId === 0 || self::$ordersId !== $id;
+        return self::$ordersId === '';
     }
 
-    public static function exists(int $id): bool
+    public static function exists(string $id): bool
     {
         return self::$ordersId === $id;
     }
 
     public function clear(): void
     {
-        self::$ordersId = 0;
+        self::$ordersId = '';
     }
 }
