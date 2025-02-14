@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Events;
 
-use Bitrix\Main\Diag\Debug;
 use Bitrix\Sale\Order;
 use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
@@ -20,7 +19,6 @@ use Mindbox\Loyalty\ORM\OrderOperationTypeTable;
 use Mindbox\Loyalty\PropertyCodeEnum;
 use Mindbox\Loyalty\Services\CalculateService;
 use Mindbox\Loyalty\Services\OrderService;
-use Mindbox\Loyalty\Support\FeatureManager;
 use Mindbox\Loyalty\Support\LoyalityEvents;
 use Mindbox\Loyalty\Support\OrderStorage;
 use Mindbox\Loyalty\Support\SessionStorage;
