@@ -263,8 +263,7 @@ class OrderEvent
 
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
-
-
+        
         if (
             $isNew
             && SessionStorage::getInstance()->getOperationType() !== null
