@@ -260,10 +260,6 @@ class OrderEvent
             SessionStorage::getInstance()->clear();
 
             $service->clearBasketByOrder($order);
-            $propertyMindboxId = $order->getPropertyCollection()->getItemByOrderPropertyCode(PropertyCodeEnum::PROPERTIES_MINDBOX_ORDER_ID);
-            if ($propertyMindboxId instanceof \Bitrix\Sale\PropertyValue) {
-                OrderStorage::add($propertyMindboxId->getValue());
-            }
 
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
