@@ -8,31 +8,6 @@ class OrderStorage
 {
     private static string $ordersId = '';
 
-    /**
-     * @var OrderStorage|null
-     */
-    protected static $instance = null;
-
-    protected function __construct()
-    {
-    }
-
-    protected function __clone()
-    {
-    }
-
-    protected function __wakeup()
-    {
-    }
-
-    /**
-     * @return static|null
-     */
-    public static function getInstance()
-    {
-        return self::$instance === null ? self::$instance = new static() : self::$instance;
-    }
-
     public static function add(string $id): void
     {
         self::$ordersId = $id;
@@ -56,5 +31,9 @@ class OrderStorage
     public function clear(): void
     {
         self::$ordersId = '';
+    }
+    public static function get(): string
+    {
+        return self::$ordersId;
     }
 }

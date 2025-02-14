@@ -79,9 +79,4 @@ class FeatureManager
     {
         return self::$userRegisterAndLogin === 0;
     }
-
-    public static function isOrderRetrySave(): bool|\Bitrix\Main\EventResult
-    {
-        return !OrderStorage::isNew();
-    }
 }

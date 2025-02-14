@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Events;
 
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Sale\Order;
 use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
@@ -75,9 +76,8 @@ class OrderEvent
 
     public static function onSaleOrderBeforeSaved(\Bitrix\Main\Event $event)
     {
-        if (FeatureManager::isOrderRetrySave()) {
-            FeatureManager::disableHandler(LoyalityEvents::CREATE_ORDER);
-            FeatureManager::disableHandler(LoyalityEvents::CONFIRM_ORDER);
+        if (!OrderStorage::isNew()) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CREATE_ORDER)) {
@@ -129,7 +129,6 @@ class OrderEvent
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
-
         if (Helper::isAdminSection()) {
             $calculateService = new CalculateService();
             try {
@@ -168,6 +167,8 @@ class OrderEvent
                 if ($propertyMindboxId instanceof \Bitrix\Sale\PropertyValue) {
                     $propertyMindboxId->setValue($mindboxId);
                 }
+            }
+            if ($mindboxId) {
                 OrderStorage::add($mindboxId);
             }
         } catch (PriceHasBeenChangedException $exception) {
@@ -229,7 +230,7 @@ class OrderEvent
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
-        if (!OrderStorage::isNew()) {
+        if (!$isNew) {
             SessionStorage::getInstance()->clear();
 
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
@@ -261,18 +262,19 @@ class OrderEvent
             SessionStorage::getInstance()->clear();
 
             $service->clearBasketByOrder($order);
-
-            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
-        }
-
-        if (
-            OrderStorage::isNew()
-            && SessionStorage::getInstance()->getOperationType() !== null
-        ) {
             $propertyMindboxId = $order->getPropertyCollection()->getItemByOrderPropertyCode(PropertyCodeEnum::PROPERTIES_MINDBOX_ORDER_ID);
             if ($propertyMindboxId instanceof \Bitrix\Sale\PropertyValue) {
                 OrderStorage::add($propertyMindboxId->getValue());
             }
+
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+
+        if (
+            $isNew
+            && SessionStorage::getInstance()->getOperationType() !== null
+        ) {
             OrderOperationTypeTable::setTypeOrder((string) $order->getId(), SessionStorage::getInstance()->getOperationType());
         }
 
