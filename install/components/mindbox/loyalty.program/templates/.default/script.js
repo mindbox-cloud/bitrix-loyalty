@@ -42,7 +42,9 @@ document.addEventListener('DOMContentLoaded', function(){
                         </tr>
                         `;
                     })
-                } else {
+                }
+
+                if (!response.data.more) {
                     moreButton.style.display = 'none';
                 }
 
