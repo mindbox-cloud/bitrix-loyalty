@@ -1,39 +1,20 @@
 .mindbox-history__title {
-    color: #0A0A0A;
     font-size: 20px;
-    font-weight: 500;
-    margin-bottom: 47px;
+    font-weight: bold;
 }
 
 .mindbox-history table {
     width: 100%;
+    margin-bottom: 20px;
 }
 
-.mindbox-history table tr td {
+.mindbox-history table td,
+.mindbox-history table th{
     vertical-align: top;
+    border: 1px solid #000000;
+    padding: 5px;
 }
 
-.mindbox-history__date {
-    color: #88888C;
-    font-size: 12px;
-}
-
-.mindbox-history__list {
-    display: grid;
-    grid-template-columns: 3fr 1fr 1fr;
-}
-
-.mindbox-history__spend {
-    position: relative;
-}
-
-.mindbox-history__icon {
-    position: absolute;
-    right: -26px;
-    top: -2px;
-    width: 22px;
-    height: 22px;
-}
 .mindbox-bonus-more {
     margin: 0 auto;
     width: 250px;
