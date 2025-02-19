@@ -34,3 +34,12 @@
     width: 22px;
     height: 22px;
 }
+.mindbox-bonus-more {
+    margin: 0 auto;
+    width: 250px;
+    display: block;
+    border: 1px solid #000;
+    outline: none;
+    background: #ffffff;
+    border-radius: 7px;
+}

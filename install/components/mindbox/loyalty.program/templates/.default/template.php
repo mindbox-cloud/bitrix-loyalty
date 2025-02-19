@@ -5,7 +5,7 @@
     <div>На вашем бонусном счету <strong><?= $arResult['bonuses']['available_format'] ?></strong></div>
 </div>
 
-<?php if($arResult['loyalty']['next_level']['name'] !== '') { ?>
+<?php if(isset($arResult['loyalty']['next_level']['name']) && $arResult['loyalty']['next_level']['name'] !== '') { ?>
     <div>
         Накопите еще <?= $arResult['loyalty']['next_level']['total']?> и получите <?= $arResult['loyalty']['next_level']['name'] ?> статус в <?= $arResult['loyalty']['next_level']['month']?>
     </div>
@@ -29,12 +29,14 @@
                 </div>
                 <div>
                 <span class="mindbox-history__spend">
-                    <?= $item['is_positive'] ? '+' : '-' ?><?= $item['size_format'] ?>
+                    <?= $item['is_positive'] ? '+' : '' ?><?= $item['size_format'] ?>
                 </span>
                 </div>
             <?php } ?>
-            <button id="mindbox-bonus-more">Загрузить еще</button>
         </div>
+        <?php if(count($arResult['history']) !== intval($arParams['HISTORY_PAGE_SIZE'])) { ?>
+            <button id="mindbox-bonus-more" data-page="1">Загрузить еще</button>
+        <?php } ?>
     </div>
 <?php } ?>
 

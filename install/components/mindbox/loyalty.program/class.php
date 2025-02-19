@@ -6,10 +6,9 @@ use Bitrix\Main\ErrorableImplementation;
 use Bitrix\Main\Loader;
 use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Services\BonusService;
-use Mindbox\Loyalty\Services\CustomerService;
 use Mindbox\Loyalty\Services\LoyaltyService;
 
-class LoyaltyProgramm extends CBitrixComponent
+class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Contract\Controllerable
 {
     use ErrorableImplementation;
 
