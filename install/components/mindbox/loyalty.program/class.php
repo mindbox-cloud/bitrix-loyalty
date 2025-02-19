@@ -40,14 +40,14 @@ class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Co
 
     public function executeComponent()
     {
-        global $USER;
+        global $USER, $APPLICATION;
 
         if (!Loader::includeModule('mindbox.loyalty')) {
             ShowError('Module mindbox.loyalty not loaded');
             return true;
         }
         if (!$USER->IsAuthorized()) {
-            ShowError('Необходимо авторизоваться');
+            $APPLICATION->AuthForm("", false, false, "N", false);
             return true;
         }
 
