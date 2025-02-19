@@ -32,7 +32,7 @@
                 <?php } ?>
             </tbody>
         </table>
-        <?php if(count($arResult['history']) < intval($arParams['HISTORY_PAGE_SIZE'])) { ?>
+        <?php if(count($arResult['history']) === intval($arParams['HISTORY_PAGE_SIZE'])) { ?>
             <button id="mindbox-bonus-more" class="mindbox-bonus-more" data-page="1">Загрузить еще</button>
         <?php } ?>
     </div>
