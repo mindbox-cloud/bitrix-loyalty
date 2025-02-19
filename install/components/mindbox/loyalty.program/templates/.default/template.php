@@ -14,28 +14,26 @@
 <?php if ($arResult['history']) { ?>
     <div class="mindbox-history">
         <div class="mindbox-history__title">История начисления и списания бонусов</div>
-        <div class="mindbox-history__list">
-            <?php foreach ($arResult['history'] as $item) { ?>
-                <div>
-                <span>
-                    <?= $item['name'] ?>
-                </span><br>
-                    <span class="mindbox-history__date">
-                    <?= $item['date'] ?>
-                </span>
-                </div>
-                <div>
-                    <?= $item['sum_format'] ?>
-                </div>
-                <div>
-                <span class="mindbox-history__spend">
-                    <?= $item['is_positive'] ? '+' : '' ?><?= $item['size_format'] ?>
-                </span>
-                </div>
-            <?php } ?>
-        </div>
+        <table class="mindbox-history__list">
+            <tr>
+                <th>Дата</th>
+                <th>Размер изменения</th>
+                <th>Причина</th>
+                <th>Дата сгорания</th>
+            </tr>
+            <tbody>
+                <?php foreach ($arResult['history'] as $item) { ?>
+                    <tr>
+                        <td><?=$item['start']?></td>
+                        <td><?=$item['size']?></td>
+                        <td><?=$item['name']?></td>
+                        <td><?=$item['end']?></td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
         <?php if(count($arResult['history']) !== intval($arParams['HISTORY_PAGE_SIZE'])) { ?>
-            <button id="mindbox-bonus-more" data-page="1">Загрузить еще</button>
+            <button id="mindbox-bonus-more" class="mindbox-bonus-more" data-page="1">Загрузить еще</button>
         <?php } ?>
     </div>
 <?php } ?>

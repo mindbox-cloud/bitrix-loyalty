@@ -42,6 +42,8 @@ document.addEventListener('DOMContentLoaded', function(){
                         </tr>
                         `;
                     })
+                } else {
+                    moreButton.style.display = 'none';
                 }
 
                 const contentBody = document.querySelector('#mindbox-bonus-history tbody');

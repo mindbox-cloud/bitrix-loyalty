@@ -77,14 +77,12 @@ class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Co
         $result = [];
         foreach ($history as $item) {
             $result[] = [
+                'start' => date($this->arParams['HISTORY_DATE_FORMAT'], strtotime($item['start'])),
                 'name' => $item['name'],
-                "sum" => $item['size'],
-                "sum_format" => $this->getFormatPrice((int)$item['size']),
-                "date" => date($this->arParams['HISTORY_DATE_FORMAT'], strtotime($item['start'])),
-                "text" => $item['name'],
+                'end' => $item['end'],
                 'is_positive' => (int)$item['size'] >= 0,
-                'size_format' => $this->getFormatPrice((int)$item['size']),
                 'size' => $item['size'],
+                'size_format' => $this->getFormatPrice((int)$item['size']),
             ];
         }
         return $result;
