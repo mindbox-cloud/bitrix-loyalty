@@ -1,0 +1,106 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Mindbox\Loyalty\Services;
+
+use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
+use Mindbox\DTO\V3\Requests\PageRequestDTO;
+use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
+use Mindbox\Loyalty\Models\Customer;
+use Mindbox\Loyalty\Operations\GetCustomerBalanceHistory;
+use Mindbox\Loyalty\Support\SettingsFactory;
+
+class BonusService
+{
+    public static function getBonusHistory(int $userId, int $pageSize, int $page): array
+    {
+        $customer = new Customer($userId);
+
+        $customerDTO = new CustomerRequestDTO([
+            'ids' => $customer->getIds()
+        ]);
+
+        $pageDTO = new PageRequestDTO();
+        $pageDTO->setItemsPerPage($pageSize);
+        $pageDTO->setPageNumber($page);
+
+        $operation = new GetCustomerBalanceHistory();
+        try {
+            $response = $operation->execute($customerDTO, $pageDTO);
+        } catch (ErrorCallOperationException $e) {
+            return [];
+        }
+
+        $result = $response->getResult();
+
+        if ($result->getStatus() !== 'Success') {
+            return [];
+        }
+
+        if (!$result->getCustomerActions()) {
+            return [];
+        }
+
+        $settings = SettingsFactory::create();
+
+        $bitrixOrderIdKey = $settings->getExternalOrderId();
+        if ($bitrixOrderIdKey) {
+            $bitrixOrderIdKey = lcfirst($bitrixOrderIdKey) . 'Id';
+        }
+
+        $history = [];
+        foreach ($result->getCustomerActions() as $action) {
+            foreach ($action->getCustomerBalanceChanges() as $customerBalanceChanges) {
+                if (!$customerBalanceChanges->getField('isAvailable')) {
+                    continue;
+                }
+
+                $comment = $customerBalanceChanges->getField('comment');
+                $isPositive = (int)$customerBalanceChanges->getField('changeAmount') > 0;
+                if (empty($comment)) {
+                    $type = $customerBalanceChanges->getField('balanceChangeKind')->getField('systemName');
+                    $orderData = $action->getOrder();
+
+                    $comment = '';
+                    $orderId = false;
+
+                    if ($bitrixOrderIdKey && !empty($orderData) && is_object($orderData)) {
+                        $orderIds = $orderData->getField('ids');
+
+                        if (array_key_exists($bitrixOrderIdKey, $orderIds)) {
+                            $orderId = str_replace('test-', '', $orderIds[$bitrixOrderIdKey]);
+                        }
+                    }
+
+                    if ($type === 'RetailOrderBonus') {
+                        if ($isPositive) {
+                            $comment = 'Начисление бонусов за заказ ';
+                        } else {
+                            $comment = 'Списание бонусов за заказ ';
+                        }
+                    } elseif ($type === 'RetailOrderPayment') {
+                        if ($isPositive) {
+                            $comment = 'Оплата заказа ';
+                        } else {
+                            $comment = 'Списание бонусов за заказ ';
+                        }
+                    }
+
+                    if (!empty($comment) && $orderId) {
+                        $comment .= 'Заказ №' . $orderId;
+                    }
+                }
+
+                $history[] = [
+                    'start' => $action->getDateTimeUtc(),
+                    'size' => $customerBalanceChanges->getChangeAmount(),
+                    'name' => $comment,
+                    'end' => $isPositive ? $customerBalanceChanges->getExpirationDateTimeUtc() : ''
+                ];
+            }
+        }
+
+        return $history;
+    }
+}

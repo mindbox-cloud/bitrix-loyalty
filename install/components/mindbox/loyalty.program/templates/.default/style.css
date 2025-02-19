@@ -1,0 +1,36 @@
+.mindbox-history__title {
+    color: #0A0A0A;
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 47px;
+}
+
+.mindbox-history table {
+    width: 100%;
+}
+
+.mindbox-history table tr td {
+    vertical-align: top;
+}
+
+.mindbox-history__date {
+    color: #88888C;
+    font-size: 12px;
+}
+
+.mindbox-history__list {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr;
+}
+
+.mindbox-history__spend {
+    position: relative;
+}
+
+.mindbox-history__icon {
+    position: absolute;
+    right: -26px;
+    top: -2px;
+    width: 22px;
+    height: 22px;
+}
