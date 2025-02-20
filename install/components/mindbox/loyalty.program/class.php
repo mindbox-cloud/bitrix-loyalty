@@ -75,6 +75,7 @@ class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Co
     {
         $history = BonusService::getBonusHistory($this->userId, (int)$this->arParams['HISTORY_PAGE_SIZE'], $page);
         $result = [];
+
         foreach ($history as $item) {
             $result[] = [
                 'start' => date($this->arParams['HISTORY_DATE_FORMAT'], strtotime($item['start'])),
