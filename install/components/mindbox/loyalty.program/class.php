@@ -4,9 +4,12 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 use Bitrix\Main\ErrorableImplementation;
 use Bitrix\Main\Loader;
+use Bitrix\Main\Localization\Loc;
 use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Services\BonusService;
 use Mindbox\Loyalty\Services\LoyaltyService;
+
+Loc::loadMessages(__FILE__);
 
 class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Contract\Controllerable
 {
@@ -19,9 +22,7 @@ class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Co
     private $userId;
     private $customerInfo;
 
-    private static array $listInMonth = [
-        'Январе', 'Феврале', 'Марте', 'Апреле', 'Мае', 'Июне', 'Июле', 'Августе', 'Сентябре', 'Октябре', 'Ноябре', 'Декабре'
-    ];
+    private static array $listInMonth = [];
 
     private const PAGE_SIZE_DEFAULT = 20;
 
@@ -30,6 +31,7 @@ class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Co
     {
         global $USER;
         parent::__construct($component);
+        self::setListInMonth();
         $this->userId = (int)$USER->getId();
     }
 
@@ -55,9 +57,13 @@ class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Co
 
         $this->setCustomerInfo();
 
-        $this->arResult['history'] = $this->getHistory();
+        if ($this->arParams['HISTORY_ENABLE'] === 'Y') {
+            $this->arResult['history'] = $this->getHistory();
+        }
         $this->arResult['bonuses'] = $this->getBalance();
-        $this->arResult['loyalty'] = $this->getLoyalty();
+        if ($this->arParams['LOYALTY_ENABLE'] === 'Y') {
+            $this->arResult['loyalty'] = $this->getLoyalty();
+        }
 
         return $this->includeComponentTemplate();
     }
@@ -111,6 +117,10 @@ class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Co
 
     private function getBalance(): array
     {
+        if (!$this->customerInfo) {
+            return [];
+        }
+
         $arBalance = $this->customerInfo->getResult()->getBalances()?->getFieldsAsArray()[0];
         return [
             'available' => $arBalance['available'],
@@ -131,6 +141,10 @@ class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Co
 
     private function getPurchases(): array
     {
+        if (!$this->customerInfo) {
+            return [];
+        }
+
         $totalPaidAmount = (int)floor($this->customerInfo->getResult()->getFieldsAsArray()['retailOrderStatistics']['totalPaidAmount']);
         return [
             'total' => $totalPaidAmount,
@@ -143,6 +157,10 @@ class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Co
         if (empty($this->arParams['SEGMENTS'])) {
             return [];
         }
+        if (!$this->customerInfo) {
+            return [];
+        }
+
         $pricePaid = (int)floor($this->customerInfo->getResult()->getFieldsAsArray()['retailOrderStatistics']['totalPaidAmount']);
         $result = [];
         $keyLevel = 0;
@@ -162,13 +180,14 @@ class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Co
             $result['name'] = $this->arParams['LEVEL_NAMES_LOYALTY'][$keyLevel + 1];
         }
 
-        $result['month'] = self::$listInMonth[date('n', strtotime('now +1 month'))];
+        $result['month'] = self::getNextMonth();
 
         return $result;
     }
 
     private function getFormatPrice(int $price)
     {
+        Loader::includeModule('currency');
         return \CCurrencyLang::CurrencyFormat($price, $this->arParams['CURRENCY_ID']);
     }
 
@@ -177,16 +196,16 @@ class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Co
         $maxCount = min(count($this->arParams['SEGMETS_LOYALTY']), count($this->arParams['LEVEL_NAMES_LOYALTY']), count($this->arParams['LEVEL_PRICES_LOYALTY']));
 
         $this->arParams['SEGMETS_LOYALTY'] = array_slice(array_filter($this->arParams['SEGMETS_LOYALTY'], fn($item) => $item !== ''), 0, $maxCount);
-        $this->arParams['~SEGMETS_LOYALTY'] = array_slice(array_filter($this->arParams['~SEGMETS_LOYALTY'], fn($item) => $item !== ''), 0, $maxCount);
         $this->arParams['LEVEL_NAMES_LOYALTY'] = array_slice(array_filter($this->arParams['LEVEL_NAMES_LOYALTY'], fn($item) => $item !== ''), 0, $maxCount);
-        $this->arParams['~LEVEL_NAMES_LOYALTY'] = array_slice(array_filter($this->arParams['~LEVEL_NAMES_LOYALTY'], fn($item) => $item !== ''), 0, $maxCount);
         $this->arParams['SEGMENTS'] = array_combine($this->arParams['SEGMETS_LOYALTY'], $this->arParams['LEVEL_NAMES_LOYALTY']);
         $this->arParams['HISTORY_PAGE_SIZE'] = (int)$this->arParams['HISTORY_PAGE_SIZE'] > 0 ? (int)$this->arParams['HISTORY_PAGE_SIZE'] : self::PAGE_SIZE_DEFAULT;
     }
 
-    public function pageAction($page)
+    public function pageAction($signedParameters, $page)
     {
         $page = (int)$page;
+        $signer = new \Bitrix\Main\Component\ParameterSigner();
+        $this->arParams = $signer->unsignParameters($this->getName(), $signedParameters);
         $size = $this->arParams['HISTORY_PAGE_SIZE'] ?? 20;
 
         try {
@@ -205,5 +224,20 @@ class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Co
                 'error' => $e->getMessage()
             ];
         }
+    }
+
+    private static function getNextMonth(): string
+    {
+        return self::$listInMonth[date('n', strtotime('now +1 month'))];
+    }
+
+    private function setListInMonth()
+    {
+        self::$listInMonth = explode(',', \Bitrix\Main\Localization\Loc::getMessage('LIST_IN_MONTH'));
+    }
+
+    protected function listKeysSignedParameters(): array
+    {
+        return ['HISTORY_PAGE_SIZE'];
     }
 }

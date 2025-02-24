@@ -5,6 +5,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) {
 
 use Bitrix\Main\Loader;
 use Bitrix\Currency;
+use Bitrix\Main\Localization\Loc;
 
 if (!Loader::includeModule('iblock'))
 {
@@ -16,17 +17,24 @@ $arComponentParameters = [
     "GROUPS" => [
         "LOYALTY" => [
             "SORT" => 100,
-            "NAME" => 'Лояльность',
+            "NAME" => Loc::getMessage('LOYALTY'),
         ],
         "HISTORY_BONUSES" => [
             "SORT" => 200,
-            "NAME" => 'История бонусов',
+            "NAME" => Loc::getMessage('HISTORY_BONUSES'),
         ],
     ],
     "PARAMETERS" => [
+        "HISTORY_ENABLE" => [
+            "PARENT" => "HISTORY_BONUSES",
+            "NAME" => Loc::getMessage('HISTORY_ENABLE'),
+            "TYPE" => "CHECKBOX",
+            "MULTIPLE" => "N",
+            "DEFAULT" => "N",
+        ],
         'CURRENCY_ID' => [
             'PARENT' => 'BASE',
-            'NAME' => 'Валюта',
+            'NAME' => Loc::getMessage('CURRENCY_ID'),
             'TYPE' => 'LIST',
             'VALUES' => Currency\CurrencyManager::getCurrencyList(),
             'DEFAULT' => Currency\CurrencyManager::getBaseCurrency(),
@@ -34,15 +42,22 @@ $arComponentParameters = [
         ],
         "HISTORY_PAGE_SIZE" => [
             "PARENT" => "HISTORY_BONUSES",
-            "NAME" => "Количество на страницы",
+            "NAME" => Loc::getMessage('HISTORY_PAGE_SIZE'),
             "TYPE" => "NUMBER",
             "MULTIPLE" => "N",
             "DEFAULT" => "20",
         ],
-        "HISTORY_DATE_FORMAT" => CIBlockParameters::GetDateFormat('Формат даты', "HISTORY_BONUSES"),
+        "HISTORY_DATE_FORMAT" => CIBlockParameters::GetDateFormat(Loc::getMessage('HISTORY_DATE_FORMAT'), "HISTORY_BONUSES"),
+        "LOYALTY_ENABLE" => [
+            "PARENT" => "HISTORY_BONUSES",
+            "NAME" => Loc::getMessage('LOYALTY_ENABLE'),
+            "TYPE" => "CHECKBOX",
+            "MULTIPLE" => "N",
+            "DEFAULT" => "N",
+        ],
         'LEVEL_NAMES_LOYALTY' => [
             "PARENT" => 'LOYALTY',
-            "NAME" => 'Названия уровней',
+            "NAME" => Loc::getMessage('LEVEL_NAMES_LOYALTY'),
             "TYPE" => "STRING",
             "MULTIPLE" => "Y",
             "ADDITIONAL_VALUES" => "Y",
@@ -51,7 +66,7 @@ $arComponentParameters = [
         ],
         'SEGMETS_LOYALTY' => [
             "PARENT" => 'LOYALTY',
-            "NAME" => 'Идентификаторы сегментов',
+            "NAME" => Loc::getMessage('SEGMETS_LOYALTY'),
             "TYPE" => "STRING",
             "MULTIPLE" => "Y",
             "ADDITIONAL_VALUES" => "Y",
@@ -60,7 +75,7 @@ $arComponentParameters = [
         ],
         'LEVEL_PRICES_LOYALTY' => [
             "PARENT" => 'LOYALTY',
-            "NAME" => 'Ценовые уровни',
+            "NAME" => Loc::getMessage('LEVEL_PRICES_LOYALTY'),
             "TYPE" => "STRING",
             "MULTIPLE" => "Y",
             "ADDITIONAL_VALUES" => "Y",

@@ -8,15 +8,19 @@ use Mindbox\DTO\DTO;
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
+use Mindbox\MindboxRequest;
 use Mindbox\MindboxResponse;
 use Mindbox\Responses\MindboxBalanceResponse;
 
 class GetPointsPerProducts extends AbstractOperation
 {
+    private ?MindboxRequest $request = null;
+    private ?MindboxResponse $response = null;
+
     /**
      * @throws ErrorCallOperationException
      */
-    public function execute(array $productList, CustomerRequestDTO $customerRequestDTO): MindboxResponse
+    public function execute(array $productList, CustomerRequestDTO $customerRequestDTO): void
     {
         try {
             $operation = $this->getOperation();
@@ -29,7 +33,7 @@ class GetPointsPerProducts extends AbstractOperation
 
             $client->setResponseType(MindboxBalanceResponse::class);
 
-            $client->prepareRequest(
+            $this->request = $client->prepareRequest(
                 method: 'POST',
                 operationName: $operation,
                 body: new DTO($data),
@@ -37,9 +41,8 @@ class GetPointsPerProducts extends AbstractOperation
                 addDeviceUUID: false
             )->getRequest();
 
-            $response = $client->sendRequest();
+            $this->response = $client->sendRequest();
 
-            return $response;
         } catch (MindboxClientException $e) {
             throw new ErrorCallOperationException(
                 message: sprintf('The operation %s failed', $this->getOperation()),
@@ -52,5 +55,15 @@ class GetPointsPerProducts extends AbstractOperation
     protected function operation(): string
     {
         return 'GetPointsPerProducts';
+    }
+
+    public function getRequest(): ?MindboxRequest
+    {
+        return $this->request;
+    }
+
+    public function getResponse(): ?MindboxResponse
+    {
+        return $this->response;
     }
 }

@@ -61,10 +61,11 @@ class LoyaltyService
 
     protected function getNameBySegment(?string $segmentExternalId): string
     {
-        if ($name = $this->segments[$segmentExternalId]) {
-            return $name;
+        if ($segmentExternalId === null || !array_key_exists($segmentExternalId, $this->segments)) {
+            return current($this->segments);
         }
 
-        return current($this->segments);
+        return $this->segments[$segmentExternalId];
+
     }
 }

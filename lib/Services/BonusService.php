@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Services;
 
+use Bitrix\Main\Localization\Loc;
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\DTO\V3\Requests\PageRequestDTO;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
@@ -11,7 +12,7 @@ use Mindbox\Loyalty\Models\Customer;
 use Mindbox\Loyalty\Operations\GetCustomerBalanceHistory;
 use Mindbox\Loyalty\Support\SettingsFactory;
 
-class BonusService
+final class BonusService
 {
     public static function getBonusHistory(int $userId, int $pageSize, int $page): array
     {
@@ -75,20 +76,20 @@ class BonusService
 
                     if ($type === 'RetailOrderBonus') {
                         if ($isPositive) {
-                            $comment = 'Начисление бонусов за заказ ';
+                            $comment = Loc::getMessage('MINDBOX_LOYALTY_BONUS_ADD_COMMENT');
                         } else {
-                            $comment = 'Списание бонусов за заказ ';
+                            $comment = Loc::getMessage('MINDBOX_LOYALTY_BONUS_OFF_COMMENT');
                         }
                     } elseif ($type === 'RetailOrderPayment') {
                         if ($isPositive) {
-                            $comment = 'Оплата заказа ';
+                            $comment = Loc::getMessage('MINDBOX_LOYALTY_BONUS_PAY_COMMENT');
                         } else {
-                            $comment = 'Списание бонусов за заказ ';
+                            $comment = Loc::getMessage('MINDBOX_LOYALTY_BONUS_OFF_COMMENT');
                         }
                     }
 
                     if (!empty($comment) && $orderId) {
-                        $comment .= 'Заказ №' . $orderId;
+                        $comment .= Loc::getMessage('MINDBOX_LOYALTY_BONUS_ORDER_LABEL') . $orderId;
                     }
                 }
 
