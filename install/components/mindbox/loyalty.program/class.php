@@ -11,7 +11,7 @@ use Mindbox\Loyalty\Services\LoyaltyService;
 
 Loc::loadMessages(__FILE__);
 
-class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Contract\Controllerable
+class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Contract\Controllerable
 {
     use ErrorableImplementation;
 
@@ -198,10 +198,10 @@ class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Co
             $this->arParams['LEVEL_NAMES_LOYALTY'] = [];
             $this->arParams['SEGMENTS'] = [];
         } else {
-            $maxCount = min(count($this->arParams['SEGMETS_LOYALTY']), count($this->arParams['LEVEL_NAMES_LOYALTY']), count($this->arParams['LEVEL_PRICES_LOYALTY']));
+            $minCount = min(count($this->arParams['SEGMETS_LOYALTY']), count($this->arParams['LEVEL_NAMES_LOYALTY']), count($this->arParams['LEVEL_PRICES_LOYALTY']));
 
-            $this->arParams['SEGMETS_LOYALTY'] = array_slice(array_filter($this->arParams['SEGMETS_LOYALTY'], fn($item) => $item !== ''), 0, $maxCount);
-            $this->arParams['LEVEL_NAMES_LOYALTY'] = array_slice(array_filter($this->arParams['LEVEL_NAMES_LOYALTY'], fn($item) => $item !== ''), 0, $maxCount);
+            $this->arParams['SEGMETS_LOYALTY'] = array_slice(array_filter($this->arParams['SEGMETS_LOYALTY'], fn($item) => $item !== ''), 0, $minCount);
+            $this->arParams['LEVEL_NAMES_LOYALTY'] = array_slice(array_filter($this->arParams['LEVEL_NAMES_LOYALTY'], fn($item) => $item !== ''), 0, $minCount);
             $this->arParams['SEGMENTS'] = array_combine($this->arParams['SEGMETS_LOYALTY'], $this->arParams['LEVEL_NAMES_LOYALTY']);
         }
         $this->arParams['HISTORY_PAGE_SIZE'] = (int)$this->arParams['HISTORY_PAGE_SIZE'] > 0 ? (int)$this->arParams['HISTORY_PAGE_SIZE'] : self::PAGE_SIZE_DEFAULT;
