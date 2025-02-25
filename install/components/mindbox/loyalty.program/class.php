@@ -121,7 +121,8 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
             return [];
         }
 
-        $arBalance = $this->customerInfo->getResult()->getBalances()?->getFieldsAsArray()[0];
+        $balanceFields = $this->customerInfo->getResult()->getBalances()?->getFieldsAsArray();
+        $arBalance = is_array($balanceFields) ? reset($balanceFields) : [];
         return [
             'available' => $arBalance['available'],
             'available_format' => $this->getFormatPrice((int)$arBalance['available']),
