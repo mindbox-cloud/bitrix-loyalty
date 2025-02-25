@@ -103,6 +103,28 @@ class OrderMindbox
         }
     }
 
+    public function getPromocodes(): array
+    {
+        $propertyCoupon = $this->order->getPropertyCollection()->getItemByOrderPropertyCode(\Mindbox\Loyalty\PropertyCodeEnum::PROPERTIES_MINDBOX_PROMOCODES);
+
+        if (!$propertyCoupon instanceof \Bitrix\Sale\PropertyValue || empty($propertyCoupon->getValue())) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($propertyCoupon->getValue() as $coupon) {
+            if (trim($coupon)) {
+                $result[] = [
+                    'ids' => [
+                        'code' => trim($coupon)
+                    ]
+                ];
+            }
+        }
+
+        return $result;
+    }
+
     public function getCoupons(): array
     {
         $propertyCoupon = $this->order->getPropertyCollection()->getItemByOrderPropertyCode(PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE);
@@ -110,6 +132,7 @@ class OrderMindbox
         if (!$propertyCoupon instanceof \Bitrix\Sale\PropertyValue || empty($propertyCoupon->getValue())) {
             return [];
         }
+
         $coupons = explode(',', $propertyCoupon->getValue());
         $result = [];
         foreach ($coupons as $coupon) {
@@ -252,7 +275,7 @@ class OrderMindbox
             'lines' => $this->getLines()->getData(),
             'customFields' => $this->getCustomFields(),
             'payments' => $this->getPayments(),
-            'coupons' => $this->getCoupons(),
+            'coupons' => array_merge($this->getCoupons(), $this->getPromocodes()),
             'bonusPoints' => $this->getBonusPoints(),
             'deliveryCost' => $this->getDeliveryCost(),
             'email' => $this->getEmail(),
