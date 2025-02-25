@@ -28,7 +28,7 @@ use Bitrix\Main\Localization\Loc;
 <?php if ($arResult['history']) { ?>
     <div class="mindbox-history">
         <div class="mindbox-history__title"><?= Loc::getMessage('HISTORY_LIST_TITLE') ?></div>
-        <table class="mindbox-history__list">
+        <table class="mindbox-history__list" id="mindbox-bonus-history">
             <tr>
                 <th><?= Loc::getMessage('HISTORY_LIST_DATE') ?></th>
                 <th><?= Loc::getMessage('HISTORY_LIST_SIZE') ?></th>
