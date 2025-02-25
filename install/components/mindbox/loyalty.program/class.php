@@ -193,11 +193,17 @@ class LoyaltyProgramm extends CBitrixComponent implements \Bitrix\Main\Engine\Co
 
     private function prepareParams(): void
     {
-        $maxCount = min(count($this->arParams['SEGMETS_LOYALTY']), count($this->arParams['LEVEL_NAMES_LOYALTY']), count($this->arParams['LEVEL_PRICES_LOYALTY']));
+        if (!is_array($this->arParams['SEGMETS_LOYALTY']) || !is_array($this->arParams['LEVEL_NAMES_LOYALTY']) || !is_array($this->arParams['LEVEL_PRICES_LOYALTY'])) {
+            $this->arParams['SEGMETS_LOYALTY'] = [];
+            $this->arParams['LEVEL_NAMES_LOYALTY'] = [];
+            $this->arParams['SEGMENTS'] = [];
+        } else {
+            $maxCount = min(count($this->arParams['SEGMETS_LOYALTY']), count($this->arParams['LEVEL_NAMES_LOYALTY']), count($this->arParams['LEVEL_PRICES_LOYALTY']));
 
-        $this->arParams['SEGMETS_LOYALTY'] = array_slice(array_filter($this->arParams['SEGMETS_LOYALTY'], fn($item) => $item !== ''), 0, $maxCount);
-        $this->arParams['LEVEL_NAMES_LOYALTY'] = array_slice(array_filter($this->arParams['LEVEL_NAMES_LOYALTY'], fn($item) => $item !== ''), 0, $maxCount);
-        $this->arParams['SEGMENTS'] = array_combine($this->arParams['SEGMETS_LOYALTY'], $this->arParams['LEVEL_NAMES_LOYALTY']);
+            $this->arParams['SEGMETS_LOYALTY'] = array_slice(array_filter($this->arParams['SEGMETS_LOYALTY'], fn($item) => $item !== ''), 0, $maxCount);
+            $this->arParams['LEVEL_NAMES_LOYALTY'] = array_slice(array_filter($this->arParams['LEVEL_NAMES_LOYALTY'], fn($item) => $item !== ''), 0, $maxCount);
+            $this->arParams['SEGMENTS'] = array_combine($this->arParams['SEGMETS_LOYALTY'], $this->arParams['LEVEL_NAMES_LOYALTY']);
+        }
         $this->arParams['HISTORY_PAGE_SIZE'] = (int)$this->arParams['HISTORY_PAGE_SIZE'] > 0 ? (int)$this->arParams['HISTORY_PAGE_SIZE'] : self::PAGE_SIZE_DEFAULT;
     }
 

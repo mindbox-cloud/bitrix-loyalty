@@ -8,7 +8,7 @@ use Bitrix\Main\Localization\Loc;
 /** @var array $arParams */
 ?>
 <div>
-    <div><?= Loc::getMessage('BONUS_TOTAL_COUNT', ['f'=>'12312']) ?> <strong><?= $arResult['bonuses']['available_format'] ?></strong></div>
+    <div><?= Loc::getMessage('BONUS_TOTAL_COUNT') ?> <strong><?= $arResult['bonuses']['available_format'] ?></strong></div>
 </div>
 
 <?php if (isset($arResult['loyalty']['next_level']['name']) && $arResult['loyalty']['next_level']['name'] !== '') { ?>

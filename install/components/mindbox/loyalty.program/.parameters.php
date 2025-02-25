@@ -12,6 +12,7 @@ if (!Loader::includeModule('iblock'))
     return;
 }
 Loader::includeModule('catalog');
+Loader::includeModule('currency');
 
 $arComponentParameters = [
     "GROUPS" => [
