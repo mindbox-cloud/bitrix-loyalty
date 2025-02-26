@@ -217,7 +217,7 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
 
         try {
             $history = $this->getHistory($page);
-            $showMore = count($history) === intval($size);
+            $showMore = count($history) !== 0;
 
             return [
                 'type' => 'success',

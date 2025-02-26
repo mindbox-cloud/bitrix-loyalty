@@ -46,11 +46,9 @@ use Bitrix\Main\Localization\Loc;
             <?php } ?>
             </tbody>
         </table>
-        <?php if (count($arResult['history']) === intval($arParams['HISTORY_PAGE_SIZE'])) { ?>
-            <button id="mindbox-bonus-more" class="mindbox-bonus-more" data-page="1">
-                <?= Loc::getMessage('HISTORY_LIST_MORE') ?>
-            </button>
-        <?php } ?>
+        <button id="mindbox-bonus-more" class="mindbox-bonus-more" data-page="1">
+            <?= Loc::getMessage('HISTORY_LIST_MORE') ?>
+        </button>
     </div>
 <?php } ?>
 
