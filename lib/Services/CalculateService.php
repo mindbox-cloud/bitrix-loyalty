@@ -94,22 +94,31 @@ class CalculateService
         }
 
         // проверяем, применение промокода
-        $this->sessionStorage->setPromocodeError('');
         if (isset($orderData['couponsInfo']) && is_array($orderData['couponsInfo'])) {
-            $couponsInfo = current($orderData['couponsInfo']);
-            if ($couponsInfo['coupon']['status'] === 'NotFound') {
-                $setCouponError = Loc::getMessage('MINDBOX_LOYALTY_COUPON_NOT_FOUND');
-            } elseif ($couponsInfo['coupon']['status'] === 'CanNotBeUsedForCurrentOrder') {
-                $setCouponError = Loc::getMessage('MINDBOX_LOYALTY_COUPON_CAN_NOT_BE_USER');
-            } elseif ($couponsInfo['coupon']['status'] === 'Used') {
-                $setCouponError = Loc::getMessage('MINDBOX_LOYALTY_COUPON_USED');
-            }
+            $index = 0;
+            foreach ($orderData['couponsInfo'] as $couponInfo) {
+                $setCouponError = null;
+                $couponCode = $couponInfo['coupon']['ids']['code'];
 
-            if ($setCouponError !== null) {
-                $this->sessionStorage->setPromocodeError($setCouponError);
-            }
+                if ($couponInfo['coupon']['status'] === 'NotFound') {
+                    $setCouponError = Loc::getMessage('MINDBOX_LOYALTY_COUPON_NOT_FOUND');
+                } elseif ($couponInfo['coupon']['status'] === 'CanNotBeUsedForCurrentOrder') {
+                    $setCouponError = Loc::getMessage('MINDBOX_LOYALTY_COUPON_CAN_NOT_BE_USER');
+                } elseif ($couponInfo['coupon']['status'] === 'Used') {
+                    $setCouponError = Loc::getMessage('MINDBOX_LOYALTY_COUPON_USED');
+                }
 
-            unset($couponsInfo, $setCouponError);
+                if ($setCouponError !== null && $index === 0) {
+                    $this->sessionStorage->setPromocodeError($setCouponError);
+                }
+
+                $this->sessionStorage->setPromocodeData($couponCode, [
+                    'apply' => $setCouponError === null,
+                    'error' => $setCouponError
+                ]);
+                $index++;
+                unset($couponsInfo, $setCouponError, $couponCode);
+            }
         }
 
         /** функционал применения скидки на корзину Mindbox  */
@@ -190,20 +199,30 @@ class CalculateService
         $mindboxOrder = new OrderMindbox($order, $settings);
         $customer = new Customer((int) $order->getField('USER_ID'));
 
-        /** @var CalculateCartAdmin $calculateCartAdmin */
-        $calculateCartAdmin = $this->serviceLocator->get('mindboxLoyalty.calculateCartAdmin');
+        $orderData = array_filter([
+            'ids' => $mindboxOrder->getIds(),
+            'deliveryCost' => $mindboxOrder->getDeliveryCost(),
+            'lines' => $mindboxOrder->getLines()->getData(),
+            'customFields' => $mindboxOrder->getCustomFields(),
+            'payments' => $mindboxOrder->getPayments(),
+            'bonusPoints' => $mindboxOrder->getBonusPoints(),
+            'coupons' => array_merge($mindboxOrder->getCoupons(), $mindboxOrder->getPromocodes()),
+            'email' => $mindboxOrder->getEmail(),
+            'mobilePhone' => $mindboxOrder->getMobilePhone(),
+        ]);
 
-        $customerDTO = new \Mindbox\DTO\V3\Requests\CustomerRequestDTO();
-        $customerDTO->setIds($customer->getIds());
-        $customerDTO->setMobilePhone($customer->getMobilePhone());
-        $customerDTO->setEmail($customer->getEmail());
-
-        $orderData = $mindboxOrder->getData();
-        unset($orderData['totalPrice']);
+        $customerData = array_filter([
+            'ids' => $customer->getIds(),
+            'email' => $customer->getEmail(),
+            'mobilePhone' => $customer->getMobilePhone(),
+        ]);
 
         $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
         $DTO->setOrder($orderData);
-        $DTO->setCustomer($customerDTO);
+        $DTO->setCustomer($customerData);
+
+        /** @var CalculateCartAdmin $calculateCartAdmin */
+        $calculateCartAdmin = $this->serviceLocator->get('mindboxLoyalty.calculateCartAdmin');
 
         return $calculateCartAdmin->execute($DTO);
     }
@@ -217,25 +236,27 @@ class CalculateService
         /** @var CalculateAuthorizedCart $calculateAuthorizedCart */
         $calculateAuthorizedCart = $this->serviceLocator->get('mindboxLoyalty.calculateAuthorizedCart');
 
-        if ($this->sessionStorage->isPromocodeUsed()) {
-            $mindboxOrder->setCoupons($this->sessionStorage->getPromocodeValue());
-        }
+        $orderData = array_filter([
+            'ids' => $mindboxOrder->getIds(),
+            'deliveryCost' => $mindboxOrder->getDeliveryCost(),
+            'lines' => $mindboxOrder->getLines()->getData(),
+            'customFields' => $mindboxOrder->getCustomFields(),
+            'payments' => $mindboxOrder->getPayments(),
+            'bonusPoints' => $mindboxOrder->getBonusPoints(),
+            'coupons' => array_merge($mindboxOrder->getCoupons(), $mindboxOrder->getPromocodes()),
+            'email' => $mindboxOrder->getEmail(),
+            'mobilePhone' => $mindboxOrder->getMobilePhone(),
+        ]);
 
-        if ($this->sessionStorage->isBonusesUsed()) {
-            $mindboxOrder->setBonuses($this->sessionStorage->getPayBonuses());
-        }
-
-        $customerDTO = new \Mindbox\DTO\V3\Requests\CustomerRequestDTO();
-        $customerDTO->setIds($customer->getIds());
-        $customerDTO->setMobilePhone($customer->getMobilePhone());
-        $customerDTO->setEmail($customer->getEmail());
-
-        $orderData = $mindboxOrder->getData();
-        unset($orderData['totalPrice']);
+        $customerData = array_filter([
+            'ids' => $customer->getIds(),
+            'email' => $customer->getEmail(),
+            'mobilePhone' => $customer->getMobilePhone(),
+        ]);
 
         $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
         $DTO->setOrder($orderData);
-        $DTO->setCustomer($customerDTO);
+        $DTO->setCustomer($customerData);
 
         return $calculateAuthorizedCart->execute($DTO);
     }
@@ -246,18 +267,22 @@ class CalculateService
 
         $mindboxOrder = new OrderMindbox($order, $settings);
 
-        /** @var CalculateUnauthorizedCart $calculateUnauthorizedCart */
-        $calculateUnauthorizedCart = $this->serviceLocator->get('mindboxLoyalty.calculateUnauthorizedCart');
-
-        if ($this->sessionStorage->isPromocodeUsed()) {
-            $mindboxOrder->setCoupons($this->sessionStorage->getPromocodeValue());
-        }
-
-        $orderData = $mindboxOrder->getData();
-        unset($orderData['totalPrice']);
+        $orderData = array_filter([
+            'ids' => $mindboxOrder->getIds(),
+            'deliveryCost' => $mindboxOrder->getDeliveryCost(),
+            'lines' => $mindboxOrder->getLines()->getData(),
+            'customFields' => $mindboxOrder->getCustomFields(),
+            'payments' => $mindboxOrder->getPayments(),
+            'coupons' => array_merge($mindboxOrder->getCoupons(), $mindboxOrder->getPromocodes()),
+            'email' => $mindboxOrder->getEmail(),
+            'mobilePhone' => $mindboxOrder->getMobilePhone(),
+        ]);
 
         $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
         $DTO->setOrder($orderData);
+
+        /** @var CalculateUnauthorizedCart $calculateUnauthorizedCart */
+        $calculateUnauthorizedCart = $this->serviceLocator->get('mindboxLoyalty.calculateUnauthorizedCart');
 
         return $calculateUnauthorizedCart->execute($DTO);
     }
@@ -312,9 +337,9 @@ class CalculateService
             $propertyBonus->setValue("");
         }
 
-        $propertyCoupon = $order->getPropertyCollection()->getItemByOrderPropertyCode(PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE);
+        $propertyCoupon = $order->getPropertyCollection()->getItemByOrderPropertyCode(PropertyCodeEnum::PROPERTIES_MINDBOX_PROMOCODES);
         if ($propertyCoupon instanceof \Bitrix\Sale\PropertyValue) {
-            $propertyCoupon->setValue("");
+            $propertyCoupon->setValue([]);
         }
 
         if ((int) $order->getField('USER_ID') > 0) {

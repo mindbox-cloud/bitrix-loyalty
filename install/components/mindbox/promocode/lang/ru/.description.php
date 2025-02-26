@@ -1,0 +1,3 @@
+<?php
+$MESS['MINDBOX_COMPONENT_PROMOCODE_NAME'] = 'Промокод';
+$MESS['MINDBOX_COMPONENT_PROMOCODE_DESCRIPTION'] = 'Компонент промокода';

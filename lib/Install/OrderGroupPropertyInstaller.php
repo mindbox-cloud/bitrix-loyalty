@@ -26,12 +26,8 @@ class OrderGroupPropertyInstaller implements InstallerInterface
         $propertiesGroupList = $this->getPropertiesGroupList();
 
         foreach ($personTypeList as $personItem) {
-            foreach ($propertiesGroupList as $propertyGroup) {
-                if ($propertyGroup['PERSON_TYPE_ID'] == $personItem['ID']
-                    && $propertyGroup['NAME'] !== PropertyCodeEnum::PROPERTIES_GROUP_NAME
-                ) {
-                    $this->addPropertyGroup(intval($personItem['ID']));
-                }
+            if (!isset($propertiesGroupList[$personItem['ID']])) {
+                $this->addPropertyGroup(intval($personItem['ID']));
             }
         }
     }
@@ -62,7 +58,7 @@ class OrderGroupPropertyInstaller implements InstallerInterface
     {
         $return = [];
         $getGroups = \CSaleOrderPropsGroup::GetList([], [
-            '=NAME' => PropertyCodeEnum::PROPERTIES_GROUP_NAME
+            'NAME' => PropertyCodeEnum::PROPERTIES_GROUP_NAME
         ]);
 
         while ($item = $getGroups->Fetch()) {

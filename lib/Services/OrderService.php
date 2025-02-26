@@ -129,7 +129,7 @@ class OrderService
             'customFields' => $mindboxOrder->getCustomFields(),
             'payments' => $mindboxOrder->getPayments(),
             'bonusPoints' => $mindboxOrder->getBonusPoints(),
-            'coupons' => $mindboxOrder->getCoupons(),
+            'coupons' => array_merge($mindboxOrder->getCoupons(), $mindboxOrder->getPromocodes()),
             'email' => $mindboxOrder->getEmail(),
             'mobilePhone' => $mindboxOrder->getMobilePhone(),
         ]);
@@ -172,7 +172,7 @@ class OrderService
             'customFields' => $mindboxOrder->getCustomFields(),
             'payments' => $mindboxOrder->getPayments(),
             'bonusPoints' => $mindboxOrder->getBonusPoints(),
-            'coupons' => $mindboxOrder->getCoupons(),
+            'coupons' => array_merge($mindboxOrder->getCoupons(), $mindboxOrder->getPromocodes()),
             'email' => $mindboxOrder->getEmail(),
             'mobilePhone' => $mindboxOrder->getMobilePhone(),
         ]);
@@ -215,7 +215,7 @@ class OrderService
             'lines' => $mindboxOrder->getLines()->getData(),
             'customFields' => $mindboxOrder->getCustomFields(),
             'payments' => $mindboxOrder->getPayments(),
-            'coupons' => $mindboxOrder->getCoupons(),
+            'coupons' => array_merge($mindboxOrder->getCoupons(), $mindboxOrder->getPromocodes()),
             'email' => $mindboxOrder->getEmail(),
             'mobilePhone' => $mindboxOrder->getMobilePhone(),
         ]);
@@ -356,6 +356,8 @@ class OrderService
 
         $customerData = array_filter([
             'ids' => $customer->getIds(),
+            'email' => $customer->getEmail(),
+            'mobilePhone' => $customer->getMobilePhone(),
         ]);
 
         $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
@@ -478,7 +480,12 @@ class OrderService
             $clearCart->setSettings($settings);
 
             $customer = new Customer((int)$order->getUserId());
-            $clearCart->execute(new DTO(['customer' => ['ids' => $customer->getIds()]]));
+
+            $clearCart->execute(new DTO(['customer' => array_filter([
+                'ids' => $customer->getIds(),
+                'email' => $customer->getEmail(),
+                'mobilePhone' => $customer->getMobilePhone(),
+            ])]));
 
             return true;
         } catch (MindboxClientException $e) {

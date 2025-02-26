@@ -81,7 +81,7 @@ class OrderPropertyInstaller implements InstallerInterface
     {
         $return = [];
         $getGroups = \CSaleOrderPropsGroup::GetList([], [
-            '=NAME' => PropertyCodeEnum::PROPERTIES_GROUP_NAME
+            'NAME' => PropertyCodeEnum::PROPERTIES_GROUP_NAME
         ]);
 
         while ($item = $getGroups->Fetch()) {
@@ -114,7 +114,7 @@ class OrderPropertyInstaller implements InstallerInterface
      */
     private function getMindboxProperiesCodes()
     {
-        return [PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE, PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS, PropertyCodeEnum::PROPERTIES_MINDBOX_ORDER_ID];
+        return [PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE, PropertyCodeEnum::PROPERTIES_MINDBOX_PROMOCODES, PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS, PropertyCodeEnum::PROPERTIES_MINDBOX_ORDER_ID];
     }
 
     private function addProperty($fields)
@@ -137,6 +137,14 @@ class OrderPropertyInstaller implements InstallerInterface
                 'CODE' => PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE,
                 'REQUIED' => 'N',
                 'UTIL' => 'Y'
+            ],
+            PropertyCodeEnum::PROPERTIES_MINDBOX_PROMOCODES => [
+                'NAME' => Loc::getMessage('MINDBOX_LOYALTY_PROPERTY_PROMOCODES'),
+                'TYPE' => 'TEXT',
+                'CODE' => PropertyCodeEnum::PROPERTIES_MINDBOX_PROMOCODES,
+                'REQUIED' => 'N',
+                'UTIL' => 'Y',
+                'MULTIPLE' => 'Y'
             ],
             PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS => [
                 'NAME' => Loc::getMessage('MINDBOX_LOYALTY_PROPERTY_MINDBOX_BONUS_NAME'),
