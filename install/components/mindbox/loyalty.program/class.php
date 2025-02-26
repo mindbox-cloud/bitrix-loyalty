@@ -245,6 +245,6 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
 
     protected function listKeysSignedParameters(): array
     {
-        return ['HISTORY_PAGE_SIZE'];
+        return ['HISTORY_PAGE_SIZE', 'HISTORY_DATE_FORMAT'];
     }
 }

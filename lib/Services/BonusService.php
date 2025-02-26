@@ -92,9 +92,14 @@ final class BonusService
                         $comment .= Loc::getMessage('MINDBOX_LOYALTY_BONUS_ORDER_LABEL') . $orderId;
                     }
                 }
-
+                $start = '';
+                if ($action->getDateTimeUtc()) {
+                    $start = $action->getDateTimeUtc();
+                } elseif ($customerBalanceChanges->getField('availableFromDateTimeUtc')) {
+                    $start = $customerBalanceChanges->getField('availableFromDateTimeUtc');
+                }
                 $history[] = [
-                    'start' => $action->getDateTimeUtc() ? $action->getDateTimeUtc() ?: $customerBalanceChanges->getAvailableFromDateTimeUtc() : '',
+                    'start' => $start,
                     'size' => $customerBalanceChanges->getChangeAmount(),
                     'name' => $comment,
                     'end' => $isPositive ? $customerBalanceChanges->getExpirationDateTimeUtc() : ''
