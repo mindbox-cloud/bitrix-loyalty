@@ -118,10 +118,10 @@ class MindboxPromocode extends CBitrixComponent implements Controllerable, Error
                     \Bitrix\Sale\Fuser::getId(),
                     \Bitrix\Main\Context::getCurrent()->getSite()
                 );
-                $discount = \Bitrix\Sale\Discount::loadByBasket($basket);
-                $basket->refreshData([ 'PRICE' ,  'COUPONS']);
+                $discount = \Bitrix\Sale\Discount::buildFromBasket($basket, new \Bitrix\Sale\Discount\Context\Fuser($basket->getFUserId(true)));
+                $refreshStrategy = \Bitrix\Sale\Basket\RefreshFactory::create(\Bitrix\Sale\Basket\RefreshFactory::TYPE_FULL);
+                $result = $basket->refresh($refreshStrategy);
                 $discount->calculate();
-                $result = $discount->getApplyResult();
             } else {
                 SessionStorage::getInstance()->setPromocode($coupon);
             }
@@ -178,10 +178,10 @@ class MindboxPromocode extends CBitrixComponent implements Controllerable, Error
             \Bitrix\Sale\Fuser::getId(),
             \Bitrix\Main\Context::getCurrent()->getSite()
         );
-        $discount = \Bitrix\Sale\Discount::loadByBasket($basket);
-        $basket->refreshData([ 'PRICE' ,  'COUPONS']);
+        $discount = \Bitrix\Sale\Discount::buildFromBasket($basket, new \Bitrix\Sale\Discount\Context\Fuser($basket->getFUserId(true)));
+        $refreshStrategy = \Bitrix\Sale\Basket\RefreshFactory::create(\Bitrix\Sale\Basket\RefreshFactory::TYPE_FULL);
+        $result = $basket->refresh($refreshStrategy);
         $discount->calculate();
-        $result = $discount->getApplyResult();
 
         $coupons = DiscountCouponsManager::get(true, [], true, true);
 

@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         break
                     }
                     case 'apply': {
-                        const parentNode = event.target.closest.querySelector('[data-entity=mindbox-promocode]');
+                        const parentNode = event.target.closest('[data-entity=mindbox-promocode]');
                         if (!promocodeInputNode) {
                             return;
                         }

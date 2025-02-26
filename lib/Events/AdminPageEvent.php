@@ -61,6 +61,7 @@ class AdminPageEvent
         $orderPropertyIds = self::getAdditionLoyaltyOrderPropsIds();
         $bonusPropertyCode = PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS;
         $promocodePropertyCode = PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE;
+        $couponsPropertyCode = PropertyCodeEnum::PROPERTIES_MINDBOX_PROMOCODES;
 
         $orderId = (int)$_REQUEST['ID'];
         $saveButtonText = 'Применить';
@@ -97,6 +98,13 @@ class AdminPageEvent
                     propertyPromocodeInput.insertAdjacentHTML('afterend', '<br><i class="mindbox_property_promocode_info" style="margin-top: 6px;display: block;"></i> ');
                     propertyPromocodeInput.insertAdjacentHTML('afterend', saveButton);
                     
+                    let propertyCouponsId = Object.keys(mindboxPropsIds).find(key => mindboxPropsIds[key] === '{$couponsPropertyCode}');
+                    const propertyCouponsInput = document.querySelector('input[name="PROPERTIES[' + propertyCouponsId + '][0]"]');
+                    if (propertyCouponsInput) {
+                        const node = propertyCouponsInput.closest('.adm-detail-content-cell-r');
+                        node.insertAdjacentHTML('beforeEnd', saveButton);
+                    }
+                                       
                     let propertyBonusesId = Object.keys(mindboxPropsIds).find(key => mindboxPropsIds[key] === '{$bonusPropertyCode}');
                     const propertyBonusesInput = document.querySelector('input[name="PROPERTIES[' + propertyBonusesId + ']"]');
                     propertyBonusesInput.insertAdjacentHTML('afterend', '<br><i class="mindbox_property_bonuses_info" style="margin-top: 6px;display: block;">{$bonusAvailableDescription}{$bonusAvailableValue}</i> ');
@@ -143,7 +151,8 @@ HTML;
 
         $additionalPropertiesCode = [
             PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS,
-            PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE
+            PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE,
+            PropertyCodeEnum::PROPERTIES_MINDBOX_PROMOCODES
         ];
 
         $iterator = OrderPropsTable::getList([
