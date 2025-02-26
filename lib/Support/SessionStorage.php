@@ -22,6 +22,9 @@ class SessionStorage
 
     /** @var string Количество бонусов начисляемые за заказ */
     public const ORDER_EARNED_BONUSES = 'ORDER_EARNED_BONUSES';
+
+    public const PROMOCODE = 'PROMOCODE';
+
     public const PROMOCODE_VALUE = 'PROMOCODE_VALUE';
     public const PROMOCODE_ERROR = 'PROMOCODE_ERROR';
     public const MINDBOX_ORDER_ID = 'MINDBOX_ORDER_ID';
@@ -136,6 +139,54 @@ class SessionStorage
     public function getOrderEarnedBonuses(): float|int
     {
         return (float) $_SESSION[self::GROUPS][self::ORDER_EARNED_BONUSES] ?? 0;
+    }
+
+    public function setPromocode(string $promocode): void
+    {
+        if (!isset( $_SESSION[self::GROUPS][self::PROMOCODE])) {
+            $_SESSION[self::GROUPS][self::PROMOCODE] = [];
+        }
+
+        $_SESSION[self::GROUPS][self::PROMOCODE][$promocode] = [
+            'value' => $promocode,
+            'apply' => false,
+            'error' => ''
+        ];
+    }
+
+    public function setPromocodeData(string $promocode, array $data): void
+    {
+        if (!isset($_SESSION[self::GROUPS][self::PROMOCODE])) {
+            return;
+        }
+
+        if (!isset($_SESSION[self::GROUPS][self::PROMOCODE][$promocode])) {
+            return;
+        }
+
+        foreach (['apply', 'error'] as $key) {
+            if (isset($data[$key])) {
+                $_SESSION[self::GROUPS][self::PROMOCODE][$promocode][$key] = $data[$key];
+            }
+        }
+    }
+
+    public function unsetPromocode(string $promocode): void
+    {
+        if (!isset($_SESSION[self::GROUPS][self::PROMOCODE])) {
+            return;
+        }
+
+        if (!isset($_SESSION[self::GROUPS][self::PROMOCODE][$promocode])) {
+            return;
+        }
+
+        unset($_SESSION[self::GROUPS][self::PROMOCODE][$promocode]);
+    }
+
+    public function getPromocode(): array
+    {
+        return (array) $_SESSION[self::GROUPS][self::PROMOCODE];
     }
 
     /**

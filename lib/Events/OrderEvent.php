@@ -57,6 +57,30 @@ class OrderEvent
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
+        if ($order->isNew() && !Helper::isAdminSection()) {
+            if (SessionStorage::getInstance()->getPromocode() !== []) {
+                $propertyCoupon = $order->getPropertyCollection()->getItemByOrderPropertyCode(\Mindbox\Loyalty\PropertyCodeEnum::PROPERTIES_MINDBOX_PROMOCODES);
+
+                if ($propertyCoupon instanceof \Bitrix\Sale\PropertyValue) {
+                    $propertyCoupon->setValue(array_keys(SessionStorage::getInstance()->getPromocode()));
+                }
+            }
+
+            $propertyBonus = $order->getPropertyCollection()->getItemByOrderPropertyCode(PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS);
+
+            if ($propertyBonus instanceof \Bitrix\Sale\PropertyValue) {
+                $propertyBonus->setValue(SessionStorage::getInstance()->getPayBonuses());
+            }
+
+            if (!empty(SessionStorage::getInstance()->getPromocodeValue())) {
+                $propertyCoupon = $order->getPropertyCollection()->getItemByOrderPropertyCode(PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE);
+
+                if ($propertyCoupon instanceof \Bitrix\Sale\PropertyValue) {
+                    $propertyCoupon->setValue(SessionStorage::getInstance()->getPromocodeValue());
+                }
+            }
+        }
+
         $service = new CalculateService();
         try {
             $service->calculateOrder($order);
@@ -122,6 +146,29 @@ class OrderEvent
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
+        if ($order->isNew() && !Helper::isAdminSection()) {
+            if (SessionStorage::getInstance()->getPromocode() !== []) {
+                $propertyCoupon = $order->getPropertyCollection()->getItemByOrderPropertyCode(\Mindbox\Loyalty\PropertyCodeEnum::PROPERTIES_MINDBOX_PROMOCODES);
+
+                if ($propertyCoupon instanceof \Bitrix\Sale\PropertyValue) {
+                    $propertyCoupon->setValue(array_keys(SessionStorage::getInstance()->getPromocode()));
+                }
+            }
+
+            $propertyBonus = $order->getPropertyCollection()->getItemByOrderPropertyCode(PropertyCodeEnum::PROPERTIES_MINDBOX_BONUS);
+            if ($propertyBonus instanceof \Bitrix\Sale\PropertyValue) {
+                $propertyBonus->setValue(SessionStorage::getInstance()->getPayBonuses());
+            }
+
+            if (!empty(SessionStorage::getInstance()->getPromocodeValue())) {
+                $propertyCoupon = $order->getPropertyCollection()->getItemByOrderPropertyCode(PropertyCodeEnum::PROPERTIES_MINDBOX_PROMO_CODE);
+
+                if ($propertyCoupon instanceof \Bitrix\Sale\PropertyValue) {
+                    $propertyCoupon->setValue(SessionStorage::getInstance()->getPromocodeValue());
+                }
+            }
+        }
+
         if (Helper::isAdminSection()) {
             $calculateService = new CalculateService();
             try {
@@ -145,12 +192,6 @@ class OrderEvent
             if ($order->isNew()) {
                 // Временый идентификатор заказа
                 $transactionId = Transaction::getInstance()->get($order);
-            }
-
-            if ($order->isNew() && !Helper::isAdminSection()) {
-                $mindboxOrder = new OrderMindbox($order, $settings);
-                $mindboxOrder->setBonuses(SessionStorage::getInstance()->getPayBonuses());
-                $mindboxOrder->setCoupons(SessionStorage::getInstance()->getPromocodeValue());
             }
 
             $mindboxId = $service->saveOrder($order, $transactionId);
