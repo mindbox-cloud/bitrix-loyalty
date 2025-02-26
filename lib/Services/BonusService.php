@@ -94,7 +94,7 @@ final class BonusService
                 }
 
                 $history[] = [
-                    'start' => $action->getDateTimeUtc(),
+                    'start' => $action->getDateTimeUtc() ? $action->getDateTimeUtc() ?: $customerBalanceChanges->getAvailableFromDateTimeUtc() : '',
                     'size' => $customerBalanceChanges->getChangeAmount(),
                     'name' => $comment,
                     'end' => $isPositive ? $customerBalanceChanges->getExpirationDateTimeUtc() : ''
