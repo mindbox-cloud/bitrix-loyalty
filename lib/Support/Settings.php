@@ -36,6 +36,7 @@ final class Settings
         SettingsEnum::USER_AUTO_SUBSCRIBE_POINTS => null,
         SettingsEnum::USER_LOGIN_IS_EMAIL => null,
         SettingsEnum::ORDER_STATUS_MATCH => null,
+        SettingsEnum::ORDER_FIELDS_MATCH => null,
         SettingsEnum::LOYALTY_ENABLE_EVENTS => null,
         SettingsEnum::YML_FEED_ENABLED => null,
         SettingsEnum::YML_CATALOG_IBLOCK_ID => null,
