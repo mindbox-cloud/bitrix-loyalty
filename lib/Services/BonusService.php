@@ -58,7 +58,7 @@ final class BonusService
                     continue;
                 }
 
-                if ($customerBalanceChanges->getField('balanceType')?->getField('name') !== $balanceSystemName) {
+                if (!empty($balanceSystemName) && $customerBalanceChanges->getField('balanceType')['name'] !== $balanceSystemName) {
                     continue;
                 }
 
