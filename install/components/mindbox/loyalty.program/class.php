@@ -120,9 +120,24 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
         if (!$this->customerInfo) {
             return [];
         }
-
+        $arBalance = [];
         $balanceFields = $this->customerInfo->getResult()->getBalances()?->getFieldsAsArray();
-        $arBalance = is_array($balanceFields) ? reset($balanceFields) : [];
+
+        $settings = \Mindbox\Loyalty\Support\SettingsFactory::create();
+        $balanceSystemName = $settings->getBalanceSystemName();
+
+        if (!empty($balanceSystemName)) {
+            foreach ($balanceFields as $balanceField) {
+                if ($balanceField['systemName'] === $balanceSystemName) {
+                    $arBalance = $balanceField;
+                }
+            }
+        }
+
+        if (empty($arBalance)) {
+            $arBalance = is_array($balanceFields) ? reset($balanceFields) : [];
+        }
+
         return [
             'available' => $arBalance['available'],
             'available_format' => $this->getFormatPrice((int)$arBalance['available']),

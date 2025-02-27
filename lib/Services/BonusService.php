@@ -44,6 +44,7 @@ final class BonusService
         }
 
         $settings = SettingsFactory::create();
+        $balanceSystemName = $settings->getBalanceSystemName();
 
         $bitrixOrderIdKey = $settings->getExternalOrderId();
         if ($bitrixOrderIdKey) {
@@ -54,6 +55,10 @@ final class BonusService
         foreach ($result->getCustomerActions() as $action) {
             foreach ($action->getCustomerBalanceChanges() as $customerBalanceChanges) {
                 if (!$customerBalanceChanges->getField('isAvailable')) {
+                    continue;
+                }
+
+                if ($customerBalanceChanges->getField('balanceType')?->getField('name') !== $balanceSystemName) {
                     continue;
                 }
 
