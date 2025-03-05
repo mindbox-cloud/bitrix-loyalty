@@ -30,6 +30,10 @@ class Api
                 $domainZone = 'io';
                 $domain = 'api.maestra';
                 break;
+            case 'api.s.mindbox':
+                $domainZone = 'ru';
+                $domain = 'api.s.mindbox';
+                break;
             default:
                 $domainZone = 'ru';
                 $domain = 'api.mindbox';

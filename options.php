@@ -289,6 +289,7 @@ foreach ($listSite as $site) {
                 'options' => [
                     'mindbox'    => 'api.mindbox.ru',
                     'maestro' => 'api.maestra.io',
+                    'api.s.mindbox' => 'api.s.mindbox.ru',
                 ],
                 'size' => 1
             ]
