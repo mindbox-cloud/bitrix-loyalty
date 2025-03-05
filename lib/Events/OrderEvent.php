@@ -207,8 +207,8 @@ class OrderEvent
                     $propertyMindboxId->setValue($mindboxId);
                 }
             }
-            if ($mindboxId) {
-                OrderStorage::add($mindboxId);
+            if ($transactionId) {
+                OrderStorage::add($transactionId);
             }
         } catch (PriceHasBeenChangedException $exception) {
             // тут заказ в мб не должен создаться
