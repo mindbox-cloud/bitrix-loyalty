@@ -20,6 +20,7 @@ use Mindbox\Loyalty\PropertyCodeEnum;
 use Mindbox\Loyalty\Services\CalculateService;
 use Mindbox\Loyalty\Services\OrderService;
 use Mindbox\Loyalty\Support\LoyalityEvents;
+use Mindbox\Loyalty\Support\OrderStorage;
 use Mindbox\Loyalty\Support\SessionStorage;
 use Mindbox\Loyalty\Support\SettingsFactory;
 
@@ -97,6 +98,10 @@ class OrderEvent
 
     public static function onSaleOrderBeforeSaved(\Bitrix\Main\Event $event)
     {
+        if (!OrderStorage::isNew()) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
         if (!LoyalityEvents::checkEnableEvent(LoyalityEvents::CREATE_ORDER)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
@@ -202,6 +207,9 @@ class OrderEvent
                     $propertyMindboxId->setValue($mindboxId);
                 }
             }
+            if ($transactionId) {
+                OrderStorage::add($transactionId);
+            }
         } catch (PriceHasBeenChangedException $exception) {
             // тут заказ в мб не должен создаться
             SessionStorage::getInstance()->clear();
@@ -296,7 +304,7 @@ class OrderEvent
 
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
-
+        
         if (
             $isNew
             && SessionStorage::getInstance()->getOperationType() !== null
