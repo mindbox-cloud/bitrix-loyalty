@@ -35,6 +35,7 @@ final class DefaultOperations
             'EditCart',
             'ClearCart',
             'EditFavourite',
+            'SetFavourite',
             'ClearFavourite',
         ];
     }

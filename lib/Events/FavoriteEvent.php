@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Events;
 
-use Bitrix\Main\LoaderException;
+use Mindbox\DTO\V3\OperationDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Loyalty\Exceptions\IntegrationLoyaltyException;
+use Mindbox\Loyalty\Operations\SetFavourite;
 use Mindbox\Loyalty\Support\LoyalityEvents;
 use Mindbox\Loyalty\Support\SettingsFactory;
 
@@ -117,18 +118,40 @@ class FavoriteEvent
 
         try {
             $settings = SettingsFactory::create();
-            $service = new \Mindbox\Loyalty\Services\ProductListService($settings);
             $customer = (is_object($USER) && $USER->isAuthorized()) ? new \Mindbox\Loyalty\Models\Customer((int)$USER->getID()) : null;
 
+            $payload = [];
             foreach ($favorites as $favorite) {
-                $service->editFavourite(
-                    new \Mindbox\Loyalty\Models\Product((int)$favorite, $settings),
-                    1,
-                    $customer
-                );
+                $product = new \Mindbox\Loyalty\Models\Product((int)$favorite, $settings);
+
+                $payload['productList'][] = [
+                    'product' => [
+                        'ids' => $product->getIds()
+                    ],
+                    'priceOfLine' => $product->getPrice(),
+                    'count' => 1
+                ];
             }
 
-        } catch (MindboxClientException|\Mindbox\Loyalty\Exceptions\ErrorCallOperationException $e) {
+            if ($customer) {
+                $payload['customer'] = array_filter([
+                    'ids' => $customer->getIds(),
+                    'email' => $customer->getEmail(),
+                    'mobilePhone' => $customer->getMobilePhone(),
+                ]);
+            } else {
+                $payload['customer'] = [
+                    'ids' => [
+                        $settings->getExternalUserId() => null
+                    ]
+                ];
+            }
+
+            $dto = new OperationDTO($payload);
+            /** @var SetFavourite $operation */
+            $operation = \Bitrix\Main\DI\ServiceLocator::getInstance()->get('mindboxLoyalty.setFavourite');
+            $operation->execute($dto);
+        } catch (\Mindbox\Loyalty\Exceptions\ErrorCallOperationException $e) {
         }
     }
 
