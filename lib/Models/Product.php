@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Models;
 
+use Bitrix\Main\Loader;
 use Mindbox\Loyalty\Support\Settings;
 use Bitrix\Iblock\ElementTable;
 use Bitrix\Main\EventResult;
@@ -35,6 +36,8 @@ class Product
         static $basePrices = [];
 
         if (!isset($basePrices[$this->productId])) {
+            Loader::includeModule('catalog');
+
             $iterPrices = \Bitrix\Catalog\PriceTable::getList([
                 'select' => ['PRICE'],
                 'filter' => [
