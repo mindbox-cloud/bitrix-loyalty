@@ -160,11 +160,49 @@ class Customer
         return $value;
     }
 
+    public function getCustomFields(): array
+    {
+        $customFields = [];
+        $matches = $this->settings->getUserFieldsMatch();
+        if (empty($userFields)) {
+            $by = 'id';
+            $order = 'asc';
+            $userFields = \CUser::GetList($by, $order, ['ID' => $this->getUserId()], ['SELECT' => ['UF_*']])->Fetch();
+        }
+
+        $fields = array_filter($userFields, function ($fields, $key) {
+            return str_contains($key, 'UF_');
+        }, ARRAY_FILTER_USE_BOTH);
+
+        foreach ($fields as $code => $value) {
+            if (!empty($value) && !empty($customName = self::getMatchByCode($code, $matches))) {
+                $customFields[$customName] = $value;
+            }
+        }
+        return array_filter($customFields);
+    }
+
     public function setMobilePhone(string $value): self
     {
         $this->data['PERSONAL_PHONE'] = $value;
 
         return $this;
+    }
+
+    public static function getMatchByCode($code, $matches = [])
+    {
+        if (empty($matches)) {
+            return '';
+        }
+
+        $matches = array_change_key_case($matches, CASE_UPPER);
+        $code = mb_strtoupper($code);
+
+        if (empty($matches[$code])) {
+            return '';
+        }
+
+        return $matches[$code];
     }
 
     public function getDto(): \Mindbox\DTO\V3\Requests\CustomerRequestDTO
@@ -179,6 +217,7 @@ class Customer
             'sex' => $this->getGender(),
             'ids' => $this->getIds(),
             'subscriptions' => $this->getSubscriptions(),
+            'customFields' => $this->getCustomFields()
         ]));
     }
 
@@ -194,6 +233,7 @@ class Customer
             'sex' => $this->getGender(),
             'ids' => $this->getIds(),
             'subscriptions' => $this->getSubscriptions(),
+            'customFields' => $this->getCustomFields()
         ]);
     }
 
