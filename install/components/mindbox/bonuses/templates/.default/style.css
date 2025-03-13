@@ -1,0 +1,440 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --mindbox-accent-color: #39aa5d;
+    --mindbox-success-color: #87C73D;
+    --mindbox-error-color: #C71E1E;
+    --mindbox-main-hover-color: #5B9F0B;
+}
+
+input::-ms-clear {
+    display: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input::placeholder {
+    font-size: 16px;
+    line-height: 100%;
+    color: #CBCBCB;
+}
+
+.mindbox {
+    font-family: "Open Sans", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 130%;
+    margin: 20px 0;
+    width: auto;
+}
+
+.mindbox a {
+    color: #1CA1BD;
+    color: var(--mindbox-accent-color);
+    text-decoration: none;
+    cursor: pointer;
+    max-width: fit-content;
+}
+
+.mindbox a:hover {
+    color: #1CA1BD;
+    color: var(--mindbox-accent-color);
+}
+
+.mindbox-basket-bonus__container {
+    width: 414px;
+    padding: 15px 20px 18px 20px;
+    border: 1px solid #EFEFEF;
+    box-sizing: border-box;
+    border-radius: 3px;
+}
+
+@media screen and (max-width: 767px)   {
+    .mindbox-basket-bonus__container {
+        width: 327px;
+        padding: 0;
+        border: none;
+    }
+}
+
+@media screen and (max-width: 374px) {
+    .mindbox-basket-bonus__container  {
+        width: 290px;
+    }
+}
+
+.mindbox-basket-bonus__promo-form-container {
+    margin: 0 0 5px 0;
+}
+
+.mindbox-basket-bonus__promo-form-title {
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 25px;
+    color: #000000;
+    margin: 0;
+}
+
+.mindbox-basket-bonus__promo-input-fields {
+    display: flex;
+}
+
+.mindbox-basket-bonus__promo-form input {
+    height: 38px;
+    box-sizing: border-box;
+    border-radius: 3px;
+}
+
+.mindbox-basket-bonus__promo-form input[name='mindbox-bonus-value'] {
+    width: 243px;
+    padding: 12px 30px 12px 11px;
+    outline: none;
+    border: 1px solid #CBCBCB;
+    background: #FFFFFF;
+    font-size: 16px;
+}
+
+@media screen and (max-width: 767px)   {
+    .mindbox-basket-bonus__promo-form input[name='mindbox-bonus-value'] {
+        width: 197px;
+    }
+}
+
+@media screen and (max-width: 374px)   {
+    .mindbox-basket-bonus__promo-form input[name='mindbox-bonus-value'] {
+        width: 160px;
+    }
+}
+
+.mindbox-basket-bonus__promo-form input[type='submit'] {
+    width: 122px;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 100%;
+    padding: 7px 16px 9px;
+    cursor: pointer;
+    border: none;
+    color: #FFFFFF;
+    background: #CBCBCB;
+    pointer-events: none;
+}
+
+.mindbox-basket-bonus__promo-form.active input[name='mindbox-bonus-value'] {
+    border: 1px solid #1CA1BD;
+    border-color: var(--mindbox-accent-color);
+}
+
+.mindbox-basket-bonus__promo-form.active input[type='submit'],
+.mindbox-basket-bonus__promo-form.accepted input[type='submit'] {
+    pointer-events: all;
+    background: #1CA1BD;
+    background: var(--mindbox-accent-color);
+}
+
+.mindbox-basket-bonus__promo-form.error input[name='mindbox-bonus-value'] {
+    color: #C71E1E;
+    color: var(--mindbox-error-color);
+}
+
+.mindbox-basket-bonus__promo-form.error .mindbox__promo-input-fields {
+    margin-bottom: 6px;
+}
+
+.mindbox-basket-bonus__promo-form.accepted input[name='mindbox-bonus-value'] {
+    color: #87C73D;
+    pointer-events: none;
+    color: var(--mindbox-success-color);
+}
+
+.mindbox-basket-bonus__promo-form.accepted input[type='submit'] {
+    border: 1px solid #1CA1BD;
+    border: 1px solid var(--mindbox-accent-color);
+    color: #1CA1BD;
+    color: var(--mindbox-accent-color);
+    background: #FFFFFF;
+}
+
+.mindbox-basket-bonus__promo-input-fields-container {
+    position: relative;
+    margin-right: 8px;
+}
+
+.mindbox-basket-bonus__promo-form.active input[type='submit']:hover {
+    transition: 300ms;
+    background: #5B9F0B;
+    background: var(--mindbox-main-hover-color);
+}
+
+.mindbox-basket-bonus__info-container:hover {
+    cursor: default;
+}
+
+.mindbox-basket-bonus__promo-input-fields-container label {
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    top: calc(50% - 6px);
+    right: 13px;
+}
+
+.mindbox-basket-bonus__promo-form.active .mindbox-basket-bonus__promo-input-fields-container label {
+    background: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.20093L13 13.2009' stroke='%23CBCBCB'/%3E%3Cpath d='M13 1.20093L1 13.2009' stroke='%23CBCBCB'/%3E%3C/svg%3E") no-repeat center center;
+    cursor: pointer;
+}
+
+.mindbox-basket-bonus__promo-form.active .mindbox-basket-bonus__promo-input-fields-container label:hover {
+    background: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L13 13' stroke='%23777777'/%3E%3Cpath d='M13 1L1 13' stroke='%23777777'/%3E%3C/svg%3E") no-repeat center center;
+    transition: 300ms;
+}
+
+.mindbox-basket-bonus__promo-form.accepted .mindbox-basket-bonus__promo-input-fields-container label {
+    width: 20px;
+    height: 20px;
+    top: calc(50% - 10px);
+    border-radius: 50%;
+    background: url("data:image/svg+xml,%3Csvg width='12' height='9' viewBox='0 0 12 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4.72724L5.03333 8.20093L11 1.20093' stroke='white'/%3E%3C/svg%3E") #87C73D no-repeat center center;
+    background: url("data:image/svg+xml,%3Csvg width='12' height='9' viewBox='0 0 12 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4.72724L5.03333 8.20093L11 1.20093' stroke='white'/%3E%3C/svg%3E") var(--mindbox-success-color) no-repeat center center;
+}
+
+.mindbox-basket-bonus__promo-form.error .mindbox-basket-bonus__promo-input-fields-container label {
+    width: 20px;
+    height: 20px;
+    top: calc(50% - 10px);
+    border-radius: 50%;
+    background: url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L9 9' stroke='white'/%3E%3Cpath d='M9 1L1 9' stroke='white'/%3E%3C/svg%3E") #C71E1E no-repeat center center;
+    background: url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L9 9' stroke='white'/%3E%3Cpath d='M9 1L1 9' stroke='white'/%3E%3C/svg%3E") var(--mindbox-error-color) no-repeat center center;
+}
+.mindbox-basket-bonus__promo-form.error .mindbox-basket-bonus__promo-input-fields-container label:hover {
+    cursor: pointer;
+}
+
+.mindbox-basket-bonus__promo-error-message {
+    display: none;
+}
+
+.mindbox-basket-bonus__promo-form.error .mindbox-basket-bonus__promo-error-message {
+    display: block;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 100%;
+    margin-bottom: 0;
+    color: #C71E1E;
+    color: var(--mindbox-error-color);
+    margin-top: 6px;
+}
+
+.mindbox-basket-bonus__promo-cart-unauthorized-user {
+    display: flex;
+    flex-direction: column;
+    margin-top: 6px;
+}
+
+.mindbox-basket-bonus__promo-cart-message {
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+.mindbox-basket-bonus__promo-cart-link {
+    font-size: 12px;
+    color: #1CA1BD;
+    color: var(--mindbox-accent-color);
+}
+
+.mindbox-basket-bonus__bonus-logo {
+    margin-right: 4px;
+}
+
+.mindbox-basket-bonus__bonus-logo circle {
+    fill: #1CA1BD;
+    fill: var(--mindbox-accent-color);
+}
+
+.mindbox-basket-bonus__bonus-amount-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    color:  #1CA1BD;
+    color: var(--mindbox-accent-color);
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 100%;
+    margin-right: 4px;
+    padding-top: 1px;
+}
+
+.mindbox-basket-bonus__bonus-info {
+    display: flex;
+    width: 17px;
+    height: 17px;
+    background: url("data:image/svg+xml,%3Csvg width='17' height='17' viewBox='0 0 17 17' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='8.86133' cy='8.90601' r='7.5' stroke='%23CBCBCB'/%3E%3Crect x='8.36133' y='12.906' width='1' height='1' fill='%23CBCBCB'/%3E%3Cpath d='M8.28416 10.906C8.27993 10.7573 8.27782 10.6458 8.27782 10.5715C8.27782 10.1337 8.34124 9.75586 8.46809 9.43786C8.56112 9.19834 8.71122 8.95674 8.91841 8.71309C9.07063 8.5355 9.34336 8.27739 9.73659 7.93875C10.1341 7.59598 10.392 7.32341 10.5104 7.12105C10.6288 6.91869 10.688 6.69775 10.688 6.45822C10.688 6.02459 10.5146 5.64465 10.1679 5.3184C9.82116 4.98801 9.39621 4.82282 8.89304 4.82282C8.40678 4.82282 8.00086 4.97149 7.67528 5.26884C7.3497 5.56618 7.13617 6.03078 7.03469 6.66264L5.86133 6.52636C5.96704 5.67975 6.27993 5.03137 6.80002 4.58123C7.32433 4.13108 8.01566 3.90601 8.87401 3.90601C9.7831 3.90601 10.5083 4.1476 11.0495 4.63078C11.5907 5.11397 11.8613 5.69834 11.8613 6.38388C11.8613 6.78034 11.7662 7.14583 11.5759 7.48034C11.3856 7.81486 11.0135 8.22164 10.4596 8.7007C10.0875 9.02282 9.84441 9.26028 9.73025 9.41309C9.61609 9.56589 9.53152 9.7414 9.47655 9.93963C9.42158 10.1379 9.38987 10.46 9.38141 10.906H8.28416Z' fill='%23CBCBCB'/%3E%3C/svg%3E%0A") center center no-repeat;
+    cursor: pointer;
+}
+
+.mindbox-basket-bonus__info-container {
+    display: none;
+    position: absolute;
+    width: 175px;
+    right: -21px;
+    top: 30px;
+    flex-direction: column;
+    padding: 11px 12px;
+    border: 1px solid #CBCBCB;
+    box-sizing: border-box;
+    border-radius: 3px;
+    filter: drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.14));
+    z-index: 2;
+    background-color: #ffffff;
+    font-size: 12px;
+}
+
+.mindbox-basket-bonus__bonus-info:hover .mindbox-basket-bonus__info-container {
+    display: flex;
+}
+
+.mindbox-basket-bonus__info-container > div:not(:last-child) {
+    margin-bottom: 6px;
+}
+
+.mindbox-basket-bonus__info-details-link {
+    color:  #1CA1BD;
+    color: var(--mindbox-accent-color);
+}
+
+.mindbox-basket-bonus__info-container :before {
+    content: '';
+    display: block;
+    height: 0;
+    width: 0;
+    position: absolute;
+    right: 22px;
+    top: -12px;
+    border: 6px solid;
+    z-index: 99;
+    border-color: transparent transparent #f9f9f9 transparent;
+}
+
+.mindbox-basket-bonus__info-container :after {
+    content: '';
+    display: block;
+    height: 0;
+    width: 0;
+    right: 21px;
+    top: -14px;
+    position: absolute;
+    border: 7px solid;
+    z-index: 98;
+    border-color: transparent transparent #CBCBCB transparent;
+}
+
+@media screen and (max-width: 374px) {
+    .mindbox-basket-bonus__info-container  {
+        right: 0;
+    }
+
+    .mindbox-basket-bonus__info-container :before {
+        right: 1px;
+    }
+
+    .mindbox-basket-bonus__info-container :after {
+        right: 0;
+    }
+}
+
+.mindbox-basket-bonus__promo-form-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.mindbox-basket-bonus__bonus-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 138px;
+    position: relative;
+    padding-top: 3px;
+}
+
+.mindbox-basket-bonus__promo-info-message {
+    margin-top: 0;
+    margin-bottom: 10px
+}
+
+.mindbox-basket-bonus__promo-cart-message .mindbox-basket-bonus__promo-info-num {
+    color: #1CA1BD;
+    color: var(--mindbox-accent-color);
+}
+
+.mindbox-basket-bonus__info-message {
+    margin-right: 4px;
+}
+
+@media screen and (max-width: 374px) {
+    .mindbox-basket-bonus__info-message  {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 1399px) {
+    .workarea .mindbox-basket-bonus__container {
+        width: 353px;
+    }
+
+    .workarea .mindbox-basket-bonus__promo-form input[name='mindbox-bonus-value'] {
+        width: 180px;
+    }
+}
+
+@media screen and (max-width: 1199px) {
+    .workarea .mindbox-basket-bonus__promo-form-title {
+        font-size: 16px;
+    }
+
+    .workarea .mindbox-basket-bonus__container {
+        width: 293px;
+    }
+
+    .workarea .mindbox-basket-bonus__promo-form input[type='submit'] {
+        width: 105px;
+        padding: 7px 7px 9px;
+    }
+
+    .workarea .mindbox-basket-bonus__promo-form input[name='mindbox-bonus-value'] {
+        width: 140px;
+    }
+
+    .mindbox-basket-bonus__info-message  {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 991px) {
+    .workarea .mindbox-basket-bonus__promo-form-title {
+        font-size: 14px;
+    }
+
+    .workarea .mindbox-basket-bonus__container {
+        width: 274px;
+    }
+
+    .workarea .mindbox-basket-bonus__promo-form input[type='submit'] {
+        width: 100px;
+        padding: 7px 5px 9px;
+    }
+
+    .workarea .mindbox-basket-bonus__promo-form input[name='mindbox-bonus-value'] {
+        width: 130px;
+    }
+
+    @media screen and (max-width: 767px) {
+        .workarea .mindbox-basket-bonus__container {
+            width: 235px;
+        }
+    }
+}
+
