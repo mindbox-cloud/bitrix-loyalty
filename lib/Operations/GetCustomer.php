@@ -6,10 +6,16 @@ use Mindbox\DTO\ResultDTO;
 use Mindbox\DTO\V3\Requests\CustomerRequestDTO;
 use Mindbox\Exceptions\MindboxClientException;
 use Mindbox\Helpers\CustomerHelper;
+use Mindbox\HttpClients\HttpClientRawResponse;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
+use Mindbox\MindboxRequest;
+use Mindbox\MindboxResponse;
+use Mindbox\Responses\MindboxCustomerResponse;
 
 class GetCustomer extends AbstractOperation
 {
+    private ?MindboxRequest $request = null;
+    private ?MindboxResponse $response = null;
 
     /**
      * @throws ErrorCallOperationException
@@ -19,14 +25,15 @@ class GetCustomer extends AbstractOperation
         try {
             $client = $this->api();
 
-            $response = (new CustomerHelper($client))
-                ->checkCustomer(
-                    customer: $dto,
-                    operationName: $this->getOperation(),
-                    addDeviceUUID: false
-                )->sendRequest();
+            $customerCLient = (new CustomerHelper($client))->checkCustomer(
+                customer: $dto,
+                operationName: $this->getOperation(),
+                addDeviceUUID: false
+            );
+            $this->request = $customerCLient->getRequest();
+            $this->response = $customerCLient->sendRequest();
 
-            return $response->getResult();
+            return $this->response->getResult();
         } catch (MindboxClientException $e) {
             throw new ErrorCallOperationException(
                 message: sprintf('The operation %s failed', $this->getOperation()),
@@ -39,5 +46,15 @@ class GetCustomer extends AbstractOperation
     protected function operation(): string
     {
         return 'CheckCustomer';
+    }
+
+    public function getRequest(): ?MindboxRequest
+    {
+        return $this->request;
+    }
+
+    public function getResponse(): ?MindboxResponse
+    {
+        return $this->response;
     }
 }

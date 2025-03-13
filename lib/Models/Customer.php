@@ -182,15 +182,6 @@ class Customer
         ]));
     }
 
-    public function getShortenedDto(): \Mindbox\DTO\V3\Requests\CustomerRequestDTO
-    {
-        return new \Mindbox\DTO\V3\Requests\CustomerRequestDTO(array_filter([
-            'email' => $this->getEmail(),
-            'mobilePhone' => $this->getMobilePhone(),
-            'ids' => $this->getIds(),
-        ]));
-    }
-
     public function getData(): array
     {
         return array_filter([

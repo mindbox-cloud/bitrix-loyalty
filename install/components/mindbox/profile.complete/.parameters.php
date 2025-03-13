@@ -9,7 +9,7 @@ Loc::loadMessages(__FILE__);
 $arComponentParameters = [
     "PARAMETERS" => [
         "REDIRECT_PAGE" => Array(
-            "NAME" => GetMessage("REDIRECT_PAGE"),
+            "NAME" => Loc::getMessage("REDIRECT_PAGE"),
             "TYPE" => "STRING",
             "MULTIPLE" => "N",
             "DEFAULT" => "",

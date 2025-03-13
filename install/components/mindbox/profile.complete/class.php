@@ -20,19 +20,6 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
 {
     use ErrorableImplementation;
 
-    /**
-     * Обязательные модули для загрузки
-     *
-     * @var string[]
-     */
-    protected static array $moduleLoaded = [
-        'mindbox.loyalty'
-    ];
-
-    protected $actions = [
-        'save'
-    ];
-
     protected const PROFILE_KEYS = [
         'LAST_NAME',
         'NAME',
@@ -50,19 +37,16 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
 
     public function configureActions()
     {
-        $actionConfig = [];
-        foreach ($this->actions as $action) {
-            $actionConfig[$action] = [
+        return [
+            'save' => [
                 'prefilters' => [
                     new Csrf(),
                     new HttpMethod([
                         HttpMethod::METHOD_POST
                     ])
                 ]
-            ];
-        }
-
-        return $actionConfig;
+            ]
+        ];
     }
 
     public function executeComponent()
@@ -71,7 +55,7 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
             return;
         }
 
-        global $USER, $APPLICATION;
+        global $USER;
 
         if (!$USER->IsAuthorized()) {
             ShowError(\Bitrix\Main\Localization\Loc::getMessage('PROFILE_ERROR_NO_AUTH'));
@@ -79,7 +63,6 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
         }
 
         $this->arResult['USER_DATA'] = $this->getUserData();
-        $APPLICATION->SetTitle(Loc::getMessage('PROFILE_TITLE'));
 
         $this->includeComponentTemplate();
     }
@@ -110,13 +93,9 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
 
     protected function checkModules(): bool
     {
-        foreach (self::$moduleLoaded as $module) {
-            if (!Loader::includeModule($module)) {
-
-                ShowError(sprintf('Module %s not loaded', $module));
-
-                return false;
-            }
+        if (!Loader::includeModule('mindbox.loyalty')) {
+            ShowError('Module mindbox.loyalty not loaded');
+            return false;
         }
 
         return true;
@@ -125,14 +104,21 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
     protected function getUserData()
     {
         global $USER;
-        $user = CUser::GetByID($USER->GetID())->GetNext();
+
         try {
             $settings = \Mindbox\Loyalty\Support\SettingsFactory::create();
             $serviceLocator = \Bitrix\Main\DI\ServiceLocator::getInstance();
-            $customer = new Customer((int)$user['ID']);
+            $customer = new Customer((int)$USER->GetID());
             $operationCheckCustomer = $serviceLocator->get('mindboxLoyalty.getCustomer');
             $operationCheckCustomer->setSettings($settings);
-            $customerData = $operationCheckCustomer->execute($customer->getShortenedDto());
+
+            $customerDto = new \Mindbox\DTO\V3\Requests\CustomerRequestDTO(array_filter([
+                'email' => $customer->getEmail(),
+                'mobilePhone' => $customer->getMobilePhone(),
+                'ids' => $customer->getIds(),
+            ]));
+
+            $customerData = $operationCheckCustomer->execute($customerDto);
             return $this->getProcessedCustomerData($customerData->getCustomer());
         } catch (ErrorCallOperationException $e) {
             //Если при получении данных получили ошибку, делаем редирект
