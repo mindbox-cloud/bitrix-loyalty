@@ -23,7 +23,7 @@ use Bitrix\Main\Localization\Loc;
     <div class="mindbox mindbox-basket-bonus mindbox-basket-bonus--active">
         <div class="mindbox-basket-bonus__container">
             <div class="mindbox-basket-bonus__promo-form-container">
-                <h3 class="mindbox-basket-bonus__promo-form-title">Оплатить бонусами</h3>
+                <h3 class="mindbox-basket-bonus__promo-form-title"><?= Loc::getMessage('BONUS_INFO_TITLE') ?></h3>
                 <div class="mindbox-basket-bonus__bonus-container">
                     <span class="mindbox-basket-bonus__info-message">У вас</span>
                     <div class="mindbox-basket-bonus__bonus-amount-container">
@@ -31,10 +31,10 @@ use Bitrix\Main\Localization\Loc;
                     </div>
                 </div>
             </div>
-            <p class="mindbox-basket-bonus__promo-cart-message">Максимум для этого заказа: <span
+            <p class="mindbox-basket-bonus__promo-cart-message"><?= Loc::getMessage('BONUS_MAXIMUM_FOR_ORDER') ?><span
                         class="mindbox-basket-bonus__promo-info-num" data-type="available"><?= $arResult['available'] ?></span>
             </p>
-            <p class="mindbox-basket-bonus__promo-cart-message">Будет начисленно за заказ: <span
+            <p class="mindbox-basket-bonus__promo-cart-message"><?= Loc::getMessage('BONUS_ACCRUED') ?><span
                         class="mindbox-basket-bonus__promo-info-num" data-type="earned"><?= $arResult['earned'] ?></span>
             </p>
 

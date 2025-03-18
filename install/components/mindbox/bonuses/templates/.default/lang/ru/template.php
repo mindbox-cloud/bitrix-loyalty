@@ -6,3 +6,4 @@ $MESS['BONUS_AUTH_MESSAGE'] = 'Авторизуйтесь, чтобы копит
 $MESS['BONUS_AUTH_LINK'] = 'Войти на&nbsp;сайт';
 $MESS['BONUS_CANCEL'] = 'Отменить';
 $MESS['BONUS_ACCEPT'] = 'Применить';
+$MESS['BONUS_ACCRUED'] = 'Будет начисленно за заказ: ';
