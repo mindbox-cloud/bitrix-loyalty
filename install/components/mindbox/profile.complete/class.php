@@ -62,6 +62,10 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
             return;
         }
 
+        if ($this->request->isPost()) {
+            $this->arResult['SAVE_RESULT'] = $this->saveAction();
+        }
+
         $this->arResult['USER_DATA'] = $this->getUserData();
 
         $this->includeComponentTemplate();
@@ -119,7 +123,7 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
             ]));
 
             $customerData = $operationCheckCustomer->execute($customerDto);
-            return $this->getProcessedCustomerData($customerData->getCustomer());
+            return array_merge($this->getBitrixUserData(), $this->getProcessedCustomerData($customerData->getCustomer()));
         } catch (ErrorCallOperationException $e) {
             //Если при получении данных получили ошибку, делаем редирект
             LocalRedirect($this->arParams['REDIRECT_PAGE']);
@@ -134,7 +138,7 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
             default => ''
         };
 
-        return [
+        return array_filter([
             'NAME' => $responseDTO->getFirstName(),
             'LAST_NAME' => $responseDTO->getLastName(),
             'SECOND_NAME' => $responseDTO->getMiddleName(),
@@ -142,6 +146,15 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
             'PERSONAL_PHONE' => $responseDTO->getMobilePhone(),
             'PERSONAL_GENDER' => $gender,
             'PERSONAL_BIRTHDAY' => $responseDTO->getBirthDate(),
-        ];
+        ]);
+    }
+
+    protected function getBitrixUserData()
+    {
+        global $USER;
+        $user = CUser::GetByID($USER->GetID())->GetNext();
+        return array_filter($user, function ($value, $key) {
+            return in_array($key, static::PROFILE_KEYS);
+        }, ARRAY_FILTER_USE_BOTH);
     }
 }

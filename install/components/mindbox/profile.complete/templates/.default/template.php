@@ -8,11 +8,15 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
  * @var array $arResult
  */
 $this->addExternalCss("/bitrix/css/main/bootstrap.css");
+
+if (!empty($arResult["SAVE_RESULT"])) {
+    $alertClass = $arResult['SAVE_RESULT']['status'] === 'success' ? 'alert-success' : 'alert-danger';
+}
 ?>
 <p><?=Loc::getMessage('PROFILE_SYNC_DATA')?></p>
 <form action="<?= POST_FORM_ACTION_URI ?>" method="post" class="mt-4 profile-complete-form">
     <?= bitrix_sessid_post() ?>
-    <div class="alert"></div>
+    <div class="alert <?= $alertClass ?? '' ?>"><?= $arResult['SAVE_RESULT']['message'] ?></div>
     <div class="mb-3">
         <label for="mindbox_last_name" class="form-label"><?= Loc::getMessage('PROFILE_LAST_NAME') ?></label>
         <input type="text" class="form-control" id="mindbox_last_name" name="LAST_NAME" value="<?=$arResult['USER_DATA']['LAST_NAME']?>">
@@ -55,9 +59,3 @@ $this->addExternalCss("/bitrix/css/main/bootstrap.css");
         <a href="<?=$arParams['REDIRECT_PAGE']?>" class="btn btn-default"><?=Loc::getMessage('PROFILE_CANCEL')?></a>
     </div>
 </form>
-
-<script>
-    BX.ready(function () {
-        ProfileCompleteForm.init('.profile-complete-form');
-    });
-</script>
