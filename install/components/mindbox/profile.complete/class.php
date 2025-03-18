@@ -62,8 +62,19 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
             return;
         }
 
-        if ($this->request->isPost()) {
+        if (!$this->arParams['FORM_NAME']) {
+            $this->arParams['FORM_NAME'] = 'mindbox-profile-complete';
+        }
+
+        if ($this->request->isPost() && $this->request->getPost('form_name') === $this->arParams['FORM_NAME']) {
             $this->arResult['SAVE_RESULT'] = $this->saveAction();
+        }
+
+        if ($this->request->getQuery('success') === 'Y') {
+            $this->arResult['SAVE_RESULT'] = [
+                'status' => 'success',
+                'message' => Loc::getMessage('PROFILE_SUCCESS')
+            ];
         }
 
         $this->arResult['USER_DATA'] = $this->getUserData();
@@ -77,6 +88,12 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
             'status' => 'error',
             'message' => ''
         ];
+
+        if (!check_bitrix_sessid()) {
+            $result['message'] = Loc::getMessage('PROFILE_ERROR_SESSION_EXPIRED');
+            return $result;
+        }
+
         $userData = array_filter($this->request->toArray(), function ($value, $key) {
             return in_array($key, static::PROFILE_KEYS);
         }, ARRAY_FILTER_USE_BOTH);
@@ -86,8 +103,7 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
         $res = $cUser->Update($USER->GetID(), $userData);
 
         if ($res) {
-            $result['status'] = 'success';
-            $result['message'] = Loc::getMessage('PROFILE_SUCCESS');
+            LocalRedirect($this->request->getRequestedPage().'?success=Y');
         } else {
             $result['message'] = $cUser->LAST_ERROR;
         }

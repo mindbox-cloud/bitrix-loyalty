@@ -16,6 +16,7 @@ if (!empty($arResult["SAVE_RESULT"])) {
 <p><?=Loc::getMessage('PROFILE_SYNC_DATA')?></p>
 <form action="<?= POST_FORM_ACTION_URI ?>" method="post" class="mt-4 profile-complete-form">
     <?= bitrix_sessid_post() ?>
+    <input type="hidden" name="form_name" value="<?= $arParams["FORM_NAME"] ?>">
     <div class="alert <?= $alertClass ?? '' ?>"><?= $arResult['SAVE_RESULT']['message'] ?></div>
     <div class="mb-3">
         <label for="mindbox_last_name" class="form-label"><?= Loc::getMessage('PROFILE_LAST_NAME') ?></label>

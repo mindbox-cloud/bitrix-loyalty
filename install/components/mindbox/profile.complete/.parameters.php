@@ -15,5 +15,12 @@ $arComponentParameters = [
             "DEFAULT" => "",
             "COLS" => 25,
         ),
+        "FORM_NAME" => Array(
+            "NAME" => Loc::getMessage("FORM_NAME"),
+            "TYPE" => "STRING",
+            "MULTIPLE" => "N",
+            "DEFAULT" => "mindbox-profile-complete",
+            "COLS" => 25,
+        ),
     ]
 ];
