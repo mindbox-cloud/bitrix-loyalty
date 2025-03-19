@@ -16,7 +16,7 @@ if (!empty($arResult["SAVE_RESULT"])) {
 <p><?=Loc::getMessage('PROFILE_SYNC_DATA')?></p>
 <form action="<?= POST_FORM_ACTION_URI ?>" method="post" class="mt-4 profile-complete-form">
     <?= bitrix_sessid_post() ?>
-    <input type="hidden" name="form_name" value="<?= $arParams["FORM_NAME"] ?>">
+    <input type="hidden" name="form_name" value="mindbox-profile-complete">
     <div class="alert <?= $alertClass ?? '' ?>"><?= $arResult['SAVE_RESULT']['message'] ?></div>
     <div class="mb-3">
         <label for="mindbox_last_name" class="form-label"><?= Loc::getMessage('PROFILE_LAST_NAME') ?></label>
@@ -57,6 +57,6 @@ if (!empty($arResult["SAVE_RESULT"])) {
     </div>
     <div class="text-center mt-4">
         <button type="submit" class="btn btn-primary"><?= Loc::getMessage('PROFILE_SAVE') ?></button>
-        <a href="<?=$arParams['REDIRECT_PAGE']?>" class="btn btn-default"><?=Loc::getMessage('PROFILE_CANCEL')?></a>
+        <a href="/" class="btn btn-default"><?=Loc::getMessage('PROFILE_CANCEL')?></a>
     </div>
 </form>

@@ -16,7 +16,7 @@ use Mindbox\Loyalty\Models\Customer;
 
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
 
-class ProfileComplete extends CBitrixComponent implements Controllerable, Errorable
+class ProfileComplete extends CBitrixComponent implements Errorable
 {
     use ErrorableImplementation;
 
@@ -35,20 +35,6 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
         parent::__construct($component);
     }
 
-    public function configureActions()
-    {
-        return [
-            'save' => [
-                'prefilters' => [
-                    new Csrf(),
-                    new HttpMethod([
-                        HttpMethod::METHOD_POST
-                    ])
-                ]
-            ]
-        ];
-    }
-
     public function executeComponent()
     {
         if (!$this->checkModules()) {
@@ -58,16 +44,12 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
         global $USER;
 
         if (!$USER->IsAuthorized()) {
-            ShowError(\Bitrix\Main\Localization\Loc::getMessage('PROFILE_ERROR_NO_AUTH'));
+            ShowError(Loc::getMessage('PROFILE_ERROR_NO_AUTH'));
             return;
         }
 
-        if (!$this->arParams['FORM_NAME']) {
-            $this->arParams['FORM_NAME'] = 'mindbox-profile-complete';
-        }
-
-        if ($this->request->isPost() && $this->request->getPost('form_name') === $this->arParams['FORM_NAME']) {
-            $this->arResult['SAVE_RESULT'] = $this->saveAction();
+        if ($this->request->isPost() && $this->request->getPost('form_name') === 'mindbox-profile-complete') {
+            $this->arResult['SAVE_RESULT'] = $this->save();
         }
 
         if ($this->request->getQuery('success') === 'Y') {
@@ -77,12 +59,17 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
             ];
         }
 
-        $this->arResult['USER_DATA'] = $this->getUserData();
+        $userData = $this->getUserData();
 
-        $this->includeComponentTemplate();
+        if ($userData) {
+            $this->arResult['USER_DATA'] = $userData;
+            $this->includeComponentTemplate();
+        }
+
+
     }
 
-    public function saveAction()
+    public function save()
     {
         $result = [
             'status' => 'error',
@@ -141,8 +128,8 @@ class ProfileComplete extends CBitrixComponent implements Controllerable, Errora
             $customerData = $operationCheckCustomer->execute($customerDto);
             return array_merge($this->getBitrixUserData(), $this->getProcessedCustomerData($customerData->getCustomer()));
         } catch (ErrorCallOperationException $e) {
-            //Если при получении данных получили ошибку, делаем редирект
-            LocalRedirect($this->arParams['REDIRECT_PAGE']);
+            ShowError(Loc::getMessage('PROFILE_ERROR_CALL_FAILED'));
+            return false;
         }
     }
 
