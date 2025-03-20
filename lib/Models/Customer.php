@@ -9,6 +9,7 @@ use Bitrix\Main\ORM\Fields\Relations\Reference;
 use Bitrix\Main\Type\Date;
 use Bitrix\Main\UserPhoneAuthTable;
 use Bitrix\Main\UserTable;
+use Mindbox\Loyalty\Helper;
 use Mindbox\Loyalty\Support\Settings;
 use Mindbox\Loyalty\Support\SettingsFactory;
 
@@ -160,6 +161,37 @@ class Customer
         return $value;
     }
 
+    public function getCustomFields(): array
+    {
+        $customFields = [];
+        $matches = $this->settings->getUserFieldsMatch();
+
+        if (empty($matches)) {
+            return [];
+        }
+
+        $userFields = UserTable::getRow([
+            'filter' => ['ID' => $this->getUserId()],
+            'select' => ['ID', 'UF_*']
+        ]);
+
+        if (!isset($userFields)) {
+            return [];
+        }
+
+        $fields = array_filter($userFields, function ($fields, $key) {
+            return str_contains($key, 'UF_');
+        }, ARRAY_FILTER_USE_BOTH);
+
+        foreach ($fields as $code => $value) {
+            if ($value !== null && !empty($customName = Helper::getMatchByCode($code, $matches))) {
+                $customFields[$customName] = $value;
+            }
+        }
+
+        return $customFields;
+    }
+
     public function setMobilePhone(string $value): self
     {
         $this->data['PERSONAL_PHONE'] = $value;
@@ -179,6 +211,7 @@ class Customer
             'sex' => $this->getGender(),
             'ids' => $this->getIds(),
             'subscriptions' => $this->getSubscriptions(),
+            'customFields' => $this->getCustomFields()
         ]));
     }
 
@@ -194,6 +227,7 @@ class Customer
             'sex' => $this->getGender(),
             'ids' => $this->getIds(),
             'subscriptions' => $this->getSubscriptions(),
+            'customFields' => $this->getCustomFields()
         ]);
     }
 

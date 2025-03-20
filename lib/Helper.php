@@ -114,4 +114,20 @@ class Helper
 
         return (int) $basePrice['ID'];
     }
+
+    public static function getMatchByCode($code, $matches = [])
+    {
+        if (empty($matches)) {
+            return '';
+        }
+
+        $matches = array_change_key_case($matches, CASE_UPPER);
+        $code = mb_strtoupper($code);
+
+        if (empty($matches[$code])) {
+            return '';
+        }
+
+        return $matches[$code];
+    }
 }

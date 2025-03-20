@@ -1,0 +1,26 @@
+.mindbox-history__title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.mindbox-history table {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.mindbox-history table td,
+.mindbox-history table th{
+    vertical-align: top;
+    border: 1px solid #000000;
+    padding: 5px;
+}
+
+.mindbox-bonus-more {
+    margin: 0 auto;
+    width: 250px;
+    display: block;
+    border: 1px solid #000;
+    outline: none;
+    background: #ffffff;
+    border-radius: 7px;
+}
