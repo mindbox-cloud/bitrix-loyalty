@@ -37,24 +37,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (check) {
                     event.target.value = value.replace(/^0+/, '');
                 }
-
-                if (value.length > 0 && window.mindboxTotalBonus > 0) {
-                    if (value > window.mindboxTotalBonus) {
-                        bonusContainer.dataset.bonusStatus = 'error';
-                        bonusContainer.querySelector(selectorApplyButton).setAttribute('disabled', 'disabled');
-                        bonusContainer.querySelector(selectorErrors).innerText = BX.message('MINDBOX_BONUS_MAX_ERROR') + window.mindboxTotalBonus;
-                        bonusContainer.querySelector(selectorErrors).classList.add('is-show');
-                    } else {
-                        bonusContainer.dataset.bonusStatus = 'active';
-                        bonusContainer.querySelector(selectorApplyButton).removeAttribute('disabled');
-                        bonusContainer.querySelector(selectorErrors).innerText = '';
-                        bonusContainer.querySelector(selectorErrors).classList.remove('is-show');
-                    }
-                } else {
-                    bonusContainer.dataset.bonusStatus = 'error';
-                    bonusContainer.querySelector(selectorApplyButton).setAttribute('disabled', 'disabled');
-                    bonusContainer.querySelector(selectorErrors).classList.remove('is-show');
-                }
             });
     });
 
@@ -69,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
             location.reload();
         }
     }
-    async function get(bonusContainer) {
+    async function get() {
         return BX.ajax.runComponentAction(componentName, 'get', {
             mode: 'class',
         });
@@ -86,10 +68,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function loadBonus(bonusContainer) {
         const asyncLoad = async () => {
-            const response = await get(bonusContainer);
+            const response = await get();
             if (response.data.available && response.data.available > 0) {
-                window.mindboxTotalBonus = response.data.available;
-
                 bonusContainer.querySelector(selectorTotal).innerText = response.data.total;
                 bonusContainer.querySelector(selectorAvailable).innerText = response.data.available;
                 bonusContainer.querySelector(selectorEarned).innerText = response.data.earned;
@@ -119,21 +99,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function mindboxCalculateBasketChange() {
-        const asyncCalculate = async (bonusContainer) => {
-            const result = await get(bonusContainer);
-
-            const currentBonus = bonusContainer.querySelector(selectorBonusValue).value;
-
-            if (result.status === 'success') {
-                if (currentBonus >= window.mindboxTotalBonus) {
-                    await apply(window.mindboxTotalBonus)
-                }
-            } else {
-                await clear();
-            }
-        }
         document.querySelectorAll(selectorMainContainer).forEach(async function (bonusContainer) {
-            asyncCalculate(bonusContainer);
+            loadBonus(bonusContainer);
         });
     }
     BX.addCustomEvent('onCalculateBasketChange', BX.delegate(mindboxCalculateBasketChange));
