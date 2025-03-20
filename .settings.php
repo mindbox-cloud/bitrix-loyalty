@@ -9,6 +9,9 @@ return [
             'mindboxLoyalty.checkCustomer' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\CheckCustomer()
             ],
+            'mindboxLoyalty.getCustomer' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\GetCustomer()
+            ],
             'mindboxLoyalty.authorizeCustomer' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\AuthorizeCustomer()
             ],
