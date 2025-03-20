@@ -29,7 +29,8 @@ class LoyaltyService
             $segments[] = ['ids' => ['externalId' => $segmentExternalId]];
         }
 
-        $operation = new GetCustomerLoyaltyLevel();
+        /** @var GetCustomerLoyaltyLevel $operation */
+        $operation = \Bitrix\Main\DI\ServiceLocator::getInstance()->get('mindboxLoyalty.getCustomerLoyaltyLevel');
         try {
             $response = $operation->execute($customerDTO, $segments);
         } catch (ErrorCallOperationException $e) {

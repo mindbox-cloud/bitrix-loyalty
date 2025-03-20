@@ -1,5 +1,7 @@
 <?php
 
+use Mindbox\Loyalty\Operations\GetCustomerBalanceHistory;
+
 return [
     'services' => [
 		'value' => [
@@ -89,6 +91,12 @@ return [
             ],
             'mindboxLoyalty.getCustomerPoints' => [
                 'constructor' => fn() => new \Mindbox\Loyalty\Operations\GetCustomerPoints()
+            ],
+            'mindboxLoyalty.getCustomerBalanceHistory' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\GetCustomerBalanceHistory()
+            ],
+            'mindboxLoyalty.getCustomerLoyaltyLevel' => [
+                'constructor' => fn() => new \Mindbox\Loyalty\Operations\GetCustomerLoyaltyLevel()
             ],
 		],
 		'readonly' => true,

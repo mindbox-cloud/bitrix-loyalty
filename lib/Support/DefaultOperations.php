@@ -37,6 +37,8 @@ final class DefaultOperations
             'EditFavourite',
             'SetFavourite',
             'ClearFavourite',
+            'GetCustomerBalanceHistory',
+            'GetCustomerLoyaltyLevel',
         ];
     }
 }

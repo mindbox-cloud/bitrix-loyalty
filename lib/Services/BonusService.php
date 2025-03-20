@@ -26,7 +26,9 @@ final class BonusService
         $pageDTO->setItemsPerPage($pageSize);
         $pageDTO->setPageNumber($page);
 
-        $operation = new GetCustomerBalanceHistory();
+        /** @var GetCustomerBalanceHistory $operation */
+        $operation = \Bitrix\Main\DI\ServiceLocator::getInstance()->get('mindboxLoyalty.getCustomerBalanceHistory');
+
         try {
             $response = $operation->execute($customerDTO, $pageDTO);
         } catch (ErrorCallOperationException $e) {
