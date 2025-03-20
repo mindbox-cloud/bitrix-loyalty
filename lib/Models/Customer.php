@@ -165,7 +165,19 @@ class Customer
     {
         $customFields = [];
         $matches = $this->settings->getUserFieldsMatch();
-        $userFields = \CUser::GetList('id', 'asc', ['ID' => $this->getUserId()], ['SELECT' => ['UF_*']])->Fetch();
+
+        if (empty($matches)) {
+            return [];
+        }
+
+        $userFields = UserTable::getRow([
+            'filter' => ['ID' => $this->getUserId()],
+            'select' => ['ID', 'UF_*']
+        ]);
+
+        if (!isset($userFields)) {
+            return [];
+        }
 
         $fields = array_filter($userFields, function ($fields, $key) {
             return str_contains($key, 'UF_');
@@ -176,6 +188,7 @@ class Customer
                 $customFields[$customName] = $value;
             }
         }
+
         return $customFields;
     }
 

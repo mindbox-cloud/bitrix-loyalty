@@ -2,6 +2,7 @@
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
+use Bitrix\Currency\CurrencyManager;
 use Bitrix\Main\ErrorableImplementation;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
@@ -25,7 +26,6 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
     private static array $listInMonth = [];
 
     private const PAGE_SIZE_DEFAULT = 20;
-
 
     public function __construct($component = null)
     {
@@ -92,6 +92,7 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
                 'size_format' => $this->getFormatPrice((int)$item['size']),
             ];
         }
+
         return $result;
     }
 
@@ -221,6 +222,7 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
             $this->arParams['SEGMENTS'] = array_combine($this->arParams['SEGMETS_LOYALTY'], $this->arParams['LEVEL_NAMES_LOYALTY']);
         }
         $this->arParams['HISTORY_PAGE_SIZE'] = (int)$this->arParams['HISTORY_PAGE_SIZE'] > 0 ? (int)$this->arParams['HISTORY_PAGE_SIZE'] : self::PAGE_SIZE_DEFAULT;
+        $this->arParams['CURRENCY_ID'] = $this->arParams['CURRENCY_ID'] ?: CurrencyManager::getBaseCurrency();
     }
 
     public function pageAction($signedParameters, $page)
@@ -228,7 +230,6 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
         $page = (int)$page;
         $signer = new \Bitrix\Main\Component\ParameterSigner();
         $this->arParams = $signer->unsignParameters($this->getName(), $signedParameters);
-        $size = $this->arParams['HISTORY_PAGE_SIZE'] ?? 20;
 
         try {
             $history = $this->getHistory($page);
@@ -260,6 +261,6 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
 
     protected function listKeysSignedParameters(): array
     {
-        return ['HISTORY_PAGE_SIZE', 'HISTORY_DATE_FORMAT'];
+        return ['HISTORY_PAGE_SIZE', 'HISTORY_DATE_FORMAT', 'CURRENCY_ID'];
     }
 }

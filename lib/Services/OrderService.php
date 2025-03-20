@@ -228,6 +228,7 @@ class OrderService
             'lastName' => $customer->getLastName(),
             'middleName' => $customer->getMiddleName(),
             'subscriptions' => $customer->getSubscriptions(),
+            'customFields' => $customer->getCustomFields()
         ]);
 
         $DTO = new \Mindbox\DTO\V3\Requests\PreorderRequestDTO();
