@@ -9,6 +9,7 @@ use Bitrix\Main\ORM\Fields\Relations\Reference;
 use Bitrix\Main\Type\Date;
 use Bitrix\Main\UserPhoneAuthTable;
 use Bitrix\Main\UserTable;
+use Mindbox\Loyalty\Helper;
 use Mindbox\Loyalty\Support\Settings;
 use Mindbox\Loyalty\Support\SettingsFactory;
 
@@ -164,22 +165,18 @@ class Customer
     {
         $customFields = [];
         $matches = $this->settings->getUserFieldsMatch();
-        if (empty($userFields)) {
-            $by = 'id';
-            $order = 'asc';
-            $userFields = \CUser::GetList($by, $order, ['ID' => $this->getUserId()], ['SELECT' => ['UF_*']])->Fetch();
-        }
+        $userFields = \CUser::GetList('id', 'asc', ['ID' => $this->getUserId()], ['SELECT' => ['UF_*']])->Fetch();
 
         $fields = array_filter($userFields, function ($fields, $key) {
             return str_contains($key, 'UF_');
         }, ARRAY_FILTER_USE_BOTH);
 
         foreach ($fields as $code => $value) {
-            if (!empty($value) && !empty($customName = self::getMatchByCode($code, $matches))) {
+            if ($value !== null && !empty($customName = Helper::getMatchByCode($code, $matches))) {
                 $customFields[$customName] = $value;
             }
         }
-        return array_filter($customFields);
+        return $customFields;
     }
 
     public function setMobilePhone(string $value): self
@@ -187,22 +184,6 @@ class Customer
         $this->data['PERSONAL_PHONE'] = $value;
 
         return $this;
-    }
-
-    public static function getMatchByCode($code, $matches = [])
-    {
-        if (empty($matches)) {
-            return '';
-        }
-
-        $matches = array_change_key_case($matches, CASE_UPPER);
-        $code = mb_strtoupper($code);
-
-        if (empty($matches[$code])) {
-            return '';
-        }
-
-        return $matches[$code];
     }
 
     public function getDto(): \Mindbox\DTO\V3\Requests\CustomerRequestDTO
