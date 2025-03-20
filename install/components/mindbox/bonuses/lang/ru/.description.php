@@ -1,0 +1,3 @@
+<?php
+$MESS['MINDBOX_COMPONENT_BONUS_NAME'] = 'Бонусы';
+$MESS['MINDBOX_COMPONENT_BONUS_DESCRIPTION'] = 'Компонент бонусов';
