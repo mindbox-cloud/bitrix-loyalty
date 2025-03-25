@@ -136,10 +136,10 @@ class OrderMindbox
         $coupons = explode(',', $propertyCoupon->getValue());
         $result = [];
         foreach ($coupons as $coupon) {
-            if (trim($coupon)) {
+            if (trim(strval($coupon))) {
                 $result[] = [
                     'ids' => [
-                        'code' => trim($coupon)
+                        'code' => trim(strval($coupon))
                     ]
                 ];
             }
