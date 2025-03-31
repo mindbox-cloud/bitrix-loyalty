@@ -222,7 +222,6 @@ class RequestedPromotions
 
                 $discountId = $discountBasket['DISCOUNT_ID'];
                 $arDiscount = $arDiscountList[$discountId];
-                $coupon = $arDiscount['USE_COUPONS'] === 'Y' ? $discountBasket['COUPON_ID'] : null;
 
                 foreach ($discountBasket['RESULT']['BASKET'] as $iterableBasketCode => $applyDiscount) {
                     $discountPrice = 0;
@@ -365,14 +364,6 @@ class RequestedPromotions
                             ],
                             'amount' => PriceMaths::roundPrecision($discountPrice * $quantity)
                         ];
-
-                        if ($coupon) {
-                            $discountData['coupon'] = [
-                                'ids' => [
-                                    'code' => $coupon
-                                ]
-                            ];
-                        }
 
                         $requestedPromotions[] = $discountData;
                     }

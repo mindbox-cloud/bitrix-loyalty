@@ -102,7 +102,7 @@ class CalculateService
 
                 if ($couponInfo['coupon']['status'] === 'NotFound') {
                     $setCouponError = Loc::getMessage('MINDBOX_LOYALTY_COUPON_NOT_FOUND');
-                } elseif ($couponInfo['coupon']['status'] === 'CanNotBeUsedForCurrentOrder') {
+                } elseif ($couponInfo['coupon']['status'] === 'CanNotBeUsedForCurrentOrder' || $couponInfo['coupon']['status'] === 'AlreadyNotActive') {
                     $setCouponError = Loc::getMessage('MINDBOX_LOYALTY_COUPON_CAN_NOT_BE_USER');
                 } elseif ($couponInfo['coupon']['status'] === 'Used') {
                     $setCouponError = Loc::getMessage('MINDBOX_LOYALTY_COUPON_USED');
