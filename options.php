@@ -294,6 +294,16 @@ foreach ($listSite as $site) {
                 'size' => 1
             ]
         ],
+        SettingsEnum::API_DOMAIN_CUSTOM => [
+            'id' => SettingsEnum::API_DOMAIN_CUSTOM . '__' . $site,
+            'origin' => SettingsEnum::API_DOMAIN_CUSTOM,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_API_DOMAIN_CUSTOM', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_API_DOMAIN_CUSTOM_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'text',
+                'size' => 60
+            ]
+        ],
         SettingsEnum::HTTP_CLIENT => [
             'id' => SettingsEnum::HTTP_CLIENT . '__' . $site,
             'origin' => SettingsEnum::HTTP_CLIENT,

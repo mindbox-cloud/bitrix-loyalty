@@ -130,4 +130,16 @@ class Helper
 
         return $matches[$code];
     }
+
+    public static function parseDomainName($domain): array
+    {
+        $domainParts = explode('.', $domain);
+
+        if (count($domainParts) < 2) {
+            return [];
+        }
+
+        $domainZone = array_pop($domainParts);
+        return [implode('.', $domainParts), $domainZone];
+    }
 }

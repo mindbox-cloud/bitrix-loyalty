@@ -21,6 +21,7 @@ class SettingsEnum
 
     public const BALANCE_SYSTEM_NAME = 'balance_system_name';
     public const API_DOMAIN = 'api_domain';
+    public const API_DOMAIN_CUSTOM = 'api_domain_custom';
     public const HTTP_CLIENT = 'http_client';
     public const TIMEOUT = 'timeout';
     public const IS_LOGGING = 'is_logging';
