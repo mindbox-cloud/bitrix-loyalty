@@ -28,6 +28,9 @@ $MESS['MINDBOX_LOYALTY_DISABLE_PROCESSING_USER_GROUPS_HINTS'] = 'Использ�
 $MESS['MINDBOX_LOYALTY_API_DOMAIN'] = 'Домен API';
 $MESS['MINDBOX_LOYALTY_API_DOMAIN_HINTS'] = 'Домен API';
 
+$MESS['MINDBOX_LOYALTY_API_DOMAIN_CUSTOM'] = 'Домен API (произвольный)';
+$MESS['MINDBOX_LOYALTY_API_DOMAIN_CUSTOM_HINTS'] = 'Произвольный домен API, имеет преимущество перед предыдущей настройкой. Корректный адрес уточните у менеджера Mindbox.';
+
 $MESS['MINDBOX_LOYALTY_HTTP_CLIENT'] = 'Клиент http';
 $MESS['MINDBOX_LOYALTY_HTTP_CLIENT_HINTS'] = 'Клиент http';
 

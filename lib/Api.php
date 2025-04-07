@@ -25,19 +25,25 @@ class Api
             LogLevel::DEBUG
         );
 
-        switch ($settings->getApiDomain()) {
-            case 'maestro':
-                $domainZone = 'io';
-                $domain = 'api.maestra';
-                break;
-            case 'api.s.mindbox':
-                $domainZone = 'ru';
-                $domain = 'api.s.mindbox';
-                break;
-            default:
-                $domainZone = 'ru';
-                $domain = 'api.mindbox';
-                break;
+        $apiDomainCustom = $settings->getApiDomainCustom();
+        if ($apiDomainCustom && !empty($apiDomainCustomParts = Helper::parseDomainName($apiDomainCustom))) {
+            $domain = $apiDomainCustomParts[0];
+            $domainZone = $apiDomainCustomParts[1];
+        } else {
+            switch ($settings->getApiDomain()) {
+                case 'maestro':
+                    $domainZone = 'io';
+                    $domain = 'api.maestra';
+                    break;
+                case 'api.s.mindbox':
+                    $domainZone = 'ru';
+                    $domain = 'api.s.mindbox';
+                    break;
+                default:
+                    $domainZone = 'ru';
+                    $domain = 'api.mindbox';
+                    break;
+            }
         }
 
         $this->client = new MindboxClientV3(

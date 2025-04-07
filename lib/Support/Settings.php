@@ -24,6 +24,7 @@ final class Settings
         SettingsEnum::WEBSITE_ORDER_FIELD => null,
         SettingsEnum::BALANCE_SYSTEM_NAME => null,
         SettingsEnum::API_DOMAIN => null,
+        SettingsEnum::API_DOMAIN_CUSTOM => null,
         SettingsEnum::HTTP_CLIENT => null,
         SettingsEnum::TIMEOUT => null,
         SettingsEnum::IS_LOGGING => null,
@@ -114,6 +115,11 @@ final class Settings
     public function getApiDomain(): ?string
     {
         return $this->settings[SettingsEnum::API_DOMAIN];
+    }
+
+    public function getApiDomainCustom(): ?string
+    {
+        return $this->settings[SettingsEnum::API_DOMAIN_CUSTOM];
     }
 
     public function getHttpClient(): ?string
