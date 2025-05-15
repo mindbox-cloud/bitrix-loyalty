@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Events;
 
+use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Page\Asset;
 use Bitrix\Main\Page\AssetLocation;
 use Bitrix\Sale\Internals\OrderPropsTable;
@@ -64,8 +65,8 @@ class AdminPageEvent
         $couponsPropertyCode = PropertyCodeEnum::PROPERTIES_MINDBOX_PROMOCODES;
 
         $orderId = (int)$_REQUEST['ID'];
-        $saveButtonText = 'Применить';
-        $bonusAvailableDescription = 'Доступно бонусов для списания: ';
+        $saveButtonText = Loc::getMessage('MINDBOX_LOYALTY_ADMIN_PAGE_APPLY_BUTTON');
+        $bonusAvailableDescription = Loc::getMessage('MINDBOX_LOYALTY_ADMIN_PAGE_BONUS_LABEL');
 
         $backgroundError = '#e63535';
 
