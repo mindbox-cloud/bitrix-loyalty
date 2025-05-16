@@ -154,7 +154,7 @@ class OrderPropertyInstaller implements InstallerInterface
                 'UTIL' => 'Y'
             ],
             PropertyCodeEnum::PROPERTIES_MINDBOX_ORDER_ID => [
-                'NAME' => Loc::getMessage('MINDBOX_LOYALTY_MINDBOX_ORDER_ID_NAME'),
+                'NAME' => Loc::getMessage('MINDBOX_LOYALTY_PROPERTY_MINDBOX_ORDER_ID_NAME'),
                 'TYPE' => 'TEXT',
                 'CODE' => PropertyCodeEnum::PROPERTIES_MINDBOX_ORDER_ID,
                 'REQUIED' => 'N',

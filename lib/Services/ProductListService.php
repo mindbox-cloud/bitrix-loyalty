@@ -89,7 +89,7 @@ class ProductListService
 
         $payload['setProductCountInList'] = [
             'product' => ['ids' => $product->getIds()],
-            'priceOfLine' => $product->getPrice(),
+            'pricePerItem' => $product->getPrice(),
             'count' => $quantity
         ];
 
