@@ -182,7 +182,7 @@ class YmlFeedMindbox
                         $url = $this->getPictureUrl($img);
                     }
                     if ($url) {
-                        $offerPicture = $dom->createElement('picture', self::yandexText2xml($this->getProtocol() . $url));
+                        $offerPicture = $dom->createElement('picture', self::yandexText2xml($url));
                         $offer->appendChild($offerPicture);
                     }
 
@@ -288,7 +288,7 @@ class YmlFeedMindbox
                 $img = $product['DETAIL_PICTURE'] ?: $product['PREVIEW_PICTURE'];
                 $url = $this->getPictureUrl($img);
                 if ($url) {
-                    $offerPicture = $dom->createElement('picture', self::yandexText2xml($this->getProtocol() . $url));
+                    $offerPicture = $dom->createElement('picture', self::yandexText2xml($url));
                     $offer->appendChild($offerPicture);
                 }
 
@@ -358,7 +358,7 @@ class YmlFeedMindbox
         }
 
         if (strncmp($pictureFile['SRC'], '/', 1) == 0) {
-            $picturePath = $this->getServerName() . \Bitrix\Main\Web\Uri::urnEncode($pictureFile['SRC'], 'utf-8');
+            $picturePath = $this->getProtocol() . $this->getServerName() . \Bitrix\Main\Web\Uri::urnEncode($pictureFile['SRC'], 'utf-8');
         } else {
             $picturePath = $pictureFile['SRC'];
         }
