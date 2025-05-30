@@ -347,13 +347,23 @@ class YmlFeedMindbox
      */
     protected function getPictureUrl($id): ?string
     {
-        $url = \CFile::GetPath($id);
-
-        if (!$url) {
+        if (empty($id)) {
             return null;
         }
 
-        return $this->getServerName() . $url;
+        $pictureFile = \CFile::GetFileArray($id);
+
+        if (empty($pictureFile)) {
+            return null;
+        }
+
+        if (strncmp($pictureFile['SRC'], '/', 1) == 0) {
+            $picturePath = $this->getServerName() . \Bitrix\Main\Web\Uri::urnEncode($pictureFile['SRC'], 'utf-8');
+        } else {
+            $picturePath = $pictureFile['SRC'];
+        }
+
+        return $picturePath;
     }
 
     /**
