@@ -94,6 +94,12 @@ $MESS['MINDBOX_LOYALTY_YML_CATALOG_PROPERTIES_HINTS'] = '';
 $MESS['MINDBOX_LOYALTY_YML_OFFERS_PROPERTIES'] = 'Выгружаемые свойства ИБ ТП';
 $MESS['MINDBOX_LOYALTY_YML_OFFERS_PROPERTIES_HINTS'] = '';
 
+$MESS['MINDBOX_LOYALTY_YML_ARTICLE_PROPERTY'] = 'Свойство артикула';
+$MESS['MINDBOX_LOYALTY_YML_ARTICLE_PROPERTY_HINTS'] = 'Данное свойство передается в тег VendorCode';
+
+$MESS['MINDBOX_LOYALTY_YML_BRAND_PROPERTY'] = 'Свойство бренда';
+$MESS['MINDBOX_LOYALTY_YML_BRAND_PROPERTY_HINTS'] = 'Данное свойство передается в тег Vendor';
+
 $MESS['MINDBOX_LOYALTY_HEADING_MAIN'] = 'Основные настройки';
 $MESS['MINDBOX_LOYALTY_HEADING_PRIMARY_KEY'] = 'Идентификаторы сущностей';
 $MESS['MINDBOX_LOYALTY_HEADING_HTTP_CLIENT'] = 'Настройки http клиента';

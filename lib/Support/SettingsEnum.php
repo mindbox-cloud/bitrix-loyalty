@@ -46,6 +46,8 @@ class SettingsEnum
     public const YML_BASE_PRICE_ID = 'yml_base_price_id';
     public const YML_CATALOG_PROPERTIES = 'yml_catalog_properties';
     public const YML_OFFERS_PROPERTIES = 'yml_offers_properties';
+    public const YML_ARTICLE_PROPERTY = 'yml_article_property';
+    public const YML_BRAND_PROPERTY = 'yml_brand_property';
     public const YML_PROTOCOL = 'yml_protocol';
     public const YML_PATH = 'yml_path';
     public const YML_CHUNK_SIZE = 'yml_chunk_size';

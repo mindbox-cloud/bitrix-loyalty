@@ -44,6 +44,8 @@ class FeedGenerator
         $catalogRepository->setStepSize($settings->getFeedChunkSize());
         $catalogRepository->setCatalogPropertyCode($settings->getFeedCatalogProperties());
         $catalogRepository->setOffersPropertyCode($settings->getFeedOffersProperties());
+        $catalogRepository->setArticleProperty($settings->getFeedArticleProperty());
+        $catalogRepository->setBrandProperty($settings->getFeedBrandProperty());
 
         $feedGenerator->setProtocol($settings->isFeedHttps());
         $feedGenerator->setFeedPath($settings->getFeedPath());

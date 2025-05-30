@@ -44,6 +44,8 @@ final class Settings
         SettingsEnum::YML_BASE_PRICE_ID => null,
         SettingsEnum::YML_CATALOG_PROPERTIES => null,
         SettingsEnum::YML_OFFERS_PROPERTIES => null,
+        SettingsEnum::YML_ARTICLE_PROPERTY => null,
+        SettingsEnum::YML_BRAND_PROPERTY => null,
         SettingsEnum::YML_PROTOCOL => null,
         SettingsEnum::YML_PATH => null,
         SettingsEnum::YML_CHUNK_SIZE => null,
@@ -263,6 +265,16 @@ final class Settings
     public function getFeedOffersProperties(): ?array
     {
         return $this->getArrayOptionValue(SettingsEnum::YML_OFFERS_PROPERTIES);
+    }
+
+    public function getFeedArticleProperty(): ?string
+    {
+        return $this->settings[SettingsEnum::YML_ARTICLE_PROPERTY] ?: null;
+    }
+
+    public function getFeedBrandProperty(): ?string
+    {
+        return $this->settings[SettingsEnum::YML_BRAND_PROPERTY] ?: null;
     }
 
     public function isFeedHttps(): bool

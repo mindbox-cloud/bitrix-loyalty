@@ -95,6 +95,9 @@ class YmlFeedMindbox
         $offers = $shop->appendChild($offers);
 
         $products = $this->catalogRepository->getProducts();
+        $articleProperty = $this->catalogRepository->getArticleProperty();
+        $brandProperty = $this->catalogRepository->getBrandProperty();
+
         foreach ($products as $productsChunk) {
             $this->products = $productsChunk['products'];
             $this->offers = $productsChunk['offers'];
@@ -187,6 +190,31 @@ class YmlFeedMindbox
                     $ofr['properties'] = array_merge($ofr['properties'], $this->products[$prodId]['properties']);
 
                     foreach ($ofr['properties'] as $property) {
+                        if (empty($property['VALUE'])) {
+                            continue;
+                        }
+
+                        if (is_array($property['VALUE'])) {
+                            $property['VALUE'] = implode('|', $property['VALUE']);
+                        }
+
+                        switch ($property['ID']) {
+                            case $articleProperty:
+                                $article = $dom->createElement('vendorCode', self::yandexText2xml($property['VALUE']));
+                                $offer->appendChild($article);
+                                break;
+                            case $brandProperty:
+                                $brand = $dom->createElement('vendor', self::yandexText2xml($property['VALUE']));
+                                $offer->appendChild($brand);
+                                break;
+                        }
+                    }
+
+                    foreach ($ofr['properties'] as $property) {
+                        if ($property['ID'] == $articleProperty || $property['ID'] == $brandProperty) {
+                            continue;
+                        }
+
                         if (!empty($property['VALUE'])) {
                             if (is_array($property['VALUE'])) {
                                 $property['VALUE'] = implode('|', $property['VALUE']);
