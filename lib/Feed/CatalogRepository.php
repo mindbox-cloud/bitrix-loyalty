@@ -11,8 +11,8 @@ class CatalogRepository implements RepositoryInterface
     protected ?int $offersCatalogId = null;
     protected array $products = [];
     protected array $offers = [];
-    protected string $articleProperty = '';
-    protected string $brandProperty = '';
+    protected ?string $articleProperty = null;
+    protected ?string $brandProperty = null;
 
     public function getProducts(): \Iterator
     {
@@ -474,7 +474,9 @@ class CatalogRepository implements RepositoryInterface
      */
     public function setArticleProperty($property): void
     {
-        $this->articleProperty = str_replace('PROPERTY_', '', $property);
+        if (isset($property)) {
+            $this->articleProperty = str_replace('PROPERTY_', '', $property);
+        }
     }
 
     /**
@@ -492,7 +494,9 @@ class CatalogRepository implements RepositoryInterface
      */
     public function setBrandProperty($property): void
     {
-        $this->brandProperty = str_replace('PROPERTY_', '', $property);
+        if (isset($property)) {
+            $this->brandProperty = str_replace('PROPERTY_', '', $property);
+        }
     }
 
     /**
