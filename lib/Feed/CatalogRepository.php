@@ -483,7 +483,7 @@ class CatalogRepository implements RepositoryInterface
      * Возвращает код свойства артикула
      * @return string
      */
-    public function getArticleProperty(): string
+    public function getArticleProperty(): ?string
     {
         return $this->articleProperty;
     }
@@ -503,7 +503,7 @@ class CatalogRepository implements RepositoryInterface
      * Возвращает код свойства бренда
      * @return string
      */
-    public function getBrandProperty(): string
+    public function getBrandProperty(): ?string
     {
         return $this->brandProperty;
     }
