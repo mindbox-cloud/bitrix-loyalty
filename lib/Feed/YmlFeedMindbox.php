@@ -95,6 +95,9 @@ class YmlFeedMindbox
         $offers = $shop->appendChild($offers);
 
         $products = $this->catalogRepository->getProducts();
+        $articleProperty = $this->catalogRepository->getArticleProperty();
+        $brandProperty = $this->catalogRepository->getBrandProperty();
+
         foreach ($products as $productsChunk) {
             $this->products = $productsChunk['products'];
             $this->offers = $productsChunk['offers'];
@@ -179,7 +182,7 @@ class YmlFeedMindbox
                         $url = $this->getPictureUrl($img);
                     }
                     if ($url) {
-                        $offerPicture = $dom->createElement('picture', self::yandexText2xml($this->getProtocol() . $url));
+                        $offerPicture = $dom->createElement('picture', self::yandexText2xml($url));
                         $offer->appendChild($offerPicture);
                     }
 
@@ -187,6 +190,31 @@ class YmlFeedMindbox
                     $ofr['properties'] = array_merge($ofr['properties'], $this->products[$prodId]['properties']);
 
                     foreach ($ofr['properties'] as $property) {
+                        if (empty($property['VALUE'])) {
+                            continue;
+                        }
+
+                        if (is_array($property['VALUE'])) {
+                            $property['VALUE'] = implode('|', $property['VALUE']);
+                        }
+
+                        switch ($property['ID']) {
+                            case $articleProperty:
+                                $article = $dom->createElement('vendorCode', self::yandexText2xml($property['VALUE']));
+                                $offer->appendChild($article);
+                                break;
+                            case $brandProperty:
+                                $brand = $dom->createElement('vendor', self::yandexText2xml($property['VALUE']));
+                                $offer->appendChild($brand);
+                                break;
+                        }
+                    }
+
+                    foreach ($ofr['properties'] as $property) {
+                        if ($property['ID'] == $articleProperty || $property['ID'] == $brandProperty) {
+                            continue;
+                        }
+
                         if (!empty($property['VALUE'])) {
                             if (is_array($property['VALUE'])) {
                                 $property['VALUE'] = implode('|', $property['VALUE']);
@@ -260,12 +288,36 @@ class YmlFeedMindbox
                 $img = $product['DETAIL_PICTURE'] ?: $product['PREVIEW_PICTURE'];
                 $url = $this->getPictureUrl($img);
                 if ($url) {
-                    $offerPicture = $dom->createElement('picture', self::yandexText2xml($this->getProtocol() . $url));
+                    $offerPicture = $dom->createElement('picture', self::yandexText2xml($url));
                     $offer->appendChild($offerPicture);
                 }
 
                 // property
                 foreach ($product['properties'] as $property) {
+                    if (empty($property['VALUE'])) {
+                        continue;
+                    }
+
+                    if (is_array($property['VALUE'])) {
+                        $property['VALUE'] = implode('|', $property['VALUE']);
+                    }
+
+                    switch ($property['ID']) {
+                        case $articleProperty:
+                            $article = $dom->createElement('vendorCode', self::yandexText2xml($property['VALUE']));
+                            $offer->appendChild($article);
+                            break;
+                        case $brandProperty:
+                            $brand = $dom->createElement('vendor', self::yandexText2xml($property['VALUE']));
+                            $offer->appendChild($brand);
+                            break;
+                    }
+                }
+                foreach ($product['properties'] as $property) {
+                    if ($property['ID'] == $articleProperty || $property['ID'] == $brandProperty) {
+                        continue;
+                    }
+
                     if (!empty($property['VALUE'])) {
                         if (is_array($property['VALUE'])) {
                             $property['VALUE'] = implode('|', $property['VALUE']);
@@ -319,13 +371,23 @@ class YmlFeedMindbox
      */
     protected function getPictureUrl($id): ?string
     {
-        $url = \CFile::GetPath($id);
-
-        if (!$url) {
+        if (empty($id)) {
             return null;
         }
 
-        return $this->getServerName() . $url;
+        $pictureFile = \CFile::GetFileArray($id);
+
+        if (empty($pictureFile)) {
+            return null;
+        }
+
+        if (strncmp($pictureFile['SRC'], '/', 1) == 0) {
+            $picturePath = $this->getProtocol() . $this->getServerName() . \Bitrix\Main\Web\Uri::urnEncode($pictureFile['SRC'], 'utf-8');
+        } else {
+            $picturePath = $pictureFile['SRC'];
+        }
+
+        return $picturePath;
     }
 
     /**

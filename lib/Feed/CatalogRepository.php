@@ -11,6 +11,8 @@ class CatalogRepository implements RepositoryInterface
     protected ?int $offersCatalogId = null;
     protected array $products = [];
     protected array $offers = [];
+    protected ?string $articleProperty = null;
+    protected ?string $brandProperty = null;
 
     public function getProducts(): \Iterator
     {
@@ -169,7 +171,10 @@ class CatalogRepository implements RepositoryInterface
             $this->products[$prod['ID']] = $prod;
         }
 
-        if (!empty($addProps = $this->getCatalogPropertyCode()) && !empty($arProductId)) {
+        $addProps = $this->getCatalogPropertyCode();
+        $this->addAdditionProperties($addProps);
+
+        if (!empty($addProps) && !empty($arProductId)) {
             $properties = $this->getProperties($addProps, $this->getIblockId(), $arProductId);
 
             foreach ($properties as $elementId => $prop) {
@@ -258,7 +263,10 @@ class CatalogRepository implements RepositoryInterface
             }
         }
 
-        if (!empty($addProps = $this->getOffersPropertyCode()) && !empty($arOfferId)) {
+        $addProps = $this->getOffersPropertyCode();
+        $this->addAdditionProperties($addProps);
+
+        if (!empty($addProps) && !empty($arOfferId)) {
             $properties = $this->getProperties($addProps, $offersCatalogId, $arOfferId);
 
             foreach ($this->offers as &$offers) {
@@ -431,9 +439,9 @@ class CatalogRepository implements RepositoryInterface
      * Возвращает массив кодов свойств для товаров
      * @return array
      */
-    public function getCatalogPropertyCode()
+    public function getCatalogPropertyCode(): array
     {
-        return $this->catalogPropertyCode;
+        return $this->catalogPropertyCode ?: [];
     }
 
     /**
@@ -455,9 +463,49 @@ class CatalogRepository implements RepositoryInterface
      * Возвращает массив кодов свойств для торговых предложений
      * @return array
      */
-    public function getOffersPropertyCode()
+    public function getOffersPropertyCode(): array
     {
-        return $this->offersPropertyCode;
+        return $this->offersPropertyCode ?: [];
+    }
+
+    /**
+     * @param $property
+     * @return void
+     */
+    public function setArticleProperty($property): void
+    {
+        if (isset($property)) {
+            $this->articleProperty = str_replace('PROPERTY_', '', $property);
+        }
+    }
+
+    /**
+     * Возвращает код свойства артикула
+     * @return string
+     */
+    public function getArticleProperty(): ?string
+    {
+        return $this->articleProperty;
+    }
+
+    /**
+     * @param $property
+     * @return void
+     */
+    public function setBrandProperty($property): void
+    {
+        if (isset($property)) {
+            $this->brandProperty = str_replace('PROPERTY_', '', $property);
+        }
+    }
+
+    /**
+     * Возвращает код свойства бренда
+     * @return string
+     */
+    public function getBrandProperty(): ?string
+    {
+        return $this->brandProperty;
     }
 
     public function getResultPrice($element)
@@ -480,5 +528,20 @@ class CatalogRepository implements RepositoryInterface
         return $arResultPrices;
     }
 
+    /**
+     * Добавляет к массиву свойств из настроек артикула и бренда
+     * @param array $properties
+     * @return void
+     */
+    protected function addAdditionProperties(array &$properties): void
+    {
+        if (!empty($articleProperty = $this->getArticleProperty()) && !in_array($articleProperty, $properties)) {
+            $properties[] = $articleProperty;
+        }
+
+        if (!empty($brandProperty = $this->getBrandProperty()) && !in_array($brandProperty, $properties)) {
+            $properties[] = $brandProperty;
+        }
+    }
 
 }

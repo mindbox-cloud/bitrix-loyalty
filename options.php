@@ -664,6 +664,47 @@ foreach ($listSite as $site) {
                 ]
             ];
         }
+
+        $allPropOptions = ["" => "-"];
+
+        $iblockIds = array_filter([$catalogIblockId, $iblockOffersId]);
+        $iblockNames = [];
+        $iblocks = \Bitrix\Iblock\IblockTable::getList(['filter' => ['=ID' => $iblockIds], 'select' => ['ID', 'NAME']]);
+
+        while ($iblock = $iblocks->fetch()) {
+            $iblockNames[$iblock['ID']] = $iblock['NAME'] . ' [' . $iblock['ID'] . ']';
+        }
+
+        foreach ($iblockIds as $iblockId) {
+            $props = \Mindbox\Loyalty\Options::getIblockProperty($iblockId);
+            $props = array_map(fn($a) => $iblockNames[$iblockId] . ': ' . $a, $props);
+            $allPropOptions = array_merge($allPropOptions, $props);
+        }
+
+        $arOptions[SettingsEnum::YML_ARTICLE_PROPERTY] = [
+            'id' => SettingsEnum::YML_ARTICLE_PROPERTY . '__' . $site,
+            'origin' => SettingsEnum::YML_ARTICLE_PROPERTY,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_ARTICLE_PROPERTY', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_ARTICLE_PROPERTY_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'selectbox',
+                'options' => $allPropOptions,
+                'size' => 1
+            ],
+            'current' => Option::get(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, SettingsEnum::YML_ARTICLE_PROPERTY, '', $site),
+        ];
+        $arOptions[SettingsEnum::YML_BRAND_PROPERTY] = [
+            'id' => SettingsEnum::YML_BRAND_PROPERTY . '__' . $site,
+            'origin' => SettingsEnum::YML_BRAND_PROPERTY,
+            'label' => Loc::getMessage('MINDBOX_LOYALTY_YML_BRAND_PROPERTY', ['#LID#' => $site]),
+            'hints' => Loc::getMessage('MINDBOX_LOYALTY_YML_BRAND_PROPERTY_HINTS', ['#LID#' => $site]),
+            'type' => [
+                'type' => 'selectbox',
+                'options' => $allPropOptions,
+                'size' => 1
+            ],
+            'current' => Option::get(MINDBOX_LOYALTY_ADMIN_MODULE_NAME, SettingsEnum::YML_BRAND_PROPERTY, '', $site),
+        ];
     }
     $arOptions[] = [
         'current' => \Mindbox\Loyalty\Options::getFeedUpdateButton('feed_module_button_update' . $site),
