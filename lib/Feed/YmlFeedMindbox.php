@@ -294,6 +294,30 @@ class YmlFeedMindbox
 
                 // property
                 foreach ($product['properties'] as $property) {
+                    if (empty($property['VALUE'])) {
+                        continue;
+                    }
+
+                    if (is_array($property['VALUE'])) {
+                        $property['VALUE'] = implode('|', $property['VALUE']);
+                    }
+
+                    switch ($property['ID']) {
+                        case $articleProperty:
+                            $article = $dom->createElement('vendorCode', self::yandexText2xml($property['VALUE']));
+                            $offer->appendChild($article);
+                            break;
+                        case $brandProperty:
+                            $brand = $dom->createElement('vendor', self::yandexText2xml($property['VALUE']));
+                            $offer->appendChild($brand);
+                            break;
+                    }
+                }
+                foreach ($product['properties'] as $property) {
+                    if ($property['ID'] == $articleProperty || $property['ID'] == $brandProperty) {
+                        continue;
+                    }
+
                     if (!empty($property['VALUE'])) {
                         if (is_array($property['VALUE'])) {
                             $property['VALUE'] = implode('|', $property['VALUE']);

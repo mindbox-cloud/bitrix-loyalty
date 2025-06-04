@@ -439,9 +439,9 @@ class CatalogRepository implements RepositoryInterface
      * Возвращает массив кодов свойств для товаров
      * @return array
      */
-    public function getCatalogPropertyCode()
+    public function getCatalogPropertyCode(): array
     {
-        return $this->catalogPropertyCode;
+        return $this->catalogPropertyCode ?: [];
     }
 
     /**
@@ -463,9 +463,9 @@ class CatalogRepository implements RepositoryInterface
      * Возвращает массив кодов свойств для торговых предложений
      * @return array
      */
-    public function getOffersPropertyCode()
+    public function getOffersPropertyCode(): array
     {
-        return $this->offersPropertyCode;
+        return $this->offersPropertyCode ?: [];
     }
 
     /**
