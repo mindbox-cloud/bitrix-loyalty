@@ -16,9 +16,7 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
 {
     use ErrorableImplementation;
 
-    private static $moduleLoaded = [
-        'mindbox.loyalty',
-    ];
+    private static string $moduleLoaded = 'mindbox.loyalty';
 
     private $userId;
     private $customerInfo;
@@ -35,7 +33,7 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
         $this->userId = (int)$USER->getId();
     }
 
-    public function configureActions()
+    public function configureActions(): array
     {
         return ['page' => ['prefilters' => []]];
     }
@@ -44,10 +42,11 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
     {
         global $USER, $APPLICATION;
 
-        if (!Loader::includeModule('mindbox.loyalty')) {
+        if (!Loader::includeModule(self::$moduleLoaded)) {
             ShowError('Module mindbox.loyalty not loaded');
             return true;
         }
+
         if (!$USER->IsAuthorized()) {
             $APPLICATION->AuthForm("", false, false, "N", false);
             return true;
@@ -60,21 +59,23 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
         if ($this->arParams['HISTORY_ENABLE'] === 'Y') {
             $this->arResult['history'] = $this->getHistory();
         }
+
         $this->arResult['bonuses'] = $this->getBalance();
+
         if ($this->arParams['LOYALTY_ENABLE'] === 'Y') {
-            $this->arResult['loyalty'] = $this->getLoyalty();
+           $this->getLoyalty();
         }
 
         return $this->includeComponentTemplate();
     }
 
-    private function getLoyalty(): array
+    private function getLoyalty(): void
     {
-        return [
-            'current_level' => $this->getCurrentLoyalty(),
-            'next_level' => $this->getNextLevelInfo(),
-            'purchases' => $this->getPurchases(),
-        ];
+        $this->arResult['loyalty'] = [];
+
+        $this->arResult['loyalty']['current_level'] = $this->getCurrentLoyalty();
+        $this->arResult['loyalty']['next_level'] = $this->getNextLevelInfo();
+        $this->arResult['loyalty']['purchases'] = $this->getPurchases();
     }
 
     private function getHistory(int $page = 1): array
@@ -204,8 +205,11 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
 
     private function getFormatPrice(int $price)
     {
-        Loader::includeModule('currency');
-        return \CCurrencyLang::CurrencyFormat($price, $this->arParams['CURRENCY_ID']);
+        if (Loader::includeModule('currency')) {
+            return \CCurrencyLang::CurrencyFormat($price, $this->arParams['CURRENCY_ID']);
+        }
+
+        return $price;
     }
 
     private function prepareParams(): void
@@ -254,7 +258,7 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
         return self::$listInMonth[date('n', strtotime('now +1 month'))];
     }
 
-    private function setListInMonth()
+    private function setListInMonth(): void
     {
         self::$listInMonth = explode(',', \Bitrix\Main\Localization\Loc::getMessage('LIST_IN_MONTH'));
     }
