@@ -23,7 +23,8 @@ class InternalEvent
         $settings = $event->getParameter('SETTINGS');
 
         global $USER;
-        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::DISCOUNT_FOR_PRICE_TYPE, $USER->GetUserGroupArray(), $settings)) {
+
+        if ($USER instanceof \CUser && !LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::DISCOUNT_FOR_PRICE_TYPE, $USER->GetUserGroupArray(), $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
