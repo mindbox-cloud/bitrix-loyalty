@@ -153,8 +153,15 @@ class OrderEvent
 
         if ($order->isNew() && !Helper::isAdminSection()) {
             if (SessionStorage::getInstance()->getPromocode() !== []) {
-                $propertyCoupon = $order->getPropertyCollection()->getItemByOrderPropertyCode(\Mindbox\Loyalty\PropertyCodeEnum::PROPERTIES_MINDBOX_PROMOCODES);
+                $allPromocode = SessionStorage::getInstance()->getPromocode();
 
+                foreach ($allPromocode as $promoId => $promocode) {
+                    if (!$promocode['apply']) {
+                        SessionStorage::getInstance()->unsetPromocode($promocode['value']);
+                    }
+                }
+
+                $propertyCoupon = $order->getPropertyCollection()->getItemByOrderPropertyCode(\Mindbox\Loyalty\PropertyCodeEnum::PROPERTIES_MINDBOX_PROMOCODES);
                 if ($propertyCoupon instanceof \Bitrix\Sale\PropertyValue) {
                     $propertyCoupon->setValue(array_keys(SessionStorage::getInstance()->getPromocode()));
                 }
