@@ -109,7 +109,7 @@ class YmlFeedMindbox
                     $offer->setAttribute('group_id', Helper::getElementCode($this->products[$prodId]['ID']));
                     $offer->setAttribute('id', Helper::getElementCode($ofr['ID']));
 
-                    $available = ($ofr['CATALOG_AVAILABLE'] === 'Y' && $ofr['ACTIVE'] === 'Y') ? 'true' : 'false';
+                    $available = ($ofr['AVAILABLE'] === 'Y' && $ofr['ACTIVE'] === 'Y') ? 'true' : 'false';
                     $offer->setAttribute('available', $available);
 
                     unset($available);
@@ -159,11 +159,11 @@ class YmlFeedMindbox
                         $oldPrice = $dom->createElement('oldprice', $ofr['prices']['RESULT_PRICE']['BASE_PRICE']);
                         $offer->appendChild($oldPrice);
                     } else {
-                        $offerPrice = $dom->createElement('price', $ofr['CATALOG_PRICE_' . $this->getBasePriceId()]);
+                        $offerPrice = $dom->createElement('price', $ofr['PRICE_' . $this->getBasePriceId()]);
                         $offer->appendChild($offerPrice);
                     }
 
-                    $offerCurrencyId = $dom->createElement('currencyId', self::yandexText2xml($ofr['CATALOG_CURRENCY_' . $this->getBasePriceId()]));
+                    $offerCurrencyId = $dom->createElement('currencyId', self::yandexText2xml($ofr['CURRENCY_' . $this->getBasePriceId()]));
                     $offer->appendChild($offerCurrencyId);
 
                     // categories
@@ -242,7 +242,7 @@ class YmlFeedMindbox
                 $offer = $dom->createElement('offer');
                 $offer->setAttribute('id', Helper::getElementCode($product['ID']));
 
-                $available = ($product['CATALOG_AVAILABLE'] === 'Y' && $product['ACTIVE'] === 'Y') ? 'true' : 'false';
+                $available = ($product['AVAILABLE'] === 'Y' && $product['ACTIVE'] === 'Y') ? 'true' : 'false';
 
                 $offer->setAttribute('available', $available);
                 unset($available);
@@ -269,11 +269,11 @@ class YmlFeedMindbox
                     $oldPrice = $dom->createElement('oldprice', $product['prices']['RESULT_PRICE']['BASE_PRICE']);
                     $offer->appendChild($oldPrice);
                 } else {
-                    $offerPrice = $dom->createElement('price', $product['CATALOG_PRICE_' . $this->getBasePriceId()]);
+                    $offerPrice = $dom->createElement('price', $product['PRICE_' . $this->getBasePriceId()]);
                     $offer->appendChild($offerPrice);
                 }
 
-                $offerCurrencyId = $dom->createElement('currencyId', self::yandexText2xml($product['CATALOG_CURRENCY_' . $this->getBasePriceId()]));
+                $offerCurrencyId = $dom->createElement('currencyId', self::yandexText2xml($product['CURRENCY_' . $this->getBasePriceId()]));
                 $offer->appendChild($offerCurrencyId);
 
                 // category

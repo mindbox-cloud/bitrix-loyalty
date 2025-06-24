@@ -103,16 +103,16 @@ class CatalogRepository implements RepositoryInterface
         $return = [];
 
         if (!empty($productId)) {
-            $getElementGroups = \CIBlockElement::GetElementGroups($productId, false, ['ID', 'ACTIVE']);
+            $iterator = \Bitrix\Iblock\SectionElementTable::getList([
+                'select' => ['IBLOCK_ELEMENT_ID', 'IBLOCK_SECTION_ID'],
+                'filter' => ['IBLOCK_ELEMENT_ID' => $productId, 'IBLOCK_SECTION.ACTIVE' => 'Y', '==ADDITIONAL_PROPERTY_ID' => null],
+            ]);
 
-            while ($item = $getElementGroups->Fetch()) {
-                if ($item['ACTIVE'] === 'Y') {
-                    $return[$item['ID']] = $item['ID'];
-                }
+            while ($item = $iterator->fetch()) {
+                $return[$item['IBLOCK_SECTION_ID']] = $item['IBLOCK_SECTION_ID'];
             }
+            unset($iterator, $item);
         }
-
-        unset($getElementGroups, $item);
 
         return $return;
     }
@@ -138,13 +138,15 @@ class CatalogRepository implements RepositoryInterface
             'IBLOCK_ID',
             'IBLOCK_SECTION_ID',
             'DETAIL_PAGE_URL',
-            'CATALOG_GROUP_' . $this->getBasePriceId(),
             'NAME',
             'DETAIL_PICTURE',
             'DETAIL_TEXT',
             'PREVIEW_PICTURE',
             'PREVIEW_TEXT',
-            'ACTIVE'
+            'ACTIVE',
+            'PRICE_' . $this->getBasePriceId(),
+            'CURRENCY_' . $this->getBasePriceId(),
+            'AVAILABLE',
         );
 
         $iterator = \CIBlockElement::GetList(
@@ -224,11 +226,13 @@ class CatalogRepository implements RepositoryInterface
             'IBLOCK_ID',
             'NAME',
             'DETAIL_PAGE_URL',
-            'CATALOG_GROUP_' . $this->getBasePriceId(),
             'IBLOCK_SECTION_ID',
             'DETAIL_PICTURE',
             'PREVIEW_PICTURE',
-            'ACTIVE'
+            'ACTIVE',
+            'PRICE_' . $this->getBasePriceId(),
+            'CURRENCY_' . $this->getBasePriceId(),
+            'AVAILABLE',
         ];
 
         $this->offers = \CCatalogSKU::getOffersList(
@@ -256,9 +260,9 @@ class CatalogRepository implements RepositoryInterface
                         ? $this->products[$productId]['ACTIVE']
                         : $offer['ACTIVE'];
 
-                    $offer['CATALOG_AVAILABLE'] = ($this->products[$productId]['CATALOG_AVAILABLE'] == 'N')
-                        ? $this->products[$productId]['CATALOG_AVAILABLE']
-                        : $offer['CATALOG_AVAILABLE'];
+                    $offer['AVAILABLE'] = ($this->products[$productId]['AVAILABLE'] == 'N')
+                        ? $this->products[$productId]['AVAILABLE']
+                        : $offer['AVAILABLE'];
                 }
             }
         }

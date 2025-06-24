@@ -98,7 +98,7 @@ class CalculateService
             $index = 0;
             foreach ($orderData['couponsInfo'] as $couponInfo) {
                 $setCouponError = null;
-                $couponCode = $couponInfo['coupon']['ids']['code'];
+                $couponCode = (string) $couponInfo['coupon']['ids']['code'];
 
                 if ($couponInfo['coupon']['status'] === 'NotFound') {
                     $setCouponError = Loc::getMessage('MINDBOX_LOYALTY_COUPON_NOT_FOUND');

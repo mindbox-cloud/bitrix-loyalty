@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const promocodes = response.data;
         let promocodeText = '';
+
         for (let promocodesKey in promocodes) {
             let textClass = promocodes[promocodesKey]['apply'] ? 'text-muted' : 'text-danger';
             let textCoupon = promocodes[promocodesKey]['apply'] ? BX.message('MINDBOX_COUPON_APPLY') : promocodes[promocodesKey]['error'];
@@ -95,10 +96,10 @@ document.addEventListener('DOMContentLoaded', () => {
             promocodeText += `
                 <div class="mindbox-coupon-alert ${textClass}">
                     <span class="mindbox-coupon-text">
-                        <strong>${promocodesKey}</strong> ${textCoupon}
+                        <strong>${promocodes[promocodesKey]['value']}</strong> ${textCoupon}
                     </span>
                     <span class="close-link" data-entity="mindbox-coupon-delete" data-action="remove"
-                      data-coupon="${promocodesKey}">${messageDelete}</span>
+                      data-coupon="${promocodes[promocodesKey]['value']}">${messageDelete}</span>
               </div>
             `;
         }
@@ -112,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return BX.ajax.runComponentAction('mindbox:promocode', 'remove', {
             mode: 'class',
             data: {
-                coupon: coupon
+                coupon: String(coupon)
             }
         })
     }
@@ -121,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return BX.ajax.runComponentAction('mindbox:promocode', 'apply', {
             mode: 'class',
             data: {
-                coupon: coupon
+                coupon: String(coupon)
             }
         })
     }

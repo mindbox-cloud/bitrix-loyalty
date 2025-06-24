@@ -125,7 +125,6 @@ class MindboxPromocode extends CBitrixComponent implements Controllerable, Error
             } else {
                 SessionStorage::getInstance()->setPromocode($coupon);
             }
-
         }
     }
 
@@ -180,7 +179,7 @@ class MindboxPromocode extends CBitrixComponent implements Controllerable, Error
         );
         $discount = \Bitrix\Sale\Discount::buildFromBasket($basket, new \Bitrix\Sale\Discount\Context\Fuser($basket->getFUserId(true)));
         $refreshStrategy = \Bitrix\Sale\Basket\RefreshFactory::create(\Bitrix\Sale\Basket\RefreshFactory::TYPE_FULL);
-        $result = $basket->refresh($refreshStrategy);
+        $basket->refresh($refreshStrategy);
         $discount->calculate();
 
         $coupons = DiscountCouponsManager::get(true, [], true, true);
@@ -191,11 +190,10 @@ class MindboxPromocode extends CBitrixComponent implements Controllerable, Error
 
         $result = [];
         foreach ($coupons as $coupon) {
-            if ($coupon['STATUS'] == DiscountCouponsManager::STATUS_NOT_FOUND || $coupon['STATUS'] == DiscountCouponsManager::STATUS_FREEZE) {
-                continue;
+            if ($coupon['STATUS'] === DiscountCouponsManager::STATUS_NOT_FOUND || $coupon['STATUS'] === DiscountCouponsManager::STATUS_FREEZE) {
                 $coupon['JS_STATUS'] = 'BAD';
                 $coupon['ERROR_TEXT'] = Loc::getMessage('MINDBOX_LOYALTY_COUPON_NOT_FOUND');
-            } elseif ($coupon['STATUS'] == DiscountCouponsManager::STATUS_NOT_APPLYED || $coupon['STATUS'] == DiscountCouponsManager::STATUS_ENTERED) {
+            } elseif ($coupon['STATUS'] === DiscountCouponsManager::STATUS_NOT_APPLYED || $coupon['STATUS'] === DiscountCouponsManager::STATUS_ENTERED) {
                 $coupon['JS_STATUS'] = 'ENTERED';
                 $coupon['ERROR_TEXT'] = Loc::getMessage('MINDBOX_LOYALTY_COUPON_CAN_NOT_BE_USER');
             } else {

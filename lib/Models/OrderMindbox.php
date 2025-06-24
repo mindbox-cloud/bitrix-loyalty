@@ -160,11 +160,17 @@ class OrderMindbox
     public function getPayments(): array
     {
         $payments = [];
+
+        $paymentPrefix = '';
+        if (defined('MINDBOX_PAYMENT_PREFIX') && is_string(MINDBOX_PAYMENT_PREFIX)) {
+            $paymentPrefix = MINDBOX_PAYMENT_PREFIX;
+        }
+
         /** @var \Bitrix\Sale\Payment $payment */
         foreach ($this->order->getPaymentCollection() as $payment) {
             if ($payment->getSum() && $payment->getPaymentSystemId()) {
                 $payments[] = array_filter([
-                    'type'   => $payment->getPaymentSystemId(),
+                    'type'   => $paymentPrefix . $payment->getPaymentSystemId(),
                     'amount' => $payment->getSum()
                 ]);
             }
@@ -243,6 +249,7 @@ class OrderMindbox
         }
 
         $deliveryId = (int) $this->order->getField('DELIVERY_ID');
+
         /** @var \Bitrix\Sale\ShipmentCollection $shipmentCollection */
         $shipmentCollection = $this->order->getShipmentCollection();
         /** @var \Bitrix\Sale\Shipment $shipment */
@@ -256,7 +263,11 @@ class OrderMindbox
         }
 
         if ($deliveryId !== 0) {
-            $customFields['deliveryType'] = $deliveryId;
+            $deliveryPrefix = '';
+            if (defined('MINDBOX_DELIVERY_PREFIX') && is_string(MINDBOX_DELIVERY_PREFIX)) {
+                $deliveryPrefix = MINDBOX_DELIVERY_PREFIX;
+            }
+            $customFields['deliveryType'] = $deliveryPrefix . $deliveryId;
         }
 
         return array_filter($customFields);
