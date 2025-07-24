@@ -181,6 +181,8 @@ class SessionStorage
             return;
         }
 
+        $promocode = mb_strtolower($promocode);
+
         if (!isset($_SESSION[self::GROUPS][self::PROMOCODE][$promocode])) {
             return;
         }
