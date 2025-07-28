@@ -147,6 +147,8 @@ class SessionStorage
             $_SESSION[self::GROUPS][self::PROMOCODE] = [];
         }
 
+        $promocode = mb_strtolower($promocode);
+
         $_SESSION[self::GROUPS][self::PROMOCODE][$promocode] = [
             'value' => $promocode,
             'apply' => false,
@@ -159,6 +161,8 @@ class SessionStorage
         if (!isset($_SESSION[self::GROUPS][self::PROMOCODE])) {
             return;
         }
+
+        $promocode = mb_strtolower($promocode);
 
         if (!isset($_SESSION[self::GROUPS][self::PROMOCODE][$promocode])) {
             return;
@@ -176,6 +180,8 @@ class SessionStorage
         if (!isset($_SESSION[self::GROUPS][self::PROMOCODE])) {
             return;
         }
+
+        $promocode = mb_strtolower($promocode);
 
         if (!isset($_SESSION[self::GROUPS][self::PROMOCODE][$promocode])) {
             return;
