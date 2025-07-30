@@ -112,11 +112,12 @@ class CartEvent
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
+        $userGroups = is_object($USER) ? $USER->GetUserGroupArray() : [2];
         if (
             $basketItem->isDelay()
             && (
                 !LoyalityEvents::checkEnableEvent(LoyalityEvents::REMOVE_FROM_FAVORITE)
-                || !LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::REMOVE_FROM_FAVORITE, $USER->GetUserGroupArray())
+                || !LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::REMOVE_FROM_FAVORITE, $userGroups)
             )
         ) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
@@ -126,7 +127,7 @@ class CartEvent
             !$basketItem->isDelay()
             && (
                 !LoyalityEvents::checkEnableEvent(LoyalityEvents::REMOVE_FROM_CART)
-                || !LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::REMOVE_FROM_CART, $USER->GetUserGroupArray())
+                || !LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::REMOVE_FROM_CART, $userGroups)
             )
         ) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
