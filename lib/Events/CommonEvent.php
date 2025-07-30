@@ -16,7 +16,6 @@ class CommonEvent
             return;
         }
 
-        global $USER;
         if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::INCLUDE_TRACKER, Helper::getUserGroups())) {
             return;
         }

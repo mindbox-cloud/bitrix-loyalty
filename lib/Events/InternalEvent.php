@@ -23,9 +23,7 @@ class InternalEvent
         $basketItem = $event->getParameter('ENTYTY');
         $settings = $event->getParameter('SETTINGS');
 
-        global $USER;
-
-        if ($USER instanceof \CUser && !LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::DISCOUNT_FOR_PRICE_TYPE, Helper::getUserGroups(), $settings)) {
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::DISCOUNT_FOR_PRICE_TYPE, Helper::getUserGroups(), $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
