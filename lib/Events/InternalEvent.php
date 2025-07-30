@@ -6,6 +6,7 @@ namespace Mindbox\Loyalty\Events;
 
 use Bitrix\Sale\BasketItem;
 use Bitrix\Sale\PriceMaths;
+use Mindbox\Loyalty\Helper;
 use Mindbox\Loyalty\Support\LoyalityEvents;
 use Mindbox\Loyalty\Support\Settings;
 
@@ -24,7 +25,7 @@ class InternalEvent
 
         global $USER;
 
-        if ($USER instanceof \CUser && !LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::DISCOUNT_FOR_PRICE_TYPE, $USER->GetUserGroupArray(), $settings)) {
+        if ($USER instanceof \CUser && !LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::DISCOUNT_FOR_PRICE_TYPE, Helper::getUserGroups(), $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
