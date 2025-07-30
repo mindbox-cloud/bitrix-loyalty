@@ -61,9 +61,11 @@ class OrderOperationTypeTable  extends DataManager
             ]);
         } else {
             $item = $find->fetch();
-            self::update($item['ID'], [
-                'OPERATION_TYPE' => $type
-            ]);
+            if ($item['ID'] > 0) {
+                self::update($item['ID'], [
+                    'OPERATION_TYPE' => $type
+                ]);
+            }
         }
     }
 
