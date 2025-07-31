@@ -35,12 +35,6 @@ class CalculateService
     public function calculateOrder(Order $order)
     {
         if (Helper::isAdminSection()) {
-            if ($order->getField('ID') == null) {
-                $type = OrderOperationTypeTable::OPERATION_TYPE_AUTH;
-                SessionStorage::getInstance()->setOperationType($type);
-            } else {
-                OrderOperationTypeTable::setTypeOrder($order->getField('ID'), OrderOperationTypeTable::OPERATION_TYPE_AUTH);
-            }
             $response = $this->calculateOrderAdmin($order);
         } elseif ($order->isNew()) {
             if (Helper::isUserUnAuthorized()) {

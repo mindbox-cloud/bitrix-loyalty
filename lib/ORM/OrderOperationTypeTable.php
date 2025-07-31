@@ -60,7 +60,7 @@ class OrderOperationTypeTable  extends DataManager
                 'OPERATION_TYPE' => $type,
             ]);
         } else {
-            self::update($item['ID'], [
+            return self::update($item['ID'], [
                 'OPERATION_TYPE' => $type
             ]);
         }
