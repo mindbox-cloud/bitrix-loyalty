@@ -6,7 +6,6 @@ namespace Mindbox\Loyalty;
 
 use Mindbox\Clients\AbstractMindboxClient;
 use Mindbox\Clients\MindboxClientV3;
-use Mindbox\Loyalty\Support\Settings;
 use Mindbox\Loyalty\Support\SettingsFactory;
 use Psr\Log\LogLevel;
 use Psr\Log\NullLogger;
@@ -20,10 +19,15 @@ class Api
     {
         $settings = SettingsFactory::createBySiteId($siteId);
 
-        $logger = new \Mindbox\Loggers\MindboxFileLogger(
-            $settings->getLogPath(),
-            LogLevel::DEBUG
-        );
+        if ($settings->isLoggingEnabled()) {
+            $logger = new \Mindbox\Loggers\MindboxFileLogger(
+                $settings->getLogPath(),
+                LogLevel::DEBUG
+            );
+        } else {
+            $logger = new NullLogger();
+        }
+
 
         $apiDomainCustom = $settings->getApiDomainCustom();
         if ($apiDomainCustom && !empty($apiDomainCustomParts = Helper::parseDomainName($apiDomainCustom))) {

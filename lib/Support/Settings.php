@@ -89,6 +89,11 @@ final class Settings
         return $this->settings[SettingsEnum::ENABLED_LOYALTY] === 'Y';
     }
 
+    public function isLoggingEnabled(): bool
+    {
+        return $this->settings[SettingsEnum::IS_LOGGING] === 'Y';
+    }
+
     public function isTestMode(): bool
     {
         return $this->settings[SettingsEnum::TEST_MODE] === 'Y';
