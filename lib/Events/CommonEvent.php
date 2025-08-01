@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mindbox\Loyalty\Events;
 
 use Bitrix\Main\Page\Asset;
+use Mindbox\Loyalty\Helper;
 use Mindbox\Loyalty\Support\LoyalityEvents;
 
 class CommonEvent
@@ -15,8 +16,7 @@ class CommonEvent
             return;
         }
 
-        global $USER;
-        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::INCLUDE_TRACKER, $USER->GetUserGroupArray())) {
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::INCLUDE_TRACKER, Helper::getUserGroups())) {
             return;
         }
 

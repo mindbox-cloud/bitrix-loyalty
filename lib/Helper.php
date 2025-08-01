@@ -142,4 +142,13 @@ class Helper
         $domainZone = array_pop($domainParts);
         return [implode('.', $domainParts), $domainZone];
     }
+
+    public static function getUserGroups(): array
+    {
+        global $USER;
+        if ((isset($USER) && $USER instanceof \CUser)) {
+            return $USER->GetUserGroupArray();
+        }
+        return [2];
+    }
 }
