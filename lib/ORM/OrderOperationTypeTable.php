@@ -51,13 +51,17 @@ class OrderOperationTypeTable  extends DataManager
     {
         $find = self::getList([
             'filter' => ['=ORDER_SITE_ID' => $orderSiteId],
-            'select' => ['*'],
+            'select' => ['ID'],
         ]);
-
-        if (!$find->fetch()) {
+        $item = $find->fetch();
+        if (!$item) {
             return self::add([
                 'ORDER_SITE_ID' => $orderSiteId,
                 'OPERATION_TYPE' => $type,
+            ]);
+        } else {
+            return self::update($item['ID'], [
+                'OPERATION_TYPE' => $type
             ]);
         }
     }
