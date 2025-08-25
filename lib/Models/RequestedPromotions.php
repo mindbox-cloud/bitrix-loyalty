@@ -82,7 +82,7 @@ class RequestedPromotions
                 if (isset($descrData['BASKET'])) {
                     $arActionDescrData = current($descrData['BASKET']);
                 } else {
-                    $arActionDescrData = current($descrData['DESCR_DATA']);
+                    $arActionDescrData = current($descrData);
                 }
 
                 if ($arDiscount['MODULE_ID'] === 'sale') {
@@ -245,7 +245,7 @@ class RequestedPromotions
                     if (isset($descrData['BASKET'])) {
                         $arActionDescrData = current($descrData['BASKET']);
                     } else {
-                        $arActionDescrData = current($descrData['DESCR_DATA']);
+                        $arActionDescrData = current($descrData);
                     }
 
                     if ($arDiscount['MODULE_ID'] === 'sale') {
