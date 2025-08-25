@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Services;
 
+use Bitrix\Main\Localization\Loc;
 use Bitrix\Sale\Order;
 use Mindbox\DTO\DTO;
 use Mindbox\DTO\V3\Requests\PreorderRequestDTO;
@@ -259,7 +260,7 @@ class OrderService
         }
 
         if (!isset($response)) {
-            throw new MindboxUnavailableException('Процессинг временно недосутпен. Часть скидок и бонусы будут недоступны для заказа');
+            throw new MindboxUnavailableException(Loc::getMessage('MINDBOX_LOYALTY_MINDBOX_UNAVAILABLE_EXCEPTION'));
         }
 
         return $response;
