@@ -78,7 +78,12 @@ class RequestedPromotions
                     continue;
                 }
 
-                $arActionDescrData = current($applyDiscount['DESCR_DATA']);
+                $descrData = $applyDiscount['DESCR_DATA'];
+                if (isset($descrData['BASKET'])) {
+                    $arActionDescrData = current($descrData['BASKET']);
+                } else {
+                    $arActionDescrData = current($descrData);
+                }
 
                 if ($arDiscount['MODULE_ID'] === 'sale') {
                     if (isset($arActionDescrData['VALUE_TYPE'])) {
@@ -236,7 +241,12 @@ class RequestedPromotions
                     }
 
                     $quantity = $basketItem->getQuantity();
-                    $arActionDescrData = current($applyDiscount['DESCR_DATA']);
+                    $descrData = $applyDiscount['DESCR_DATA'];
+                    if (isset($descrData['BASKET'])) {
+                        $arActionDescrData = current($descrData['BASKET']);
+                    } else {
+                        $arActionDescrData = current($descrData);
+                    }
 
                     if ($arDiscount['MODULE_ID'] === 'sale') {
                         if (isset($arActionDescrData['VALUE_TYPE'])) {
