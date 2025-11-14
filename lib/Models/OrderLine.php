@@ -111,7 +111,7 @@ class OrderLine
     public function getData(): array
     {
         return array_filter([
-            'basePricePerItem' => $this->getBasePricePerItem(),
+            'basePricePerItem' => $this->basketItem->getBasePrice() ?? $this->getBasePricePerItem(),
             'quantity' => $this->getQuantity(),
             'lineId' => $this->getLineId(),
             'lineNumber' => $this->getLineNumber(),
