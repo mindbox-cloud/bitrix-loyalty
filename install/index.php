@@ -106,6 +106,11 @@ class mindbox_loyalty extends CModule
             $orderOperationTypeTableInstance->createDbTable();
         }
 
+        $orderProductPriceTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\OrderProductPriceTable::class);
+        if (!$orderProductPriceTableInstance->getConnection()->isTableExists($orderProductPriceTableInstance->getDBTableName())) {
+            $orderProductPriceTableInstance->createDbTable();
+        }
+
         $siteId = $this->getCurrentSiteId();
         (new OrderGroupPropertyInstaller($siteId))->up();
         (new OrderPropertyInstaller($siteId))->up();
@@ -128,6 +133,10 @@ class mindbox_loyalty extends CModule
         $orderOperationTypeTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\OrderOperationTypeTable::class);
         $orderOperationTypeTableInstance->getConnection()
             ->queryExecute("drop table if exists " . $orderOperationTypeTableInstance->getDBTableName());
+
+        $orderProductPriceTableInstance = \Bitrix\Main\ORM\Entity::getInstance(\Mindbox\Loyalty\ORM\OrderProductPriceTable::class);
+        $orderProductPriceTableInstance->getConnection()
+            ->queryExecute("drop table if exists " . $orderProductPriceTableInstance->getDBTableName());
 
 
         $iterSite = \Bitrix\Main\SiteTable::getList([
@@ -222,6 +231,15 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\OrderEvent::class,
             'onSaleOrderDeleted',
+            1000
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->registerEventHandler(
+            'sale',
+            'OnSaleOrderSaved',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\OrderEvent::class,
+            'onSaleOrderSavedProductPriceSave',
             1000
         );
 
@@ -426,6 +444,14 @@ class mindbox_loyalty extends CModule
             $this->MODULE_ID,
             \Mindbox\Loyalty\Events\OrderEvent::class,
             'onSaleOrderDeleted'
+        );
+
+        \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(
+            'sale',
+            'OnSaleOrderSaved',
+            $this->MODULE_ID,
+            \Mindbox\Loyalty\Events\OrderEvent::class,
+            'onSaleOrderSavedProductPriceSave'
         );
 
         \Bitrix\Main\EventManager::getInstance()->unRegisterEventHandler(

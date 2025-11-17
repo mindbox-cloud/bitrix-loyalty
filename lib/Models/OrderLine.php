@@ -7,6 +7,7 @@ namespace Mindbox\Loyalty\Models;
 
 use Bitrix\Sale\BasketItem;
 use Bitrix\Sale\Order;
+use Mindbox\Loyalty\ORM\OrderProductPriceTable;
 use Mindbox\Loyalty\Support\Settings;
 
 class OrderLine
@@ -44,6 +45,20 @@ class OrderLine
 
     public function getBasePricePerItem()
     {
+        if ($this->basketItem->getField('ORDER_ID')) {
+            $basePrice = OrderProductPriceTable::getList([
+                'filter' => [
+                    'ORDER_ID' => $this->basketItem->getField('ORDER_ID'),
+                    'PRODUCT_ID' => $this->basketItem->getProductId(),
+                ],
+                'select' => ['PRICE_PER_ITEM']
+            ])->fetch();
+
+            if ($basePrice) {
+                return $basePrice['PRICE_PER_ITEM'];
+            }
+        }
+
         static $basePrices = [];
 
         if (!isset($basePrices[$this->getLineId()])) {
@@ -111,7 +126,7 @@ class OrderLine
     public function getData(): array
     {
         return array_filter([
-            'basePricePerItem' => $this->basketItem->getPrice() ?? $this->getBasePricePerItem(),
+            'basePricePerItem' => $this->getBasePricePerItem(),
             'quantity' => $this->getQuantity(),
             'lineId' => $this->getLineId(),
             'lineNumber' => $this->getLineNumber(),

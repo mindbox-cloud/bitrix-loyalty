@@ -20,3 +20,5 @@ $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_remove_from_favorite'] = 'Удаление 
 $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_discount_for_price_type'] = 'Расчет скидки как разница типов цен';
 $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_edit_order_to_admin_page'] = 'Редактирование заказа в админке';
 $MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_create_order_to_admin_page'] = 'Создание заказа в админке';
+
+$MESS['MINDBOX_LOYALTY_ENABLE_EVENTS_save_order_product_price'] = 'Сохранение цен на товары в заказе';
