@@ -111,6 +111,12 @@ class mindbox_loyalty extends CModule
             $orderProductPriceTableInstance->createDbTable();
         }
 
+        $orderProductPriceTableInstance->getConnection()->createIndex(
+            $orderProductPriceTableInstance->getDBTableName(),
+            'ix_basket_id_' . $orderProductPriceTableInstance->getDBTableName(),
+            'BASKET_ID'
+        );
+
         $siteId = $this->getCurrentSiteId();
         (new OrderGroupPropertyInstaller($siteId))->up();
         (new OrderPropertyInstaller($siteId))->up();

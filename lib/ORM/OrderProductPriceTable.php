@@ -24,8 +24,8 @@ class OrderProductPriceTable extends DataManager
             'ORDER_ID' => new IntegerField('ORDER_ID', [
                 'title' => 'ORDER_ID',
             ]),
-            'PRODUCT_ID' => new IntegerField('PRODUCT_ID', [
-                'title' => 'PRODUCT_ID',
+            'BASKET_ID' => new IntegerField('BASKET_ID', [
+                'title' => 'BASKET_ID',
             ]),
             'PRICE_PER_ITEM' => new FloatField('PRICE_PER_ITEM', [
                 'title' => 'PRICE_PER_ITEM',

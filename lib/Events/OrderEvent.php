@@ -463,8 +463,6 @@ class OrderEvent
         }
 
         if (!$isNew) {
-            SessionStorage::getInstance()->clear();
-
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
@@ -475,18 +473,18 @@ class OrderEvent
         }
 
         $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds((int) $order->getField('USER_ID'));
-        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::CONFIRM_ORDER, $userGroupArray, $settings)) {
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::SAVE_ORDER_PRODUCT_PRICE, $userGroupArray, $settings)) {
             return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
         }
 
         /**
-         * @var BasketItem
+         * @var BasketItem $basketItem
          */
         foreach ($order->getBasket() as $basketItem) {
             $orderLine = new OrderLine($basketItem, $settings);
             $lineData = [
                 'ORDER_ID' => $order->getId(),
-                'PRODUCT_ID' => $basketItem->getProductId(),
+                'BASKET_ID' => $basketItem->getId(),
                 'PRICE_PER_ITEM' => $orderLine->getBasePricePerItem()
             ];
 

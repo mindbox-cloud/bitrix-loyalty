@@ -46,10 +46,14 @@ class OrderLine
     public function getBasePricePerItem()
     {
         if ($this->basketItem->getField('ORDER_ID')) {
+            if (!$this->basketItem->getId()) {
+                return $this->basketItem->getBasePrice();
+            }
+
             $basePrice = OrderProductPriceTable::getList([
                 'filter' => [
                     'ORDER_ID' => $this->basketItem->getField('ORDER_ID'),
-                    'PRODUCT_ID' => $this->basketItem->getProductId(),
+                    'BASKET_ID' => $this->basketItem->getId(),
                 ],
                 'select' => ['PRICE_PER_ITEM']
             ])->fetch();
