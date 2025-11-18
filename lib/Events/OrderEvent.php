@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Mindbox\Loyalty\Events;
 
+use Bitrix\Sale\BasketItem;
 use Bitrix\Sale\Order;
 use Mindbox\Exceptions\MindboxUnavailableException;
 use Mindbox\Loyalty\Exceptions\ErrorCallOperationException;
 use Mindbox\Loyalty\Exceptions\IntegrationLoyaltyException;
 use Mindbox\Loyalty\Helper;
+use Mindbox\Loyalty\Models\OrderLine;
 use Mindbox\Loyalty\Models\OrderMindbox;
+use Mindbox\Loyalty\ORM\OrderProductPriceTable;
 use Mindbox\Loyalty\Support\CallBlocking;
 use Mindbox\Loyalty\Exceptions\EmptyLineException;
 use Mindbox\Loyalty\Exceptions\PriceHasBeenChangedException;
@@ -440,6 +443,52 @@ class OrderEvent
             $service = new OrderService();
             $service->cancelOrder($order);
         } catch (IntegrationLoyaltyException $exception) {
+        }
+
+        return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+    }
+
+    public static function onSaleOrderSavedProductPriceSave(\Bitrix\Main\Event $event)
+    {
+        if (LoyalityEvents::checkEnableEvent(LoyalityEvents::SAVE_ORDER_PRODUCT_PRICE)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        /** @var Order $order */
+        $order = $event->getParameter('ENTITY');
+        $isNew = $event->getParameter('IS_NEW');
+
+        if (!$order instanceof Order) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        if (!$isNew) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        $settings = SettingsFactory::createBySiteId($order->getSiteId());
+
+        if (Helper::isDisableProccessingForUser((int) $order->getUserId(), $settings)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        $userGroupArray = \Bitrix\Main\UserTable::getUserGroupIds((int) $order->getField('USER_ID'));
+        if (!LoyalityEvents::checkEnableEventsForUserGroup(LoyalityEvents::SAVE_ORDER_PRODUCT_PRICE, $userGroupArray, $settings)) {
+            return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);
+        }
+
+        /**
+         * @var BasketItem $basketItem
+         */
+        foreach ($order->getBasket() as $basketItem) {
+            $orderLine = new OrderLine($basketItem, $settings);
+            $lineData = [
+                'ORDER_ID' => $order->getId(),
+                'BASKET_ID' => $basketItem->getId(),
+                'PRICE_PER_ITEM' => $orderLine->getBasePricePerItem()
+            ];
+
+            OrderProductPriceTable::add($lineData);
         }
 
         return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS);

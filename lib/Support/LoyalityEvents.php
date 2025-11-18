@@ -30,6 +30,7 @@ class LoyalityEvents
     public const ADD_FAVORITE = 'add_to_favorite';
     public const REMOVE_FROM_FAVORITE = 'remove_from_favorite';
     public const DISCOUNT_FOR_PRICE_TYPE = 'discount_for_price_type';
+    public const SAVE_ORDER_PRODUCT_PRICE = 'save_order_product_price';
 
     public static function getAll(): array
     {
