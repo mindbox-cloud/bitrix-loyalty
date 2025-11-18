@@ -255,7 +255,7 @@ class LoyaltyProgram extends CBitrixComponent implements \Bitrix\Main\Engine\Con
 
     private static function getNextMonth(): string
     {
-        return self::$listInMonth[date('n', strtotime('now +1 month'))];
+        return self::$listInMonth[date('n', strtotime('now +1 month')) - 1];
     }
 
     private function setListInMonth(): void
