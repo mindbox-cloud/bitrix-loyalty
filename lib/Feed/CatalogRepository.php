@@ -24,7 +24,7 @@ class CatalogRepository implements RepositoryInterface
 
         $pages = ceil($this->getProductCount() / $this->getStepSize());
 
-        for ($step = 1; $step <= $pages; $step++) {
+        for ($step = 0; $step <= $pages; $step++) {
             $this->cleanProducts();
             $this->loadProducts($this->getStepSize(), $step);
             $this->loadOffers();
@@ -153,7 +153,7 @@ class CatalogRepository implements RepositoryInterface
             [],
             ['=IBLOCK_ID' => $this->getIblockId()],
             false,
-            ['nTopCount' => $limit, 'nOffset' => $offset],
+            ['nTopCount' => $limit, 'nOffset' => $offset*$limit],
             $arSelect
         );
 
