@@ -50,6 +50,10 @@ class OrderLine
                 return $this->basketItem->getBasePrice();
             }
 
+            if ($this->basketItem->isCustomPrice()) {
+                return $this->basketItem->getPrice();
+            }
+
             $basePrice = OrderProductPriceTable::getList([
                 'filter' => [
                     'ORDER_ID' => $this->basketItem->getField('ORDER_ID'),
